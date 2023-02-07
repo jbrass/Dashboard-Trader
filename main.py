@@ -1,4 +1,5 @@
 # Importar las librerías necesarias
+from datos import *
 import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
@@ -12,57 +13,61 @@ import seaborn as sns
 from bokeh.plotting import figure
 import yfinance as yf
 import datetime as dt
+import streamlit as st
+import requests
+from bs4 import BeautifulSoup
+
+st.set_page_config(page_title="Mi tablero de Streamlit",
+                   page_icon=":guardsman:",
+                   layout="wide",
+                   initial_sidebar_state="expanded")
+st.markdown(
+    """
+    <style>
+    body {
+        background-color: black;
+        color: white;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 
 
+    
 # Cargar la imagen de logo
 with open("fintra-logo.png", 'rb') as img:
     st.image(img.read(), width=200)
 
-df_diarios_ES = pd.read_csv("./Operativa/Diarios-ES.csv")
-df_diarios_ES['dia'] = pd.to_datetime(df_diarios_ES['dia'], format='%m/%d/%Y')
-
-df_diarios_NQ = pd.read_csv("./Operativa/Diarios-NQ.csv")
-df_diarios_NQ['dia'] = pd.to_datetime(df_diarios_NQ['dia'], format='%m/%d/%Y')
-
-df_semanal_ES = pd.read_csv("./Operativa/Semanal-ES.csv")
-df_semanal_ES['dia'] = pd.to_datetime(df_semanal_ES['dia'])
-
-df_semanal_NQ = pd.read_csv("./Operativa/Semanal-NQ.csv")
-df_semanal_NQ['dia'] = pd.to_datetime(df_semanal_NQ['dia'])
-
-renombre = {
-    "./Operativa/Diarios-ES.csv": "Datos diarios mini S&P500",
-    "./Operativa/Diarios-NQ.csv": "Datos diarios mini NASDAQ100",
-    "./Operativa/Semanal-ES.csv": "Datos semanales mini S&P500",
-    "./Operativa/Semanal-NQ.csv": "Datos semanales mini NASDAQ 100"
-}
-
-data_source = st.selectbox("Selecciona una fuente de datos", list(renombre.values()))
-
-for archivo, nombre_amigable in renombre.items():
-    if data_source == nombre_amigable:
-        if archivo == "./Operativa/Diarios-ES.csv":
-            df = df_diarios_ES
-        elif archivo == "./Operativa/Diarios-NQ.csv":
-            df = df_diarios_NQ
-        elif archivo == "./Operativa/Semanal-ES.csv":
-            df = df_semanal_ES
-        else:
-            df = df_semanal_NQ
-        break
-
-
 # Utilizar una estructura de control de flujo más clara
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Estadísticas", "Gráficos", "Forecast", "Resultados Operativa","Ficheros Descargas/Subidas", "Acciones"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["Estadísticas", "Gráficos/Forecast", "Resultados Operativa", "Acciones", "Ganadoras", "Cripto", "Defi"])
 
 with tab1:
 
-    st.title("Resumen de la jornada de trading")
+    data_source = st.selectbox("Selecciona una fuente de datos", list(renombre.values()))
 
-    st.markdown("### Subtítulo")
+    for archivo, nombre_amigable in renombre.items():
+        if data_source == nombre_amigable:
+            if archivo == "./Operativa/Diarios-ES.csv":
+                df = df_diarios_ES
+            elif archivo == "./Operativa/Diarios-NQ.csv":
+                df = df_diarios_NQ
+            elif archivo == "./Operativa/Semanal-ES.csv":
+                df = df_semanal_ES
+            else:
+                df = df_semanal_NQ
+            break
+    
+    
+    st.subheader("Resumen de la Semana 06/02/2023")
 
-    st.markdown('Streamlit is Streamlit isStreamlit isStreamlit isStreamlit isStreamlit isStreamlit is **_really_ cool**.')
+
+    st.markdown(" **Los activos de riesgo mantuvieron el tono alcista**")
+    st.markdown("La semana estuvo marcada por las reuniones de los bancos centrales, los cuales cumplieron con lo previsto en lo que se refiere a las subidas en los tipos de interés: FED 25pb, BCE y BoE 50pb. Hasta aquí lo esperado, pero fue el tono menos combativo de Powell lo que cargó de razones a los inversores, que siguen convencidos de que la FED saldrá al rescate de la economía en la segunda parte del año. Esto sirvió también de soporte en la región europea, a pesar del tono más agresivo de Christine Lagarde y la confirmación por parte de la autoridad monetaria de otra subida de 50pb para su reunión de marzo, en este caso la compleja situación de las arcas públicas en los países del sur de Europa hacen pensar a más de uno que el BCE no podrá hacer todo lo que le gustaría para aplacar la inflación.")
+
+    st.markdown(" **Datos macro mixtos al cierre de la semana**")
+    st.markdown("Por el lado positivo: PMI’s saliendo de zona de contracción y un dato de crecimiento del PIB mejor del esperado en la zona euro; pero también tuvimos datos negativos que siguen sembrando la duda, como por ejemplo: un aviso importante en el repunte en los datos de inflación subyacente en la región europea, a lo se que sumaron unos datos de empleo mucho mejor de lo esperado en Estados Unidos, que impiden descartar segundas vueltas en el nivel de precios.")
 
    
     
@@ -127,6 +132,7 @@ with tab1:
 
 
 with tab2:
+    
     # Encabezado para la sección de gráficos
     st.header("Gráficos")
 
@@ -163,17 +169,7 @@ with tab2:
     else:
         st.warning("La variable seleccionada no es válida.")
 
-
-            
-
-
-with tab3:
-
-    # Cargar los dataframes
-    df_diarios_ES = pd.read_csv('./Operativa/Diarios-ES.csv')
-    df_diarios_NQ = pd.read_csv('./Operativa/Diarios-NQ.csv')
-    df_semanal_ES = pd.read_csv('./Operativa/Semanal-ES.csv')
-    df_semanal_NQ = pd.read_csv('./Operativa/Semanal-NQ.csv')
+    st.subheader('Pulsa el botón de la izquierda Predecir y podrás hacer una predicción sobre la variable que desees')
 
     dfs = {'Diarios ES': df_diarios_ES, 'Diarios NQ': df_diarios_NQ,
         'Semanal ES': df_semanal_ES, 'Semanal NQ': df_semanal_NQ}
@@ -203,10 +199,13 @@ with tab3:
         st.line_chart(data)
         st.line_chart(data_pred, use_container_width=True)
         return y_pred
-
+    
 
     # Usar un sidebar de Streamlit para obtener la entrada del usuario
     st.sidebar.header("Pronóstico")
+
+        
+        
     rename_values = {'close': 'Cierre', 'vol': 'Volumen', 'vpoc': 'VPOC', 'vwap': 'VWAP', 'vol_vah': 'Volumen en VAH', 'vol_vpoc': 'Volumen en VPOC', 'vol_val': 'Volumen en VAL', 'vix_close': 'VIX Cierre', 'range': 'Rango', 'high': 'Alto', 'low': 'Bajo', 'delta': 'Delta'}
     valor = st.sidebar.selectbox("Seleccione el valor a predecir", [rename_values[i] for i in rename_values.keys()])
     valor = [key for key, value in rename_values.items() if value == valor][0]
@@ -217,17 +216,13 @@ with tab3:
     # Llamar a la función con la entrada del usuario
     if st.sidebar.button("Predecir"):
         y_pred = regresion_lineal(df, valor, dias)
-        st.write("Valores pronosticados:", y_pred)
+        st.write("Valores pronosticados:", y_pred)     
 
 
 
 
 
-
-
-
-
-with tab4:
+with tab3:
     # Mostrar resumen operativo
     st.subheader('Resumen Operativo')
 
@@ -335,54 +330,8 @@ with tab4:
 
 
         
-with tab5:
 
-
-    def load_data():
-        data = st.file_uploader("Selecciona el archivo de datos diarios (formato csv)", type="csv")
-        if data is not None:
-            data = pd.read_csv(data)
-            data["dia"] = pd.to_datetime(data["dia"])
-            return data
-        else:
-            st.error("No se ha seleccionado ningún archivo.")
-            return None
-
-    data = load_data()
-
-    if data is not None:
-        # Filtro de fechas
-        start_date = st.date_input("Selecciona la fecha de inicio")
-        end_date = st.date_input("Selecciona la fecha de fin")
-        if start_date and end_date:
-            data = data[(data["dia"] >= start_date) & (data["dia"] <= end_date)]
-        elif start_date:
-            data = data[data["dia"] >= start_date]
-        elif end_date:
-            data = data[data["dia"] <= end_date]
-
-        # Tablas con estadísticos básicos
-        st.subheader("Estadísticos básicos")
-        st.write(data.describe())
-
-        # Heatmap de correlaciones
-        st.subheader("Heatmap de correlaciones")
-        corr = data.drop("dia", axis=1).corr()
-        sns.set(font_scale=1.5)
-        fig, ax = plt.subplots(figsize=(10,8))
-        sns.heatmap(corr, annot=True, cmap="coolwarm", ax=ax)
-        st.pyplot(fig)
-
-        
-        # Crear un gráfico de líneas utilizando Altair
-        chart = alt.Chart(df).mark_line().encode(
-            x='dia',
-            y='vol'
-        )
-        st.altair_chart(chart, use_container_width=True)
-
-
-with tab6:
+with tab4:
     # Función para descargar datos de cotización de un instrumento financiero específico
     def download_data(ticker, start_date, end_date):
         df = yf.download(ticker, start=start_date, end=end_date)
@@ -400,11 +349,15 @@ with tab6:
     # Interfaz de usuario de Streamlit
     with st.container():
         st.title("Buscador de Acciones")
-
-        ticker = st.text_input("Ingrese el ticker de la empresa:", "AAPL")
-
+        
+        # Filtramos por fechas
         start_date = st.date_input("Ingrese la fecha de inicio:", dt.date(2020, 1, 1))
         end_date = st.date_input("Ingrese la fecha final:", dt.date.today())
+        
+        # Dinamicamente buscara el ticker.. Ojo! solo el ticker 
+        ticker = st.text_input("Ingrese el ticker de la empresa:", "AAPL")
+
+
 
         if st.button("Mostrar datos"):    
             df,description = download_data(ticker, start_date, end_date)
@@ -412,3 +365,43 @@ with tab6:
             st.line_chart(df[["Close", "Media móvil de 200 sesiones"]])
 
             
+with tab5:
+
+    # Hacer una solicitud a la URL
+    url = "https://finance.yahoo.com/gainers"
+    response = requests.get(url)
+
+    # Verificar si la solicitud fue exitosa
+    if response.status_code == 200:
+        # Crear un objeto BeautifulSoup con el contenido de la página web
+        soup = BeautifulSoup(response.content, "html.parser")
+
+        # Buscar un elemento específico en la página web, por ejemplo, una tabla
+        table = soup.find("table")
+
+        # Procesar la información en la tabla y crear un DataFrame
+        rows = []
+        for row in table.find_all("tr"):
+            cells = [cell.text for cell in row.find_all("td")]
+            rows.append(cells)
+        df = pd.DataFrame(rows, columns=["Symbol","Name", "Price(Intraday)", "Change","% Change","Volume","Avg Vol(3 month)","Market Cap","PE Ratio (TTM)", "52 Week Range"])
+        # Eliminar la fila 0 del DataFrame
+        df = df.drop(0)
+        # Mostrar el DataFrame con Streamlit
+        st.subheader("Acciones Ganadoras")
+        st.table(df)
+    else:
+        st.write("Error al hacer la solicitud")
+
+
+
+
+
+
+with tab6:
+    st.subheader('Tab para critpoactivos')
+    
+    
+
+with tab7:
+    st.subheader("Tab para Defi")
