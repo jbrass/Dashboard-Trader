@@ -42,7 +42,7 @@ with open("fintra-logo.png", 'rb') as img:
     st.image(img.read(), width=200)
 
 # Utilizar una estructura de control de flujo más clara
-tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["Estadísticas", "Gráficos/Forecast"]) 
+tab1, tab2 = st.tabs(["Estadísticas", "Gráficos/Forecast"]) 
 
 with tab1:
 
