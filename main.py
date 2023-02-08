@@ -223,7 +223,7 @@ with tab2:
 
 
 
-with tab3:
+""" with tab3:
     # Mostrar resumen operativo
     st.subheader('Resumen Operativo')
 
@@ -424,3 +424,4 @@ with tab7:
     st.subheader("Tab para Defi")
 
 
+ """
