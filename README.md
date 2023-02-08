@@ -1,21 +1,22 @@
-## Nombre del proyecto
-Descripción breve y concisa del proyecto.
+## Dashboard de Información Financiera
+Este proyecto es un tablero interactivo para consultar información financiera sobre el mercado de derivados sobre futuros e índices como el NASDAQ y el S&P 500. Desarrollado en Python con librerías como Streamlit, entre otras.
 
-## Instalación
-Indicaciones detalladas sobre cómo instalar el proyecto en su entorno local.
+## Funcionalidades
+1. Visualización de gráficos y datos actualizados en tiempo real sobre el mercado de derivados y los índices mencionados.
+2. Posibilidad de realizar análisis y seguimiento de diferentes instrumentos financieros.
+3. Interfaz intuitiva y fácil de usar.
+
+## Requisitos
+Tener instalado Python 3.x
+Instalar las librerías requeridas presentes en el archivo requirements.txt
 
 ## Uso
-Instrucciones sobre cómo utilizar el proyecto, incluyendo cualquier configuración necesaria.
+Para ejecutar este proyecto, simplemente clone este repositorio a su equipo local y ejecute el siguiente comando en la terminal:
+1. streamlit run app.py
 
-## Contribución
-Instrucciones sobre cómo contribuir al proyecto, incluyendo cualquier política de contribución y código de conducta.
 
-## Licencia
-Información sobre la licencia bajo la cual se distribuye el proyecto.
+## Contribuciones
+Si deseas contribuir al proyecto, por favor envía una solicitud de pull. Para cualquier consulta o problema, abre un issue en este repositorio.
 
-## Créditos
-Créditos a cualquier persona o entidad que haya contribuido al desarrollo del proyecto.
-
-## Contacto
-Información sobre cómo contactar a los desarrolladores o mantenedores del proyecto, incluyendo cualquier información de soporte o de contacto técnico.
-
+## Autor
+Este proyecto ha sido desarrollado por José Mª Martin jmmartinnu@hotmail.com

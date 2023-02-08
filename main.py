@@ -16,6 +16,7 @@ import datetime as dt
 import streamlit as st
 import requests
 from bs4 import BeautifulSoup
+import ta
 
 st.set_page_config(page_title="Mi tablero de Streamlit",
                    page_icon=":guardsman:",
@@ -41,7 +42,7 @@ with open("fintra-logo.png", 'rb') as img:
     st.image(img.read(), width=200)
 
 # Utilizar una estructura de control de flujo más clara
-tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["Estadísticas", "Gráficos/Forecast", "Resultados Operativa", "Acciones", "Ganadoras", "Cripto", "Defi"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["Estadísticas", "Gráficos/Forecast", "TrackRecord", "Acciones", "Ganadoras", "Cripto", "Defi"])
 
 with tab1:
 
@@ -400,8 +401,26 @@ with tab5:
 
 with tab6:
     st.subheader('Tab para critpoactivos')
+    # Sección para Análisis de rendimiento
+    if st.checkbox("Ver Análisis de rendimiento"):
+        # Cargar los datos de rendimiento de las inversiones
+        rendimiento = pd.read_csv("./Operativa/resumen.csv")
+        
+        # Mostrar el rendimiento histórico en un gráfico de línea
+        st.line_chart(rendimiento)
+        
+        # Calcular el rendimiento actual y la rentabilidad proyectada
+        rendimiento_actual = rendimiento["Rendimiento"].iloc[-1]
+        rentabilidad_proyectada = rendimiento["Rendimiento"].mean()
+        
+        # Mostrar el rendimiento actual y la rentabilidad proyectada
+        st.write("Rendimiento actual:", rendimiento_actual)
+        st.write("Rentabilidad proyectada:", rentabilidad_proyectada)
+
     
     
 
 with tab7:
     st.subheader("Tab para Defi")
+
+
