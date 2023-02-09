@@ -21,7 +21,7 @@ import ta
 from textos import *
 from sklearn.preprocessing import StandardScaler
 from datetime import timedelta
-
+import datetime
 
 st.set_page_config(page_title="Mi tablero de Streamlit",
                    page_icon=":guardsman:",
@@ -97,11 +97,13 @@ with tab1:
     # Crear campos de entrada de fecha
     fecha_inicio = st.date_input("Selecciona una fecha de inicio")
     fecha_fin = st.date_input("Selecciona una fecha de fin")
+    df["Date"] = pd.to_datetime(df["Date"])
+
 
     # Crear un botón para aplicar el filtro
     if st.button("Aplicar filtro"):
             # Filtrar la base de datos
-            df_filtrado = df.drop("Unnamed: 0", axis=1)[(df["dia"] >= fecha_inicio.strftime("%m/%d/%Y")) & (df["dia"] <= fecha_fin.strftime("%m/%d/%Y"))]
+            df_filtrado = df.drop("Unnamed: 0", axis=1)[(df["Date"].dt.date >= fecha_inicio) & (df["Date"].dt.date <= fecha_fin)]
             # Mostrar la tabla con los datos filtrados
             st.dataframe(df_filtrado)
             
@@ -119,25 +121,25 @@ with tab1:
 
 with tab2:
     # Selección de la variable a graficar
-    variable = st.selectbox("Seleccione una variable", ["Máximo del día", "Mínimo del día", "Precio de cierre", "Volumen", "Rango en ticks", "Precio cierre de VIX", "Vwap", "Volumen en zona de Vpoc", "Volumen Value Area Low", "Volumen Value Area High"], key='variable', index=0)
+    variable = st.selectbox("Seleccione una variable", ["Day's High", "Day's Low", "Closing Price", "Volume", "Range in ticks", "VIX Closing Price", "Vwap", "Volume in Vpoc Zone", "Volume Value Area Low", "Volume Value Area High"], key='variable', index=0)
 
     # Selección del tipo de gráfico
     tipo_grafico = st.selectbox("Seleccione un tipo de gráfico", ["Línea", "Dispersión", "Barras"], key='tipo_grafico', index=0)
 
     # Verifica si la variable seleccionada es válida para un gráfico de línea, dispersión o barras
-    if variable in ["Máximo del día", "Mínimo del día", "Precio de cierre", "Volumen", "Rango en ticks", "Precio cierre de VIX", "Vwap", "Volumen en zona de Vpoc", "Volumen Value Area Low", "Volumen Value Area High"]:
+    if variable in ["Day's High", "Day's Low", "Closing Price", "Volume", "Range in ticks", "VIX Closing Price", "Vwap", "Volume in Vpoc Zone", "Volume Value Area Low", "Volume Value Area High"]:
         # Crea un gráfico con x como el día y y como el valor de la variable seleccionada
         fig = go.Figure()
 
         # Si el tipo de gráfico es línea
         if tipo_grafico == 'Línea':
-            fig.add_trace(go.Scatter(x=df['dia'], y=df[variable], mode='lines'))
+            fig.add_trace(go.Scatter(x=df['Date'], y=df[variable], mode='lines'))
         # Si el tipo de gráfico es dispersión
         elif tipo_grafico == 'Dispersión':
-            fig.add_trace(go.Scatter(x=df['dia'], y=df[variable], mode='markers'))
+            fig.add_trace(go.Scatter(x=df['Date'], y=df[variable], mode='markers'))
         # Si el tipo de gráfico es barras
         else:
-            fig.add_trace(go.Bar(x=df['dia'], y=df[variable]))
+            fig.add_trace(go.Bar(x=df['Date'], y=df[variable]))
 
         # Personaliza los títulos y ejes del gráfico
         fig.update_layout(
@@ -175,9 +177,9 @@ with tab2:
 
     st.subheader("Modelo de Regresión Lineal para hacer distintas predicciones a un día")
 
-    x_name = st.selectbox("Seleccione la variable independiente", ["Precio de cierre", "Precio cierre de VIX", "Volumen","Apertura","Máximo del día","Mínimo del día","Vpoc","Vwap","Rango en ticks"])
-    predict_value = st.number_input("Ingrese el último valor de la variable independiente en el día de ayer (" + x_name + "):", value=df[df['dia'] == df['dia'].max() - timedelta(days=1)][x_name].values[0])
-    y_name = st.selectbox("Seleccione la variable dependiente", ["Precio de cierre", "Precio cierre de VIX", "Volumen", "Apertura", "Máximo del día", "Mínimo del día", "Vpoc", "Vwap", "Rango en ticks"])
+    x_name = st.selectbox("Seleccione la variable independiente", ["Closing Price", "VIX Closing Price", "Volume", "Opening", "Day's High", "Day's Low", "Vpoc", "Vwap", "Range in ticks"])
+    predict_value = st.number_input("Ingrese el último valor de la variable independiente en el día de ayer (" + x_name + "):", value=df[df['Date'] == df['Date'].max() - timedelta(days=1)][x_name].values[0])
+    y_name = st.selectbox("Seleccione la variable dependiente", ["Closing Price", "VIX Closing Price", "Volume", "Opening", "Day's High", "Day's Low", "Vpoc", "Vwap", "Range in ticks"])
 
 
     x_std, y_std, slr, prediction = model(x_name, y_name, predict_value, 1)

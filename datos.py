@@ -21,18 +21,33 @@ df_semanal_NQ['dia'] = df_semanal_NQ['dia'].dt.date
 ## Renombro algunas columnas 
 def rename_columns(df):
     df = df.rename(columns={
-        "high": "Máximo del día",
-        "low": "Mínimo del día",
-        "close": "Precio de cierre",
-        "vol": "Volumen",
-        "range": "Rango en ticks",
-        "vix_close": "Precio cierre de VIX",
+        "high": "Day's High",
+        "low": "Day's Low",
+        "close": "Closing Price",
+        "vol": "Volume",
+        "range": "Range in ticks",
+        "vix_close": "VIX Closing Price",
         "vwap": "Vwap",
-        "vol_vpoc": "Volumen en zona de Vpoc",
-        "vol_val": "Volumen Value Area Low",
-        "vol_vah": "Volumen Value Area High",
-        "open": "Apertura",
-        "vpoc": "Vpoc"
+        "vol_vpoc": "Volume in Vpoc Zone",
+        "vol_val": "Volume Value Area Low",
+        "vol_vah": "Volume Value Area High",
+        "open": "Opening",
+        "vpoc": "Vpoc",
+        "dia": "Date",
+        "vah": "Value Area High",
+        "val": "Value Area Low",
+        "poc_naked": "Naked Open Poc",
+        "rango_area": "Range of Area in points",
+        "delta": "Delta",
+        "dia_semanal": "Weekday",
+        "tendencia": "Trend",
+        "cot_commercial": "Cot Commercial",
+        "cot_noncommercial": "Cot Non Commercial",
+        "cot_dealer": "Cot Dealer",
+        "cot_institutional": "Cot Institutional",
+        "cot_leveragedfunds": "Cot Leveraged Funds",
+        "cot_other": "Cot Other"
+        
     })
     return df
 

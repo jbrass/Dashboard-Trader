@@ -1,3 +1,4 @@
+datos
 pandas
 streamlit
 plotly
@@ -8,5 +9,6 @@ numpy
 seaborn
 bokeh
 yfinance
-beautifulsoup4
+bs4
 ta
+textos
