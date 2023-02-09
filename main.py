@@ -85,7 +85,7 @@ with tab1:
    
     
     
-    st.header("Estadísticas últimos 2 días")
+    st.subheader("Estadísticas últimos 2 días")
     # Mostrar la tabla completa al iniciar el programa
     st.dataframe(df.drop("Unnamed: 0", axis=1).tail(2))
     
