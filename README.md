@@ -1,9 +1,11 @@
 ## Dashboard de Información Financiera
-Este código es un ejemplo de un tablero de Streamlit en Python que utiliza la librería principal streamlit para visualizar y analizar datos financieros. Se cargan diferentes fuentes de datos, incluyendo el archivo de diarios ES, diarios NQ, semanal ES y semanal NQ, y se permite al usuario elegir una fuente de datos para analizar.
+Este código en Python y Streamlit es un tablero de visualización de datos. Usa la biblioteca Streamlit para crear una interfaz web interactiva que permite a los usuarios visualizar y explorar los datos.
 
-El tablero consta de dos pestañas: "Estadísticas" y "Gráficos/Forecast". La pestaña "Estadísticas" muestra un resumen de la semana y las estadísticas de los últimos 2 días para el activo seleccionado, incluyendo el promedio, la desviación estándar, la media y los cuartiles. La pestaña "Gráficos/Forecast" aún no está implementada en el código.
+El tablero tiene dos pestañas, "Estadísticas" y "Gráficos/Forecast". En la primera pestaña, se puede seleccionar una fuente de datos de la lista de opciones disponibles en el menú lateral, y luego ver estadísticas generales, estadísticas por rango de fechas, y un mapa de correlaciones para esos datos.
 
-Además, el código utiliza una variedad de librerías adicionales, como pandas, plotly, altair, sklearn, matplotlib, numpy, seaborn, bokeh, yfinance, datetime, requests y BeautifulSoup, y ta.
+En la segunda pestaña, se utiliza un modelo de regresión para hacer un pronóstico sobre el comportamiento de un activo financiero en el futuro. Además, se pueden ver gráficos interactivos para visualizar los datos y las tendencias.
+
+En resumen, este código permite a los usuarios explorar y visualizar datos financieros de manera intuitiva y interactiva.
 
 ## Funcionalidades
 1. Visualización de gráficos y datos actualizados en tiempo real sobre el mercado de derivados y los índices mencionados.

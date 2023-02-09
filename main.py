@@ -20,7 +20,7 @@ from bs4 import BeautifulSoup
 import ta
 from textos import *
 from sklearn.preprocessing import StandardScaler
-
+from datetime import timedelta
 
 
 st.set_page_config(page_title="Mi tablero de Streamlit",
@@ -51,19 +51,29 @@ tab1, tab2 = st.tabs(["Estadísticas", "Gráficos/Forecast"])
 
 with tab1:
 
-    data_source = st.selectbox("Selecciona una fuente de datos", list(renombre.values()))
+    def mostrar_sidebar():
+        data_source = st.sidebar.selectbox("Selecciona una fuente de datos", list(renombre.values()))
 
-    for archivo, nombre_amigable in renombre.items():
-        if data_source == nombre_amigable:
-            if archivo == "./Operativa/Diarios-ES.csv":
-                df = df_diarios_ES
-            elif archivo == "./Operativa/Diarios-NQ.csv":
-                df = df_diarios_NQ
-            elif archivo == "./Operativa/Semanal-ES.csv":
-                df = df_semanal_ES
-            else:
-                df = df_semanal_NQ
-            break
+        for archivo, nombre_amigable in renombre.items():
+            if data_source == nombre_amigable:
+                if archivo == "./Operativa/Diarios-ES.csv":
+                    df = df_diarios_ES
+                elif archivo == "./Operativa/Diarios-NQ.csv":
+                    df = df_diarios_NQ
+                elif archivo == "./Operativa/Semanal-ES.csv":
+                    df = df_semanal_ES
+                else:
+                    df = df_semanal_NQ
+                break
+        return df
+
+    st.sidebar.title("Selección de datos")
+    df = mostrar_sidebar()
+
+
+
+
+
     
     
     st.subheader(titulo_semanal)
@@ -108,18 +118,14 @@ with tab1:
 
 
 with tab2:
-    
-    # Encabezado para la sección de gráficos
-    st.header("Gráficos")
-
     # Selección de la variable a graficar
-    variable = st.selectbox("Seleccione una variable", ["high", "low", "close", "vol", "range", "vix_close", "vwap", "vol_vpoc", "vol_vah", "vol_val"], key='variable', index=0)
+    variable = st.selectbox("Seleccione una variable", ["Máximo del día", "Mínimo del día", "Precio de cierre", "Volumen", "Rango en ticks", "Precio cierre de VIX", "Vwap", "Volumen en zona de Vpoc", "Volumen Value Area Low", "Volumen Value Area High"], key='variable', index=0)
 
     # Selección del tipo de gráfico
     tipo_grafico = st.selectbox("Seleccione un tipo de gráfico", ["Línea", "Dispersión", "Barras"], key='tipo_grafico', index=0)
 
     # Verifica si la variable seleccionada es válida para un gráfico de línea, dispersión o barras
-    if variable in ["high", "low", "close", "vol", "range", "vix_close", "vwap", "vol_vpoc", "vol_vah", "vol_val"]:
+    if variable in ["Máximo del día", "Mínimo del día", "Precio de cierre", "Volumen", "Rango en ticks", "Precio cierre de VIX", "Vwap", "Volumen en zona de Vpoc", "Volumen Value Area Low", "Volumen Value Area High"]:
         # Crea un gráfico con x como el día y y como el valor de la variable seleccionada
         fig = go.Figure()
 
@@ -145,53 +151,62 @@ with tab2:
     else:
         st.warning("La variable seleccionada no es válida.")
 
-    st.subheader('Pulsa el botón de la izquierda Predecir y podrás hacer una predicción sobre la variable que desees')
 
-    dfs = {'Diarios ES': df_diarios_ES, 'Diarios NQ': df_diarios_NQ,
-        'Semanal ES': df_semanal_ES, 'Semanal NQ': df_semanal_NQ}
-
-    # Función para realizar la regresión lineal
-    def regresion_lineal(df, valor, dias):
-        if 'close' not in df.columns or valor not in df.columns:
-            st.error("Error: las columnas necesarias no están presentes en el dataframe.")
-            return
-
-        x = df['close'].values.reshape(-1, 1)
-        y = df[valor].values.reshape(-1, 1)
+    @st.cache
+    def model(x_name, y_name, predict_value, num_days):
+        x = df[x_name].dropna().values.reshape(-1, 1)
+        y = df[y_name].dropna().values.reshape(-1, 1)
 
         sc_x = StandardScaler()
+        sc_y = StandardScaler()
+
         x_std = sc_x.fit_transform(x)
+        y_std = sc_y.fit_transform(y)
 
         slr = LinearRegression()
-        slr.fit(x_std, y)
+        slr.fit(x_std, y_std)
 
-        x_pred = [x[-1]] + [x[-1] + i for i in range(1, dias + 1)]
-        x_pred_std = sc_x.transform(np.array(x_pred).reshape(-1, 1))
-        y_pred = slr.predict(x_pred_std)
+        predict_values_std = sc_x.transform(np.array([predict_value + i for i in range(num_days)]).reshape(-1, 1))
+        predictions = slr.predict(predict_values_std)
+        predictions = sc_y.inverse_transform(predictions)
+            
+        return x_std, y_std, slr, predictions
 
-        data = pd.DataFrame({'x_std': x_std.flatten(), 'y': y.flatten()})
-        data_pred = pd.DataFrame({'x_pred_std': x_pred_std.flatten(), 'y_pred': y_pred.flatten()})
 
-        st.line_chart(data)
-        st.line_chart(data_pred, use_container_width=True)
-        return y_pred
+    st.subheader("Modelo de Regresión Lineal para hacer distintas predicciones a un día")
+
+    x_name = st.selectbox("Seleccione la variable independiente", ["Precio de cierre", "Precio cierre de VIX", "Volumen","Apertura","Máximo del día","Mínimo del día","Vpoc","Vwap","Rango en ticks"])
+    predict_value = st.number_input("Ingrese el último valor de la variable independiente en el día de ayer (" + x_name + "):", value=df[df['dia'] == df['dia'].max() - timedelta(days=1)][x_name].values[0])
+    y_name = st.selectbox("Seleccione la variable dependiente", ["Precio de cierre", "Precio cierre de VIX", "Volumen", "Apertura", "Máximo del día", "Mínimo del día", "Vpoc", "Vwap", "Rango en ticks"])
+
+
+    x_std, y_std, slr, prediction = model(x_name, y_name, predict_value, 1)
+
+    scatter = alt.Chart(pd.DataFrame({
+        "x": x_std.flatten(),
+        "y": y_std.flatten()
+    })).mark_circle().encode(
+        x='x',
+        y='y'
+    )
+
+    line = alt.Chart(pd.DataFrame({
+        "x": x_std.flatten(),
+        "y": slr.predict(x_std).flatten()
+    })).mark_line(color='orange').encode(
+        x='x',
+        y='y'
+    )
+
+    st.altair_chart(scatter + line, use_container_width=True)
+
+
+    variable_dependiente = y_name
+
+    st.write("La predicción para la variable", variable_dependiente, "es", prediction[0][0])
+
     
 
-    # Usar un sidebar de Streamlit para obtener la entrada del usuario
-    st.sidebar.header("Pronóstico")
 
-        
-        
-    rename_values = {'close': 'Cierre', 'vol': 'Volumen', 'vpoc': 'VPOC', 'vwap': 'VWAP', 'vol_vah': 'Volumen en VAH', 'vol_vpoc': 'Volumen en VPOC', 'vol_val': 'Volumen en VAL', 'vix_close': 'VIX Cierre', 'range': 'Rango', 'high': 'Alto', 'low': 'Bajo', 'delta': 'Delta'}
-    valor = st.sidebar.selectbox("Seleccione el valor a predecir", [rename_values[i] for i in rename_values.keys()])
-    valor = [key for key, value in rename_values.items() if value == valor][0]
-
-    dias = st.sidebar.number_input("Ingrese el número de días a predecir", min_value=1, max_value=365, value=30)
-
-
-    # Llamar a la función con la entrada del usuario
-    if st.sidebar.button("Predecir"):
-        y_pred = regresion_lineal(df, valor, dias)
-        st.write("Valores pronosticados:", y_pred)     
 
 
