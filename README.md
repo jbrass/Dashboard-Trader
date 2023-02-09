@@ -18,7 +18,7 @@ Instalar las librerías requeridas presentes en el archivo requirements.txt
 
 ## Uso
 Para ejecutar este proyecto, simplemente clone este repositorio a su equipo local y ejecute el siguiente comando en la terminal:
-1. streamlit run app.py
+1. streamlit run main.py
 
 
 ## Contribuciones
