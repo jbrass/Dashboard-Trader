@@ -1,10 +1,7 @@
-titulo_semanal = "Resumen de la Semana 06/02/2023"
-subtitulo_semanal = " **Los activos de riesgo mantuvieron el tono alcista**"
-resumen_semanal = "La semana estuvo marcada por las reuniones de los bancos centrales, los cuales cumplieron con lo previsto en lo que se refiere a las subidas en los tipos de interés: FED 25pb, BCE y BoE 50pb. Hasta aquí lo esperado, pero fue el tono menos combativo de Powell lo que cargó de razones a los inversores, que siguen convencidos de que la FED saldrá al rescate de la economía en la segunda parte del año. Esto sirvió también de soporte en la región europea, a pesar del tono más agresivo de Christine Lagarde y la confirmación por parte de la autoridad monetaria de otra subida de 50pb para su reunión de marzo, en este caso la compleja situación de las arcas públicas en los países del sur de Europa hacen pensar a más de uno que el BCE no podrá hacer todo lo que le gustaría para aplacar la inflación."
-titulo_cuerpo = " **Datos macro mixtos al cierre de la semana**"
-cuerpo_semanal = "Por el lado positivo: PMI’s saliendo de zona de contracción y un dato de crecimiento del PIB mejor del esperado en la zona euro; pero también tuvimos datos negativos que siguen sembrando la duda, como por ejemplo: un aviso importante en el repunte en los datos de inflación subyacente en la región europea, a lo se que sumaron unos datos de empleo mucho mejor de lo esperado en Estados Unidos, que impiden descartar segundas vueltas en el nivel de precios."
-
-
-
+titulo_semanal = "Weekly Summary 02/06/2023"
+subtitulo_semanal = " **Risk assets maintained bullish tone**"
+resumen_semanal = "The week was marked by meetings of central banks, which delivered as expected in terms of interest rate hikes: FED 25pb, ECB and BoE 50pb. So far, so expected, but it was Powell's less combative tone that gave investors reason, who remain convinced that the FED will come to the rescue of the economy in the second half of the year. This also served as support in the European region, despite the more aggressive tone of Christine Lagarde and confirmation by the monetary authority of another 50pb hike for its March meeting, in this case the complex situation of public finances in the countries of southern Europe make more than one think that the ECB will not be able to do everything it would like to calm inflation."
+titulo_cuerpo = " **Mixed macro data at the close of the week**"
+cuerpo_semanal = "On the positive side: PMI's coming out of contraction zone and better-than-expected GDP growth data in the eurozone; but we also had negative data that continues to sow doubt, such as: a major warning in the rebound in underlying inflation data in the European region, to which were added much better-than-expected job data in the United States, which prevent ruling out second rounds in the price level."
 
 

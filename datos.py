@@ -60,10 +60,10 @@ df_semanal_NQ = rename_columns(df_semanal_NQ)
 
 
 renombre = {
-    "./Operativa/Diarios-ES.csv": "Datos diarios mini S&P500",
-    "./Operativa/Diarios-NQ.csv": "Datos diarios mini NASDAQ100",
-    "./Operativa/Semanal-ES.csv": "Datos semanales mini S&P500",
-    "./Operativa/Semanal-NQ.csv": "Datos semanales mini NASDAQ 100"
+    "./Operativa/Diarios-ES.csv": "Mini S&P500 daily data",
+    "./Operativa/Diarios-NQ.csv": "Daily mini NASDAQ100 data",
+    "./Operativa/Semanal-ES.csv": "Mini S&P500 Weekly data",
+    "./Operativa/Semanal-NQ.csv": "Weekly mini NASDAQ100 data"
 }
 
 

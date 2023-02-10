@@ -47,12 +47,12 @@ with open("fintra-logo.png", 'rb') as img:
     st.image(img.read(), width=200)
 
 # Utilizar una estructura de control de flujo más clara
-tab1, tab2 = st.tabs(["Estadísticas", "Gráficos/Forecast"])
+tab1, tab2 = st.tabs(["Statistics", "Charts/Forecast"])
 
 with tab1:
 
     def mostrar_sidebar():
-        data_source = st.sidebar.selectbox("Selecciona una fuente de datos", list(renombre.values()))
+        data_source = st.sidebar.selectbox("Select a data source", list(renombre.values()))
 
         for archivo, nombre_amigable in renombre.items():
             if data_source == nombre_amigable:
@@ -67,7 +67,7 @@ with tab1:
                 break
         return df
 
-    st.sidebar.title("Selección de datos")
+    st.sidebar.title("Data selection")
     df = mostrar_sidebar()
 
 
@@ -85,73 +85,77 @@ with tab1:
    
     
     
-    st.subheader("Estadísticas últimos 2 días")
+    st.subheader("Last 2 Days Statistics")
     # Mostrar la tabla completa al iniciar el programa
     st.dataframe(df.drop("Unnamed: 0", axis=1).tail(2))
     
-    st.subheader("Estadísticas Generales")
+    st.subheader("General Statistics")
     # Mostrar la tabla completa al iniciar el programa
     st.dataframe(df.drop("Unnamed: 0", axis=1))
     
-    st.subheader("Estadísticas por rango de fechas")
+    st.subheader("Statistics by Date Range")
     # Crear campos de entrada de fecha
-    fecha_inicio = st.date_input("Selecciona una fecha de inicio")
-    fecha_fin = st.date_input("Selecciona una fecha de fin")
+    fecha_inicio = st.date_input("Select a Start Date")
+    fecha_fin = st.date_input("Select an End Date")
     df["Date"] = pd.to_datetime(df["Date"])
+    
 
 
     # Crear un botón para aplicar el filtro
-    if st.button("Aplicar filtro"):
+    if st.button("Apply Filter"):
             # Filtrar la base de datos
             df_filtrado = df.drop("Unnamed: 0", axis=1)[(df["Date"].dt.date >= fecha_inicio) & (df["Date"].dt.date <= fecha_fin)]
             # Mostrar la tabla con los datos filtrados
             st.dataframe(df_filtrado)
-            
-    st.subheader("Mapa de Correlaciones")
+    
+
+    st.subheader("General statistics")
+    st.write(df.describe()) 
+              
+    st.subheader("Correlation Heatmap")
     # Utilizar comentarios para explicar el propósito de cada sección de código
     # Crear un gráfico de correlación utilizando la librería específica
     fig = go.Figure(data=go.Heatmap(
             z=df.corr(),
-            x=df.columns,
-            y=df.columns))
+            x=df.drop("Unnamed: 0", axis=1).columns,
+            y=df.drop("Unnamed: 0", axis=1).columns))
     st.plotly_chart(fig)
 
 
 
 
 with tab2:
+
     # Selección de la variable a graficar
-    variable = st.selectbox("Seleccione una variable", ["Day's High", "Day's Low", "Closing Price", "Volume", "Range in ticks", "VIX Closing Price", "Vwap", "Volume in Vpoc Zone", "Volume Value Area Low", "Volume Value Area High"], key='variable', index=0)
-
+    selected_vars = st.multiselect("Select multiple inputs", ["Day's High", "Day's Low", "Closing Price", "Volume", "Range in ticks", "VIX Closing Price", "Vwap", "Volume in Vpoc Zone", "Volume Value Area Low", "Volume Value Area High"], default=["Closing Price"])
     # Selección del tipo de gráfico
-    tipo_grafico = st.selectbox("Seleccione un tipo de gráfico", ["Línea", "Dispersión", "Barras"], key='tipo_grafico', index=0)
-
-    # Verifica si la variable seleccionada es válida para un gráfico de línea, dispersión o barras
-    if variable in ["Day's High", "Day's Low", "Closing Price", "Volume", "Range in ticks", "VIX Closing Price", "Vwap", "Volume in Vpoc Zone", "Volume Value Area Low", "Volume Value Area High"]:
-        # Crea un gráfico con x como el día y y como el valor de la variable seleccionada
+    tipo_grafico = st.selectbox("Select a Chart Type", ["Line", "Scatter", "Bars"], key='tipo_grafico', index=0)
+    if len(selected_vars) > 0:
         fig = go.Figure()
-
-        # Si el tipo de gráfico es línea
-        if tipo_grafico == 'Línea':
-            fig.add_trace(go.Scatter(x=df['Date'], y=df[variable], mode='lines'))
-        # Si el tipo de gráfico es dispersión
-        elif tipo_grafico == 'Dispersión':
-            fig.add_trace(go.Scatter(x=df['Date'], y=df[variable], mode='markers'))
-        # Si el tipo de gráfico es barras
-        else:
-            fig.add_trace(go.Bar(x=df['Date'], y=df[variable]))
-
+        
+        for variable in selected_vars:
+            # Si el tipo de gráfico es línea
+            if tipo_grafico == 'Line':
+                fig.add_trace(go.Scatter(x=df['Date'], y=df[variable], mode='lines', name=variable))
+            # Si el tipo de gráfico es dispersión
+            elif tipo_grafico == 'Scatter':
+                fig.add_trace(go.Scatter(x=df['Date'], y=df[variable], mode='markers', name=variable))
+            # Si el tipo de gráfico es barras
+            else:
+                fig.add_trace(go.Bar(x=df['Date'], y=df[variable], name=variable))
+        
         # Personaliza los títulos y ejes del gráfico
         fig.update_layout(
-            title=f'Gráfico de {variable}',
-            xaxis_title='Día',
-            yaxis_title=variable
+            title=f'Chart of {", ".join(selected_vars)}',
+            xaxis_title='Date',
+            yaxis_title='Value'
         )
-
+        
         # Muestra el gráfico en la página
         st.plotly_chart(fig)
     else:
-        st.warning("La variable seleccionada no es válida.")
+        st.warning("Please select at least one variable")
+
 
 
     @st.cache
@@ -175,11 +179,11 @@ with tab2:
         return x_std, y_std, slr, predictions
 
 
-    st.subheader("Modelo de Regresión Lineal para hacer distintas predicciones a un día")
+    st.subheader("Linear Regression Model to make different predictions to one day")
 
-    x_name = st.selectbox("Seleccione la variable independiente", ["Closing Price", "VIX Closing Price", "Volume", "Opening", "Day's High", "Day's Low", "Vpoc", "Vwap", "Range in ticks"])
-    predict_value = st.number_input("Ingrese el último valor de la variable independiente en el día de ayer (" + x_name + "):", value=df[df['Date'] == df['Date'].max() - timedelta(days=1)][x_name].values[0])
-    y_name = st.selectbox("Seleccione la variable dependiente", ["Closing Price", "VIX Closing Price", "Volume", "Opening", "Day's High", "Day's Low", "Vpoc", "Vwap", "Range in ticks"])
+    x_name = st.selectbox("Select the independent variable", ["Closing Price", "VIX Closing Price", "Volume", "Opening", "Day's High", "Day's Low", "Vpoc", "Vwap", "Range in ticks"])
+    predict_value = st.number_input("Last value of the independent variable in yesterday or enter the data you want to make a relationship and with it you will have a prediction(" + x_name + "):", value=df[df['Date'] == df['Date'].max() - timedelta(days=1)][x_name].values[0])
+    y_name = st.selectbox("Select the variable to predict", ["Closing Price", "VIX Closing Price", "Volume", "Opening", "Day's High", "Day's Low", "Vpoc", "Vwap", "Range in ticks"])
 
 
     x_std, y_std, slr, prediction = model(x_name, y_name, predict_value, 1)
@@ -205,7 +209,7 @@ with tab2:
 
     variable_dependiente = y_name
 
-    st.write("La predicción para la variable", variable_dependiente, "es", prediction[0][0])
+    st.write("The prediction for the variable: ", variable_dependiente, "es", prediction[0][0])
 
     
 
