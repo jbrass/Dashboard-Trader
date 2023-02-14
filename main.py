@@ -23,6 +23,9 @@ from sklearn.preprocessing import StandardScaler
 from datetime import timedelta
 import datetime
 
+
+
+
 st.set_page_config(page_title="Mi tablero de Streamlit",
                    page_icon=":guardsman:",
                    layout="wide",
@@ -210,9 +213,4 @@ with tab2:
     variable_dependiente = y_name
 
     st.write("The prediction for the variable: ", variable_dependiente, "es", prediction[0][0])
-
-    
-
-
-
 
