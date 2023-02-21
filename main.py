@@ -14,7 +14,6 @@ import seaborn as sns
 from bokeh.plotting import figure
 import yfinance as yf
 import datetime as dt
-import streamlit as st
 import requests
 from bs4 import BeautifulSoup
 import ta
@@ -22,7 +21,7 @@ from textos import *
 from sklearn.preprocessing import StandardScaler
 from datetime import timedelta
 import datetime
-
+import time
 
 
 
@@ -50,7 +49,7 @@ with open("fintra-logo.png", 'rb') as img:
     st.image(img.read(), width=200)
 
 # Utilizar una estructura de control de flujo más clara
-tab1, tab2 = st.tabs(["Statistics", "Charts/Forecast"])
+tab1, tab2, tab3 = st.tabs(["Markets Report", "Statistics", "Charts/Forecast"])
 
 with tab1:
 
@@ -77,16 +76,41 @@ with tab1:
 
 
 
-    
-    
-    st.subheader(titulo_semanal)
-    st.markdown(subtitulo_semanal)
-    st.markdown(resumen_semanal)
-    st.markdown(titulo_cuerpo)
-    st.markdown(cuerpo_semanal)
 
-   
+    with st.expander(titulo_semanal):
+            st.caption(resumen_semanal)
+            st.markdown(titulo_cuerpo)
+            st.markdown(cuerpo_semanal)
+
+            
+
+    with st.expander(title_renta_variable):
+            st.caption(renta_variable)
+            st.image("./img/renta_variable.png")
+            
+            
+    with st.expander(title_renta_fija):
+            st.caption(renta_fija)
+            st.image("./img/renta_fija.png")
+            
+            
+    with st.expander(title_divisa_mater):
+            st.caption(divisa_materia)
+            st.image("./img/materias_divisas.png")
+            
+
+
+    st.info(title_esta_semana, icon="ℹ️")
+    st.caption(esta_semana1)
+    st.caption(esta_semana2)
+    st.caption(esta_semana3)
+    st.caption(esta_semana4)
     
+
+
+    
+    
+with tab2: 
     
     st.subheader("Last 2 Days Statistics")
     # Mostrar la tabla completa al iniciar el programa
@@ -127,7 +151,7 @@ with tab1:
 
 
 
-with tab2:
+with tab3:
 
     # Selección de la variable a graficar
     selected_vars = st.multiselect("Select multiple inputs", ["Day's High", "Day's Low", "Closing Price", "Volume", "Range in ticks", "VIX Closing Price", "Vwap", "Volume in Vpoc Zone", "Volume Value Area Low", "Volume Value Area High"], default=["Closing Price"])
@@ -185,8 +209,14 @@ with tab2:
     st.subheader("Linear Regression Model to make different predictions to one day")
 
     x_name = st.selectbox("Select the independent variable", ["Closing Price", "VIX Closing Price", "Volume", "Opening", "Day's High", "Day's Low", "Vpoc", "Vwap", "Range in ticks"])
-    predict_value = st.number_input("Last value of the independent variable in yesterday or enter the data you want to make a relationship and with it you will have a prediction(" + x_name + "):", value=df[df['Date'] == df['Date'].max() - timedelta(days=1)][x_name].values[0])
+
     y_name = st.selectbox("Select the variable to predict", ["Closing Price", "VIX Closing Price", "Volume", "Opening", "Day's High", "Day's Low", "Vpoc", "Vwap", "Range in ticks"])
+    latest_date = df['Date'].max() - timedelta(days=1)
+    latest_row = df[df['Date'] == latest_date][x_name]
+    if not latest_row.empty:
+        predict_value = st.number_input("Last value of the independent variable in yesterday or enter the data you want to make a relationship and with it you will have a prediction(" + x_name + "):", value=latest_row.values[0])
+    else:
+        predict_value = st.number_input("Last value of the independent variable in yesterday or enter the data you want to make a relationship and with it you will have a prediction(" + x_name + "):")
 
 
     x_std, y_std, slr, prediction = model(x_name, y_name, predict_value, 1)
