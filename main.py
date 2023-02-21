@@ -21,7 +21,7 @@ from textos import *
 from sklearn.preprocessing import StandardScaler
 from datetime import timedelta
 import datetime
-import time
+
 
 
 
