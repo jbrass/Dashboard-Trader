@@ -106,7 +106,7 @@ with tab1:
     st.caption(esta_semana2)
     st.caption(esta_semana3)
     st.caption(esta_semana4)
-    st.caption(esta_seman5)
+    st.caption(esta_semana5)
 
 
     
