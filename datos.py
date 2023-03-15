@@ -17,6 +17,8 @@ df_semanal_NQ['dia'] = pd.to_datetime(df_semanal_NQ['dia'], errors = 'coerce')
 df_semanal_NQ['dia'] = df_semanal_NQ['dia'].dt.date
 
 
+df_volatilidad = pd.read_csv("./Operativa/spx_quotedata.csv", on_bad_lines='skip', delimiter=",")
+df_volatilidad_nq = pd.read_csv("./Operativa/ndx_quotedata.csv", on_bad_lines='skip', delimiter=",")
 
 ## Renombro algunas columnas 
 def rename_columns(df):

@@ -50,7 +50,7 @@ with open("fintra-logo.png", 'rb') as img:
     st.image(img.read(), width=200)
 
 # Utilizar una estructura de control de flujo más clara
-tab1, tab2, tab3= st.tabs(["Markets Report", "Statistics", "Charts/Forecast"])
+tab1, tab2, tab3, tab4= st.tabs(["Markets Report", "Statistics", "Charts/Forecast", "Volatilidad"])
 
 with tab1:
 
@@ -72,8 +72,6 @@ with tab1:
 
     st.sidebar.title("Data selection")
     df = mostrar_sidebar()
-
-
 
 
 
@@ -245,3 +243,78 @@ with tab3:
 
     st.write("The prediction for the variable: ", variable_dependiente, "es", prediction[0][0])
 
+
+
+with tab4:
+
+    # Select para elegir el archivo
+    archivo_seleccionado = st.selectbox(
+        "Seleccionar archivo",
+        ["spx_quotedata.csv", "ndx_quotedata.csv"]
+    )
+
+    # Cargar el archivo seleccionado
+    if archivo_seleccionado == "spx_quotedata.csv":
+        df = pd.DataFrame(df_volatilidad)
+    else:
+        df = pd.DataFrame(df_volatilidad_nq)
+
+    # Mostrar la tabla completa al iniciar el programa
+    st.subheader('Volatilidad')
+    st.dataframe(df)
+
+    # Crear lista de fechas únicas en la columna "Expiration Date"
+    fechas_unicas = df['Expiration Date'].unique()
+
+    # Selectbox para seleccionar la fecha de vencimiento
+    fecha_seleccionada = st.selectbox(
+        "Seleccionar fecha de vencimiento",
+        fechas_unicas
+    )
+
+    # Filtrar el DataFrame para seleccionar solo las filas que corresponden a la fecha de vencimiento seleccionada
+    df_filtrado = df[df['Expiration Date'] == fecha_seleccionada]
+
+    # Selección de la variable a graficar
+    selected_vars = st.multiselect(
+        "Seleccionar variables a graficar",
+        [
+            'Calls', 'Calls Last Sale', 'Calls Net','Calls Bid', 'Calls Ask','Calls Volume', 'Calls IV','Calls Delta',
+            'Calls Gamma', 'Calls Open Interest', 'Strike', 'Puts', 'Puts Net', 'Puts Bid', 'Puts Ask', 'Puts Volume',
+            'Puts IV','Puts Delta', 'Puts Gamma', 'Puts Open Interest'
+        ],
+        default=["Calls Volume","Puts Volume"]
+    )
+
+    # Selección del tipo de gráfico
+    tipo_grafico2 = st.selectbox(
+        "Seleccionar tipo de gráfico",
+        ["Bars", "Scatter"],
+        key='tipo_grafico2',
+        index=0
+    )
+
+    if len(selected_vars) > 0:
+        fig = go.Figure()
+
+        for variable in selected_vars:
+            # Si el tipo de gráfico es línea
+            if tipo_grafico2 == 'Bars':
+                fig.add_trace(go.Bar(x=df_filtrado['Strike'], y=df_filtrado[variable],  name=variable))
+            else:
+                fig.add_trace(go.Scatter(x=df_filtrado['Strike'], y=df_filtrado[variable],  mode='markers', name=variable))
+
+        # Personaliza los títulos y ejes del gráfico
+        fig.update_layout(
+            title=f'Gráfico de {", ".join(selected_vars)} para la fecha {fecha_seleccionada}',
+            xaxis_title= 'Strike',
+            yaxis_title= variable
+        )
+
+        # Muestra el gráfico en la página
+        st.plotly_chart(fig)
+    else:
+        st.warning("Por favor seleccionar al menos una variable")
+        
+        
+        
