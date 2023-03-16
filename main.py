@@ -50,7 +50,7 @@ with open("fintra-logo.png", 'rb') as img:
     st.image(img.read(), width=200)
 
 # Utilizar una estructura de control de flujo más clara
-tab1, tab2, tab3, tab4= st.tabs(["Markets Report", "Statistics", "Charts/Forecast", "Volatilidad"])
+tab1, tab2, tab3, tab4, tab5= st.tabs(["Markets Report", "Statistics", "Charts/Forecast", "Volatilidad", "Volatility Calculator stocks"])
 
 with tab1:
 
@@ -318,3 +318,50 @@ with tab4:
         
         
         
+with tab5:
+    
+    st.subheader("Volatility Calculator stocks")
+
+    ticker = st.text_input("Please enter a ticker symbol", value="AAPL", max_chars=5, key="ticker")
+
+    # Descargar los datos más recientes del activo
+    stock_data = yf.download(ticker, period="max")
+    stock_data.dropna(inplace=True)
+    stock_data.reset_index(inplace=True)
+
+    # Calcular el promedio móvil de 21 días y la volatilidad implícita
+    stock_data["MA"] = stock_data["Adj Close"].rolling(window=21).mean()
+    stock_data["volatility"] = ta.volatility.BollingerBands(stock_data["Adj Close"]).bollinger_mavg()
+
+    # Crear un gráfico con los datos históricos del activo
+    fig = go.Figure(data=[go.Candlestick(x=stock_data['Date'],
+                open=stock_data['Open'],
+                high=stock_data['High'],
+                low=stock_data['Low'],
+                close=stock_data['Adj Close'])])
+    fig.add_trace(go.Scatter(x=stock_data['Date'], y=stock_data["MA"], mode="lines", name="21 Day Moving Average"))
+    fig.add_trace(go.Scatter(x=stock_data['Date'], y=stock_data["volatility"], mode="lines", name="Bollinger Bands"))
+    fig.update_layout(title=f"{ticker} Historical Data with Bollinger Bands and 21-day Moving Average",
+                    xaxis_title="Date",
+                    yaxis_title="Price",
+                    template="plotly_dark")
+    st.plotly_chart(fig)
+
+    # Crear un gráfico de la distribución de retornos
+    log_returns = np.log(stock_data["Adj Close"]).diff().dropna()
+    fig2 = go.Figure(data=[go.Histogram(x=log_returns, nbinsx=30)])
+    fig2.update_layout(title=f"{ticker} Returns Distribution",
+                    xaxis_title="Log Returns",
+                    yaxis_title="Frequency",
+                    template="plotly_dark")
+    st.plotly_chart(fig2)
+
+    # Calcular la volatilidad implícita
+    annual_volatility = log_returns.std() * np.sqrt(252)
+    st.write(f"Annualized Volatility: {round(annual_volatility*100, 2)}%")
+
+    # Calcular los percentiles de los retornos
+    percentiles = [1, 5, 10]
+    values = [f"{round(np.percentile(log_returns, p), 4)}" for p in percentiles]
+    result = dict(zip(percentiles, values))
+    st.write(f"Percentiles of Log Returns (1%, 5%, 10%): {result}")

@@ -1,7 +1,4 @@
-
-NASDAQ 100,Last: 12251.3213,Change:  51.5213
-"Date: 16 de marzo de 2023, 5:40 GMT-4",Bid: 0,Ask: 0,Size: 0*0,Volume: 0
-Expiration Date,Calls,Last Sale,Net,Bid,Ask,Volume,IV,Delta,Gamma,Open Interest,Strike,Puts,Last Sale,Net,Bid,Ask,Volume,IV,Delta,Gamma,Open Interest
+Expiration Date,Calls,Calls Last Sale,Calls Net,Calls Bid,Calls Ask,Calls Volume,Calls IV,Calls Delta,Calls Gamma,Calls Open Interest,Strike,Puts,Puts Last Sale,Puts Net,Puts Bid,Puts Ask,Puts Volume,Puts IV,Puts Delta,Puts Gamma,Puts Open Interest
 Wed Mar 15 2023,NDXP230315C09000000,0,0,3158,3358,0,0,1,0,0,9000.00,NDXP230315P09000000,0,0,0,40,0,0,0,0,0
 Wed Mar 15 2023,NDXP230315C09100000,0,0,0,0,0,0,1,0,0,9100.00,NDXP230315P09100000,0,0,0,40,0,0,0,0,0
 Wed Mar 15 2023,NDXP230315C09200000,0,0,0,0,0,0,1,0,0,9200.00,NDXP230315P09200000,0,0,0,40,0,0,0,0,0
