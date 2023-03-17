@@ -204,12 +204,24 @@ with tab3:
             
         return x_std, y_std, slr, predictions
 
+    # Mostrar tabla de datos con 2 inputs
+    # Mostrar gráfico de dispersión de dos columnas
+    col_x = st.selectbox('Select a column for the X axis', df.drop("Unnamed: 0", axis=1).columns)
+    col_y = st.selectbox('Select a column for the Y axis', df.drop("Unnamed: 0", axis=1).columns)
+    scatter_plot = alt.Chart(df).mark_circle().encode(
+        x=col_x,
+        y=col_y,
+        tooltip=[col_x, col_y]
+    ).interactive()
+    st.write("### Scatterplot " + col_x + " vs " + col_y)
+    st.altair_chart(scatter_plot, use_container_width=True)
+
 
     st.subheader("Linear Regression Model to make different predictions to one day")
 
-    x_name = st.selectbox("Select the independent variable", ["Closing Price", "VIX Closing Price", "Volume", "Opening", "Day's High", "Day's Low", "Vpoc", "Vwap", "Range in ticks"])
+    x_name = st.selectbox("Select the independent input", ["Closing Price", "VIX Closing Price", "Volume", "Opening", "Day's High", "Day's Low", "Vpoc", "Vwap", "Range in ticks"])
 
-    y_name = st.selectbox("Select the variable to predict", ["Closing Price", "VIX Closing Price", "Volume", "Opening", "Day's High", "Day's Low", "Vpoc", "Vwap", "Range in ticks"])
+    y_name = st.selectbox("Select the input to predict", ["Closing Price", "VIX Closing Price", "Volume", "Opening", "Day's High", "Day's Low", "Vpoc", "Vwap", "Range in ticks"])
     latest_date = df['Date'].max() - timedelta(days=1)
     latest_row = df[df['Date'] == latest_date][x_name]
     if not latest_row.empty:
@@ -242,6 +254,17 @@ with tab3:
     variable_dependiente = y_name
 
     st.write("The prediction for the variable: ", variable_dependiente, "es", prediction[0][0])
+
+
+
+
+
+
+
+
+
+
+
 
 
 
