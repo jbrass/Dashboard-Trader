@@ -217,6 +217,9 @@ with tab3:
     st.altair_chart(scatter_plot, use_container_width=True)
 
 
+
+
+
     st.subheader("Linear Regression Model to make different predictions to one day")
 
     x_name = st.selectbox("Select the independent input", ["Closing Price", "VIX Closing Price", "Volume", "Opening", "Day's High", "Day's Low", "Vpoc", "Vwap", "Range in ticks"])
