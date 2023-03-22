@@ -19,6 +19,38 @@ df_semanal_NQ['dia'] = df_semanal_NQ['dia'].dt.date
 
 df_volatilidad = pd.read_csv("./Operativa/spx_quotedata.csv", on_bad_lines='skip', delimiter=",")
 df_volatilidad_nq = pd.read_csv("./Operativa/ndx_quotedata.csv", on_bad_lines='skip', delimiter=",")
+df_volatilidad_vix = pd.read_csv("./Operativa/vix_quotedata.csv", on_bad_lines='skip', delimiter=",")
+
+df_dix = pd.read_csv("./Operativa/DIX.csv", on_bad_lines='skip', delimiter=",")
+
+
+
+inflacion_df = pd.read_csv('./Operativa/inflacion.csv', names=['Date', 'Inflation'])
+tipos_interes_df = pd.read_csv('./Operativa/tipos-interes.csv', names=['Date', 'Tax'])
+m2_df = pd.read_csv('./Operativa/m2.csv', names=['Date', 'Dato'])
+empleo_df = pd.read_csv('./Operativa/empleo.csv', names=['Date', 'Tax'])
+dolar_df = pd.read_csv('./Operativa/dolar.csv', names=['Date', 'Price'])
+dolaresEmergentes_df = pd.read_csv('./Operativa/dolares-emergentes.csv', names=['Date', 'Cant'])
+
+#elimino la fila 0
+# Eliminar la fila 0 de inflacion_df
+inflacion_df = inflacion_df.drop(0)
+
+# Eliminar la fila 0 de tipos_interes_df
+tipos_interes_df = tipos_interes_df.drop(0)
+
+# Eliminar la fila 0 de m2_df
+m2_df = m2_df.drop(0)
+
+# Eliminar la fila 0 de empleo_df
+empleo_df = empleo_df.drop(0)
+
+
+# Eliminar la fila 0 de dolar_df
+empleo_df = dolar_df.drop(0)
+
+# Eliminar la fila 0 de dolaresEmergentes_df
+empleo_df = dolaresEmergentes_df.drop(0)
 
 #df_inflacion = pd.read_csv("./Operativa/inflacion.csv", on_bad_lines='skip', delimiter=",")
 

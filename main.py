@@ -24,7 +24,7 @@ import scipy
 from scipy.stats import norm
 import matplotlib.pyplot as plt
 import yfinance as yf
-
+from sklearn.linear_model import LinearRegression
 
 st.set_page_config(page_title="Mi tablero de Streamlit",
                    page_icon=":guardsman:",
@@ -50,7 +50,7 @@ with open("fintra-logo.png", 'rb') as img:
     st.image(img.read(), width=200)
 
 # Utilizar una estructura de control de flujo más clara
-tab1, tab2, tab3, tab4, tab5= st.tabs(["Markets Report", "Statistics", "Charts/Forecast", "Volatilidad", "Volatility Calculator stocks"])
+tab1, tab2, tab3, tab4, tab5= st.tabs(["Markets Report", "Statistics", "Charts/Forecast", "Volatilidad", "Statics Macro"])
 
 with tab1:
 
@@ -149,6 +149,7 @@ with tab2:
 
 
 
+   
 
 with tab3:
 
@@ -276,14 +277,17 @@ with tab4:
     # Select para elegir el archivo
     archivo_seleccionado = st.selectbox(
         "Seleccionar archivo",
-        ["spx_quotedata.csv", "ndx_quotedata.csv"]
+        ["spx_quotedata.csv", "ndx_quotedata.csv", "vix_quotedata.csv"]
     )
 
     # Cargar el archivo seleccionado
     if archivo_seleccionado == "spx_quotedata.csv":
         df = pd.DataFrame(df_volatilidad)
-    else:
+    elif archivo_seleccionado == "ndx_quotedata.csv":
         df = pd.DataFrame(df_volatilidad_nq)
+    else:
+        df = pd.DataFrame(df_volatilidad_vix)
+    
 
     # Mostrar la tabla completa al iniciar el programa
     st.subheader('Volatilidad')
@@ -341,53 +345,93 @@ with tab4:
         st.plotly_chart(fig)
     else:
         st.warning("Por favor seleccionar al menos una variable")
-        
-        
-        
-with tab5:
+ 
+ 
+ 
+ 
+ 
     
-    st.subheader("Volatility Calculator stocks")
+    st.subheader('Squeezmetric')
 
-    ticker = st.text_input("Please enter a ticker symbol", value="AAPL", max_chars=5, key="ticker")
+    # Select para elegir el archivo
+    archivo_seleccionado = st.selectbox(
+        "Seleccionar archivo",
+        ["DIX.csv"]
+    )
 
-    # Descargar los datos más recientes del activo
-    stock_data = yf.download(ticker, period="max")
-    stock_data.dropna(inplace=True)
-    stock_data.reset_index(inplace=True)
+    # Cargar el archivo seleccionado
+    if archivo_seleccionado == "DIX.csv":
+        df = pd.read_csv("./Operativa/DIX.csv")
+    else:
+        st.write('No has seleccionado ningun archivo')
 
-    # Calcular el promedio móvil de 21 días y la volatilidad implícita
-    stock_data["MA"] = stock_data["Adj Close"].rolling(window=21).mean()
-    stock_data["volatility"] = ta.volatility.BollingerBands(stock_data["Adj Close"]).bollinger_mavg()
+    # Seleccionar todas las columnas numéricas excepto date
+    numeric_cols = ['price', 'dix', 'gex']
+    df_numeric = df[numeric_cols]
 
-    # Crear un gráfico con los datos históricos del activo
-    fig = go.Figure(data=[go.Candlestick(x=stock_data['Date'],
-                open=stock_data['Open'],
-                high=stock_data['High'],
-                low=stock_data['Low'],
-                close=stock_data['Adj Close'])])
-    fig.add_trace(go.Scatter(x=stock_data['Date'], y=stock_data["MA"], mode="lines", name="21 Day Moving Average"))
-    fig.add_trace(go.Scatter(x=stock_data['Date'], y=stock_data["volatility"], mode="lines", name="Bollinger Bands"))
-    fig.update_layout(title=f"{ticker} Historical Data with Bollinger Bands and 21-day Moving Average",
-                    xaxis_title="Date",
-                    yaxis_title="Price",
-                    template="plotly_dark")
-    st.plotly_chart(fig)
+    # Crear una figura de Plotly Express para cada variable y agregarla a una lista
+    figs = []
+    for col in numeric_cols:
+        fig = px.line(df, x='date', y=col, title=f'Gráfico de líneas para {col}')
+        fig.update_layout(
+            xaxis_title='Fecha',
+            yaxis_title='Valor',
+            legend_title=col,
+        )
+        figs.append(fig)
 
-    # Crear un gráfico de la distribución de retornos
-    log_returns = np.log(stock_data["Adj Close"]).diff().dropna()
-    fig2 = go.Figure(data=[go.Histogram(x=log_returns, nbinsx=30)])
-    fig2.update_layout(title=f"{ticker} Returns Distribution",
-                    xaxis_title="Log Returns",
-                    yaxis_title="Frequency",
-                    template="plotly_dark")
-    st.plotly_chart(fig2)
+    # Mostrar los gráficos utilizando st.plotly_chart()
+    for fig in figs:
+        st.plotly_chart(fig)
+ 
+ 
 
-    # Calcular la volatilidad implícita
-    annual_volatility = log_returns.std() * np.sqrt(252)
-    st.write(f"Annualized Volatility: {round(annual_volatility*100, 2)}%")
+with tab5:
 
-    # Calcular los percentiles de los retornos
-    percentiles = [1, 5, 10]
-    values = [f"{round(np.percentile(log_returns, p), 4)}" for p in percentiles]
-    result = dict(zip(percentiles, values))
-    st.write(f"Percentiles of Log Returns (1%, 5%, 10%): {result}")
+
+    # Dividir en dos columnas
+    col1, col2, col3, col4,  = st.columns(4)
+
+    # Tabla de inflación en la primera columna
+    with col1:
+        st.subheader('CPI')
+        st.write(inflacion_df.tail(10))
+
+    # Gráfico de tipos de interés en la segunda columna
+    with col2:
+        st.subheader('Interest Rate')
+        st.write(tipos_interes_df.tail(10))
+        
+    # Gráfico de tipos de interés en la segunda columna
+    with col3:
+        st.subheader('M2')
+        st.write(m2_df.tail(10))
+
+    # Gráfico de tipos de interés en la segunda columna
+    with col4:
+        st.subheader('Unemployment Rate')
+        st.write(empleo_df.tail(10))
+        
+        
+    # Dividir en dos columnas
+    col1, col2, col3, col4,  = st.columns(4)
+
+    # Tabla de inflación en la primera columna
+    with col1:
+        st.subheader('Dollar to Euro')
+        st.write(dolar_df.tail(10))
+
+    # Gráfico de tipos de interés en la segunda columna
+    with col2:
+        st.subheader('Emerging Markete')
+        st.write(dolaresEmergentes_df.tail(10))
+        
+    # Gráfico de tipos de interés en la segunda columna
+    with col3:
+        st.subheader('M2')
+        st.write(m2_df.tail(10))
+
+    # Gráfico de tipos de interés en la segunda columna
+    with col4:
+        st.subheader('Unemployment Rate')
+        st.write(empleo_df.tail(10))
