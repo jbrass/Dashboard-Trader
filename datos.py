@@ -20,9 +20,19 @@ df_semanal_NQ['dia'] = df_semanal_NQ['dia'].dt.date
 df_volatilidad = pd.read_csv("./Operativa/spx_quotedata.csv", on_bad_lines='skip', delimiter=",")
 df_volatilidad_nq = pd.read_csv("./Operativa/ndx_quotedata.csv", on_bad_lines='skip', delimiter=",")
 df_volatilidad_vix = pd.read_csv("./Operativa/vix_quotedata.csv", on_bad_lines='skip', delimiter=",")
+df_volatilidad_qqq = pd.read_csv("./Operativa/vix_quotedata.csv", on_bad_lines='skip', delimiter=",")
+
+
 
 df_dix = pd.read_csv("./Operativa/DIX.csv", on_bad_lines='skip', delimiter=",")
 
+
+#Squeeze metrics
+# Cargar el archivo
+df_squeeze = pd.read_csv("./Operativa/DIX.csv")
+
+#Datos CBOE
+data = pd.read_csv('./Operativa/spx_quotedata.csv')
 
 
 inflacion_df = pd.read_csv('./Operativa/inflacion.csv', names=['Date', 'Inflation'])

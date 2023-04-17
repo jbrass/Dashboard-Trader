@@ -22,9 +22,10 @@ import datetime
 import plotly.express as px
 import scipy
 from scipy.stats import norm
-import matplotlib.pyplot as plt
-import yfinance as yf
 from sklearn.linear_model import LinearRegression
+from plotly.subplots import make_subplots
+
+
 
 st.set_page_config(page_title="Mi tablero de Streamlit",
                    page_icon=":guardsman:",
@@ -349,42 +350,152 @@ with tab4:
  
  
  
+    # Crear un DataFrame con los datos de interés
+    df_top = df_filtrado[['Strike', 'Calls Volume', 'Calls Open Interest', 'Puts Volume', 'Puts Open Interest']]
+    df_top['Nuevo Strike'] = df_top['Strike'] + 30 # Agregar la nueva columna "Nuevo Strike" sumando 30 a cada fila
+    df_top = df_top.sort_values(by=['Calls Volume', 'Calls Open Interest', 'Puts Volume', 'Puts Open Interest'], ascending=False)
+    df_top = df_top.head(15)
+
+    # Mostrar las dos tablas en dos columnas
+    col1, col2 = st.columns(2)
+
+    # En la primera columna, mostrar la tabla original con la columna "Strike"
+    with col1:
+        st.write("SPX")
+        st.dataframe(df_top[['Strike', 'Calls Volume', 'Calls Open Interest', 'Puts Volume', 'Puts Open Interest']])
+
+    # En la segunda columna, mostrar la tabla actualizada con la nueva columna "Nuevo Strike"
+    with col2:
+        st.write("ES")
+        st.dataframe(df_top[['Nuevo Strike', 'Calls Volume', 'Calls Open Interest', 'Puts Volume', 'Puts Open Interest']])
+
+
+    
+
+    
+
  
     
     st.subheader('Squeezmetric')
-
-    # Select para elegir el archivo
-    archivo_seleccionado = st.selectbox(
-        "Seleccionar archivo",
-        ["DIX.csv"]
-    )
-
-    # Cargar el archivo seleccionado
-    if archivo_seleccionado == "DIX.csv":
-        df = pd.read_csv("./Operativa/DIX.csv")
-    else:
-        st.write('No has seleccionado ningun archivo')
-
     # Seleccionar todas las columnas numéricas excepto date
     numeric_cols = ['price', 'dix', 'gex']
-    df_numeric = df[numeric_cols]
+    df_numeric = df_squeeze[numeric_cols]
 
-    # Crear una figura de Plotly Express para cada variable y agregarla a una lista
-    figs = []
-    for col in numeric_cols:
-        fig = px.line(df, x='date', y=col, title=f'Gráfico de líneas para {col}')
-        fig.update_layout(
-            xaxis_title='Fecha',
-            yaxis_title='Valor',
-            legend_title=col,
+    # Crear figura con 3 subplots
+    fig = make_subplots(rows=3, cols=1, shared_xaxes=True)
+
+    # Agregar cada gráfico de línea a la figura
+    fig.add_trace(go.Scatter(x=df_squeeze['date'], y=df_squeeze['price'], name='SP500'), row=1, col=1)
+    fig.add_trace(go.Scatter(x=df_squeeze['date'], y=df_squeeze['dix'], name='Dark Index', hovertemplate='hola'), row=2, col=1)
+    fig.add_trace(go.Scatter(x=df_squeeze['date'], y=df_squeeze['gex'], name='Gamma'), row=3, col=1)
+
+    # Personalizar la figura
+    fig.update_layout(
+        height=800,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
         )
-        figs.append(fig)
+    )
 
-    # Mostrar los gráficos utilizando st.plotly_chart()
-    for fig in figs:
-        st.plotly_chart(fig)
+    # Mostrar la figura utilizando st.plotly_chart()
+    st.plotly_chart(fig)
+
+
+
  
- 
+
+    # Agregar una columna para el total de deltas en cada Expiration Date
+    data['Total Delta'] = data['Calls Delta'] + data['Puts Delta']
+
+    #Transformar Expiration Date a formato fecha
+    data['Expiration Date'] = pd.to_datetime(data['Expiration Date'], format='%a %b %d %Y')
+
+    # Crear un gráfico de barras con los datos de Total Delta vs Expiration Date
+    chart = alt.Chart(data).mark_bar(width=15).encode(
+        x=alt.X('Expiration Date', sort=None),
+        y=alt.Y('Total Delta', axis=alt.Axis(title='Deltas', format='.0f')),
+        color=alt.condition(
+            alt.datum['Total Delta'] > 0,
+            alt.value("green"),  # cuando Total Delta es mayor que 0, la barra será verde
+            alt.value("red")  # cuando Total Delta es menor que 0, la barra será roja
+        )
+    ).properties(
+        width=800,
+        height=400,
+        title='DEALERS MARKET DIARY'
+    )
+    
+
+    # Agregar una línea horizontal para mostrar el nivel 0 de Delta
+    hline = alt.Chart(pd.DataFrame({'y': [0]})).mark_rule(color='black', strokeWidth=1).encode(y='y')
+
+    # Configurar las opciones del gráfico y mostrarlo en Streamlit
+    st.altair_chart(chart + hline, use_container_width=True)
+
+
+
+
+
+    st.subheader('Otros')
+    
+    # gráfico 1
+    alt.Chart(df).mark_circle(size=50).encode(
+        x='Calls Volume:Q',
+        y='Puts Volume:Q',
+        color=alt.Color('Expiration Date:N', scale=alt.Scale(scheme='category10')),
+        tooltip=['Expiration Date:N']
+    ).properties(
+        title='Volumen de llamadas vs opciones de venta'
+    ).interactive()
+
+    # gráfico 2
+    alt.Chart(df).mark_bar().encode(
+        x=alt.X('Expiration Date:N', axis=alt.Axis(title=None)),
+        y=alt.Y('Calls Volume:Q', axis=alt.Axis(title='Volumen')),
+        color=alt.value('steelblue')
+    ).properties(
+        title='Volumen de llamadas por fecha de vencimiento'
+    ).interactive() | alt.Chart(df).mark_bar().encode(
+        x=alt.X('Expiration Date:N', axis=alt.Axis(title=None)),
+        y=alt.Y('Puts Volume:Q', axis=alt.Axis(title='Volumen')),
+        color=alt.value('orange')
+    ).properties(
+        title='Volumen de opciones de venta por fecha de vencimiento'
+    ).interactive()
+    
+    
+    # filtrar los datos para incluir solo la fecha de vencimiento más reciente
+    latest_expiry = data['Expiration Date'].max()
+    data = data[data['Expiration Date'] == latest_expiry]
+
+    # crear el gráfico
+    chart = alt.Chart(data).mark_line().encode(
+        x='Strike',
+        y='Calls Open Interest:Q',
+        color=alt.value('#5b8ff9')
+    ).properties(
+        title='Interés abierto de llamadas y opciones de venta por precio de ejercicio'
+    )
+
+    chart += alt.Chart(data).mark_line().encode(
+        x='Strike',
+        y='Puts Open Interest:Q',
+        color=alt.value('#ff6b81')
+    ).interactive()
+
+    # mostrar el gráfico
+    chart
+        
+        
+        
+        
+
+        
+    
 
 with tab5:
 
@@ -396,6 +507,14 @@ with tab5:
     with col1:
         st.subheader('CPI')
         st.write(inflacion_df.tail(10))
+
+
+
+
+            
+    
+        
+         
 
     # Gráfico de tipos de interés en la segunda columna
     with col2:
@@ -423,15 +542,14 @@ with tab5:
 
     # Gráfico de tipos de interés en la segunda columna
     with col2:
-        st.subheader('Emerging Markete')
+        st.subheader('Emerging Markets')
         st.write(dolaresEmergentes_df.tail(10))
         
-    # Gráfico de tipos de interés en la segunda columna
-    with col3:
-        st.subheader('M2')
-        st.write(m2_df.tail(10))
 
-    # Gráfico de tipos de interés en la segunda columna
-    with col4:
-        st.subheader('Unemployment Rate')
-        st.write(empleo_df.tail(10))
+
+
+
+
+
+
+        
