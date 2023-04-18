@@ -49,7 +49,7 @@ with open("fintra-logo.png", 'rb') as img:
     st.image(img.read(), width=200)
 
 # Utilizar una estructura de control de flujo más clara
-tab1, tab2, tab3, tab4, tab5, tab6= st.tabs(["Markets Report", "Statistics", "Charts/Forecast", "Volatilidad", "Statics Macro", "Mercado Inmobiliario"])
+tab1, tab2, tab3, tab4, tab5= st.tabs(["Markets Report", "Statistics", "Charts/Forecast", "Options 0DTE", "Statics Macro"])
 
 with tab1:
 
@@ -268,9 +268,14 @@ with tab3:
 
 with tab4:
 
+    # Mostrar la tabla completa al iniciar el programa
+    st.subheader('Options 0DTE')
+    st.caption('Options on stock are important because they offer fast trading opportunities and can influence the futures market. Futures traders should keep an eye on these options to take advantage of opportunities and minimize risks.')
+    
+    
     # Select para elegir el archivo
     archivo_seleccionado = st.selectbox(
-        "Seleccionar archivo",
+        "Select a file",
         ["spx_quotedata.csv", "ndx_quotedata.csv", "vix_quotedata.csv"]
     )
 
@@ -282,9 +287,6 @@ with tab4:
     else:
         df = pd.DataFrame(df_volatilidad_vix)
     
-
-    # Mostrar la tabla completa al iniciar el programa
-    st.subheader('Volatilidad')
     st.dataframe(df)
 
     # Crear lista de fechas únicas en la columna "Expiration Date"
@@ -292,7 +294,7 @@ with tab4:
 
     # Selectbox para seleccionar la fecha de vencimiento
     fecha_seleccionada = st.selectbox(
-        "Seleccionar fecha de vencimiento",
+        "Select expiration date",
         fechas_unicas
     )
 
@@ -301,7 +303,7 @@ with tab4:
 
     # Selección de la variable a graficar
     selected_vars = st.multiselect(
-        "Seleccionar variables a graficar",
+        "Select variables to graph",
         [
             'Calls', 'Calls Last Sale', 'Calls Net','Calls Bid', 'Calls Ask','Calls Volume', 'Calls IV','Calls Delta',
             'Calls Gamma', 'Calls Open Interest', 'Strike', 'Puts', 'Puts Net', 'Puts Bid', 'Puts Ask', 'Puts Volume',
@@ -312,7 +314,7 @@ with tab4:
 
     # Selección del tipo de gráfico
     tipo_grafico2 = st.selectbox(
-        "Seleccionar tipo de gráfico",
+        "Select chart type",
         ["Bars", "Scatter"],
         key='tipo_grafico2',
         index=0
@@ -330,7 +332,7 @@ with tab4:
 
         # Personaliza los títulos y ejes del gráfico
         fig.update_layout(
-            title=f'Gráfico de {", ".join(selected_vars)} para la fecha {fecha_seleccionada}',
+            title=f'Chart of {", ".join(selected_vars)} to date {fecha_seleccionada}',
             xaxis_title= 'Strike',
             yaxis_title= variable
         )
@@ -338,7 +340,7 @@ with tab4:
         # Muestra el gráfico en la página
         st.plotly_chart(fig)
     else:
-        st.warning("Por favor seleccionar al menos una variable")
+        st.warning("Please select at least one input")
  
  
  
@@ -377,10 +379,22 @@ with tab4:
     # Crear figura con 3 subplots
     fig = make_subplots(rows=3, cols=1, shared_xaxes=True)
 
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.info('**Dark Index (DIX)**, is a dollar-weighted measure of the Dark Pool Indicator (DPI) of the S&P 500 components. When the DIX is higher, market sentiment in dark pools is generally more bullish. When the DIX is lower, it is more bearish or uncertain.', icon="ℹ️")
+        
+
+    with col2:
+        st.info('**Gamma Exposure (GEX)**, is a dollar-denominated measure of option market-makers hedging obligations. When GEX is high, the option market is implying that volatility will be low. When GEX is low, volatility is high, and while we expect a choppy market, further losses are unlikely.', icon="ℹ️")
+
+   
+   
     # Agregar cada gráfico de línea a la figura
     fig.add_trace(go.Scatter(x=df_squeeze['date'], y=df_squeeze['price'], name='SP500'), row=1, col=1)
     fig.add_trace(go.Scatter(x=df_squeeze['date'], y=df_squeeze['dix'], name='Dark Index', hovertemplate='hola'), row=2, col=1)
-    fig.add_trace(go.Scatter(x=df_squeeze['date'], y=df_squeeze['gex'], name='Gamma'), row=3, col=1)
+    fig.add_trace(go.Scatter(x=df_squeeze['date'], y=df_squeeze['gex'], name='Gamma Exposure'), row=3, col=1)
 
     # Personalizar la figura
     fig.update_layout(
@@ -400,7 +414,6 @@ with tab4:
 
 
  
-
     # Agregar una columna para el total de deltas en cada Expiration Date
     data['Total Delta'] = data['Calls Delta'] + data['Puts Delta']
 
@@ -421,7 +434,7 @@ with tab4:
         height=400,
         title='DEALERS MARKET DIARY'
     )
-    
+
 
     # Agregar una línea horizontal para mostrar el nivel 0 de Delta
     hline = alt.Chart(pd.DataFrame({'y': [0]})).mark_rule(color='black', strokeWidth=1).encode(y='y')
@@ -430,59 +443,71 @@ with tab4:
     st.altair_chart(chart + hline, use_container_width=True)
 
 
+    st.info('The dealers current approximate total delta exposure for all expirations is a crucial metric to track. When calls are greater than zero, it indicates that the dealers are short calls, while customers are long calls. On the other hand, when puts are less than zero, it means dealers are short puts, while customers are long puts, implying they are well-hedged. The green and red lines represent the average short-term deltas, which are important indicators of market trends. Therefore, keeping an eye on the dealers delta exposure is essential to make informed trading decisions and minimize risks.', icon="ℹ️")
 
 
 
-    st.subheader('Otros')
-    
-    # gráfico 1
-    alt.Chart(df).mark_circle(size=50).encode(
-        x='Calls Volume:Q',
-        y='Puts Volume:Q',
-        color=alt.Color('Expiration Date:N', scale=alt.Scale(scheme='category10')),
-        tooltip=['Expiration Date:N']
-    ).properties(
-        title='Volumen de llamadas vs opciones de venta'
-    ).interactive()
 
-    # gráfico 2
-    alt.Chart(df).mark_bar().encode(
-        x=alt.X('Expiration Date:N', axis=alt.Axis(title=None)),
-        y=alt.Y('Calls Volume:Q', axis=alt.Axis(title='Volumen')),
-        color=alt.value('steelblue')
-    ).properties(
-        title='Volumen de llamadas por fecha de vencimiento'
-    ).interactive() | alt.Chart(df).mark_bar().encode(
-        x=alt.X('Expiration Date:N', axis=alt.Axis(title=None)),
-        y=alt.Y('Puts Volume:Q', axis=alt.Axis(title='Volumen')),
-        color=alt.value('orange')
-    ).properties(
-        title='Volumen de opciones de venta por fecha de vencimiento'
-    ).interactive()
+
+    col1, col2 = st.columns(2)
     
     
-    # filtrar los datos para incluir solo la fecha de vencimiento más reciente
-    latest_expiry = data['Expiration Date'].max()
-    data = data[data['Expiration Date'] == latest_expiry]
-
-    # crear el gráfico
-    chart = alt.Chart(data).mark_line().encode(
-        x='Strike',
-        y='Calls Open Interest:Q',
-        color=alt.value('#5b8ff9')
-    ).properties(
-        title='Interés abierto de llamadas y opciones de venta por precio de ejercicio'
-    )
-
-    chart += alt.Chart(data).mark_line().encode(
-        x='Strike',
-        y='Puts Open Interest:Q',
-        color=alt.value('#ff6b81')
-    ).interactive()
-
-    # mostrar el gráfico
-    chart
+    with col1:
+        st.subheader('Call & Put volume by maturities')
         
+        # gráfico 1
+        alt.Chart(df).mark_circle(size=50).encode(
+            x='Calls Volume:Q',
+            y='Puts Volume:Q',
+            color=alt.Color('Expiration Date:N', scale=alt.Scale(scheme='category10')),
+            tooltip=['Expiration Date:N']
+        ).properties(
+            title='Call volume vs put options'
+        ).interactive()
+                # gráfico 2
+        alt.Chart(df).mark_bar().encode(
+            x=alt.X('Expiration Date:N', axis=alt.Axis(title=None)),
+            y=alt.Y('Calls Volume:Q', axis=alt.Axis(title='Volumen')),
+            color=alt.value('steelblue')
+        ).properties(
+            title='Call volume by due date'
+        ).interactive() | alt.Chart(df).mark_bar().encode(
+            x=alt.X('Expiration Date:N', axis=alt.Axis(title=None)),
+            y=alt.Y('Puts Volume:Q', axis=alt.Axis(title='Volumen')),
+            color=alt.value('orange')
+        ).properties(
+            title='Put Option Volume by Expiration Date'
+        ).interactive()
+
+
+    with col2:
+
+        st.subheader('Open interest of calls and put options by strike price')
+        
+        # filtrar los datos para incluir solo la fecha de vencimiento más reciente
+        latest_expiry = data['Expiration Date'].max()
+        data = data[data['Expiration Date'] == latest_expiry]
+
+        # crear el gráfico
+        chart = alt.Chart(data).mark_line().encode(
+            x='Strike',
+            y='Calls Open Interest:Q',
+            color=alt.value('#5b8ff9')
+        )
+
+        chart += alt.Chart(data).mark_line().encode(
+            x='Strike',
+            y='Puts Open Interest:Q',
+            color=alt.value('#ff6b81')
+        ).interactive()
+
+        # mostrar el gráfico
+        chart
+        
+    
+
+    
+
         
         
         
@@ -503,11 +528,6 @@ with tab5:
 
 
 
-
-            
-    
-        
-         
 
     # Gráfico de tipos de interés en la segunda columna
     with col2:
@@ -540,11 +560,7 @@ with tab5:
         
 
 
-with tab6:
-    st.subheader('Mercado Inmobilario Español')
-    st.write(df_vivienda.tail(10))
 
-#"Año";"Periodo";"Compraventa nueva";"Compraventa usadas";"Total compraventa";"Precio m2";"Hipotecas";"Índice precio";"Deuda familias"
 
 
 
