@@ -1,5 +1,5 @@
 # Importar las librerías necesarias
-from datos import *
+from src.datos import *
 import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
@@ -25,8 +25,6 @@ from scipy.stats import norm
 from sklearn.linear_model import LinearRegression
 from plotly.subplots import make_subplots
 
-
-
 st.set_page_config(page_title="Mi tablero de Streamlit",
                    page_icon=":guardsman:",
                    layout="wide",
@@ -51,7 +49,7 @@ with open("fintra-logo.png", 'rb') as img:
     st.image(img.read(), width=200)
 
 # Utilizar una estructura de control de flujo más clara
-tab1, tab2, tab3, tab4, tab5= st.tabs(["Markets Report", "Statistics", "Charts/Forecast", "Volatilidad", "Statics Macro"])
+tab1, tab2, tab3, tab4, tab5, tab6= st.tabs(["Markets Report", "Statistics", "Charts/Forecast", "Volatilidad", "Statics Macro", "Mercado Inmobiliario"])
 
 with tab1:
 
@@ -60,11 +58,11 @@ with tab1:
 
         for archivo, nombre_amigable in renombre.items():
             if data_source == nombre_amigable:
-                if archivo == "./Operativa/Diarios-ES.csv":
+                if archivo == "./Operativa/processed/Diarios-ES.csv":
                     df = df_diarios_ES
-                elif archivo == "./Operativa/Diarios-NQ.csv":
+                elif archivo == "./Operativa/processed/Diarios-NQ.csv":
                     df = df_diarios_NQ
-                elif archivo == "./Operativa/Semanal-ES.csv":
+                elif archivo == "./Operativa/processed/Semanal-ES.csv":
                     df = df_semanal_ES
                 else:
                     df = df_semanal_NQ
@@ -259,11 +257,6 @@ with tab3:
     variable_dependiente = y_name
 
     st.write("The prediction for the variable: ", variable_dependiente, "es", prediction[0][0])
-
-
-
-
-
 
 
 
@@ -547,9 +540,11 @@ with tab5:
         
 
 
+with tab6:
+    st.subheader('Mercado Inmobilario Español')
+    st.write(df_vivienda.tail(10))
+
+#"Año";"Periodo";"Compraventa nueva";"Compraventa usadas";"Total compraventa";"Precio m2";"Hipotecas";"Índice precio";"Deuda familias"
 
 
 
-
-
-        
