@@ -38,6 +38,14 @@ df_squeeze = pd.read_csv("./Operativa/processed/DIX.csv")
 #Datos CBOE
 data = pd.read_csv('./Operativa/processed/spx_quotedata.csv')
 
+#CBOE Acciones
+data_apple = pd.read_csv('./Operativa/processed/aapl_quotedata.csv')
+data_goog = pd.read_csv('./Operativa/processed/googl_quotedata.csv')
+data_meta = pd.read_csv('./Operativa/processed/meta_quotedata.csv')
+data_msft = pd.read_csv('./Operativa/processed/msft_quotedata.csv')
+data_amzn = pd.read_csv('./Operativa/processed/amzn_quotedata.csv')
+
+
 
 inflacion_df = pd.read_csv('./Operativa/processed/inflacion.csv', names=['Date', 'Inflation'])
 tipos_interes_df = pd.read_csv('./Operativa/processed/tipos-interes.csv', names=['Date', 'Tax'])

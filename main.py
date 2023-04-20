@@ -276,7 +276,7 @@ with tab4:
     # Select para elegir el archivo
     archivo_seleccionado = st.selectbox(
         "Select a file",
-        ["spx_quotedata.csv", "ndx_quotedata.csv", "vix_quotedata.csv"]
+        ["spx_quotedata.csv", "ndx_quotedata.csv", "aapl_quotedata.csv", "googl_quotedata.csv", "meta_quotedata.csv", "msft_quotedata.csv", "amzn_quotedata.csv", "vix_quotedata.csv"]
     )
 
     # Cargar el archivo seleccionado
@@ -284,10 +284,24 @@ with tab4:
         df = pd.DataFrame(df_volatilidad)
     elif archivo_seleccionado == "ndx_quotedata.csv":
         df = pd.DataFrame(df_volatilidad_nq)
+        
+    elif archivo_seleccionado == "aapl_quotedata.csv":
+        df = pd.DataFrame(data_apple)
+        
+    elif archivo_seleccionado == "googl_quotedata.csv":
+        df = pd.DataFrame(data_goog)
+        
+    elif archivo_seleccionado == "meta_quotedata.csv":
+        df = pd.DataFrame(data_meta)
+
+    elif archivo_seleccionado == "msft_quotedata.csv":
+        df = pd.DataFrame(data_msft)
+
+    elif archivo_seleccionado == "amzn_quotedata.csv":
+        df = pd.DataFrame(data_amzn)
+                
     else:
-        df = pd.DataFrame(df_volatilidad_vix)
-    
-    st.dataframe(df)
+        st.dataframe(df)
 
     # Crear lista de fechas únicas en la columna "Expiration Date"
     fechas_unicas = df['Expiration Date'].unique()
