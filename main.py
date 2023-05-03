@@ -535,38 +535,38 @@ with tab4:
     
     
     
-    
-    col1, col2 = st.columns(2)
-    
-    
-    with col1:
+    """     
+        col1, col2 = st.columns(2)
+        
+        
+        with col1:
 
 
-        # Calculamos el Delta Notional y el Vanna
-        data['Delta Notional'] = data['Calls Delta'] * data['Calls Volume'] * 100
-        data['Vanna'] = data['Calls Gamma'] * data['Calls Volume'] * 100
+            # Calculamos el Delta Notional y el Vanna
+            data['Delta Notional'] = data['Calls Delta'] * data['Calls Volume'] * 100
+            data['Vanna'] = data['Calls Gamma'] * data['Calls Volume'] * 100
 
-        # Creamos el gráfico
-        chart = alt.Chart(data).mark_bar().encode(
-            x='Strike',
-            y=alt.Y('Delta Notional', title='Delta Notional'),
-            tooltip=['Strike', 'Delta Notional']
-        ).properties(
-            width=600,
-            height=400,
-            title='Gráfico Delta Notional vs Strike'
-        )
+            # Creamos el gráfico
+            chart = alt.Chart(data).mark_bar().encode(
+                x='Strike',
+                y=alt.Y('Delta Notional', title='Delta Notional'),
+                tooltip=['Strike', 'Delta Notional']
+            ).properties(
+                width=600,
+                height=400,
+                title='Gráfico Delta Notional vs Strike'
+            )
 
-        # Añadimos la línea del Vanna al gráfico con escala logarítmica
-        vanna_line = alt.Chart(data).mark_line(color='red').encode(
-            x='Strike',
-            y=alt.Y('Vanna', scale=alt.Scale(type='log'), title='Vanna'),
-            tooltip=['Strike', 'Vanna']
-        )
+            # Añadimos la línea del Vanna al gráfico con escala logarítmica
+            vanna_line = alt.Chart(data).mark_line(color='red').encode(
+                x='Strike',
+                y=alt.Y('Vanna', scale=alt.Scale(type='log'), title='Vanna'),
+                tooltip=['Strike', 'Vanna']
+            )
 
-        # Mostramos el gráfico completo con ambas líneas
-        st.altair_chart(chart + vanna_line)
-
+            # Mostramos el gráfico completo con ambas líneas
+            st.altair_chart(chart + vanna_line)
+    """
 
 
 
