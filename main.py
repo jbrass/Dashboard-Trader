@@ -144,7 +144,7 @@ with tab2:
     # Utilizar comentarios para explicar el propósito de cada sección de código
     # Crear un gráfico de correlación utilizando la librería específica
     fig = go.Figure(data=go.Heatmap(
-            z=df.corr(), method='spearman',
+            z=df.corr(),
             x=df.drop("Unnamed: 0", axis=1).columns,
             y=df.drop("Unnamed: 0", axis=1).columns))
     st.plotly_chart(fig)

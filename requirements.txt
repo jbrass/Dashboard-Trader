@@ -11,6 +11,7 @@ yfinance
 beautifulsoup4
 ta
 requests
-scikit-learn
 timedelta
 datetime
+plotly.express
+scipy
