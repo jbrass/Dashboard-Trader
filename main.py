@@ -75,26 +75,31 @@ with tab1:
 
 
 
-    with st.expander(titulo_semanal):
-            st.caption(resumen_semanal)
-            st.markdown(titulo_cuerpo)
-            st.markdown(cuerpo_semanal)
 
-            
+    # Título de la sección
+    st.header('Día 03/05/2023')
 
-    with st.expander(title_renta_variable):
-            st.caption(renta_variable)
-            st.image("./img/renta_variable.png")
-            
-            
-    with st.expander(title_renta_fija):
-            st.caption(renta_fija)
-            st.image("./img/renta_fija.png")
-            
-            
-    with st.expander(title_divisa_mater):
-            st.caption(divisa_materia)
-            st.image("./img/materias_divisas.png")
+    # Introducción
+    st.write(txt_comentario)
+    #ppner imagen
+    st.image("./img/3-mayo-preapertura.png")    
+    # Gráfico de precios de la semana
+    st.subheader('Niveles importantes')
+    st.write(txt_niveles)
+    st.image("./img/3-mayo-preapertura_niveles.png")
+    st.write(txt_delta)
+    st.image("./img/3-mayo-preapertura_delta.png")
+    st.image("./img/3-mayo-preapertura_estructura.png")
+    
+    # Análisis de los principales movimientos del mercado
+    st.subheader('Planteamiento y escenarios operativos')
+    st.write(txt_esperamos)
+    st.write('Durante la semana, las acciones de la compañía XYZ experimentaron una subida del 12%, mientras que las acciones de la compañía ABC cayeron un 8%. Por otro lado, el índice S&P 500 se mantuvo prácticamente sin cambios.')
+
+    # Volatilidad
+    st.subheader('Volatilidad')
+    st.write('En base a estos datos, se podría concluir que el mercado sigue siendo bastante inestable y que hay que estar atentos a las fluctuaciones de los precios. En cuanto a las recomendaciones, se sugiere tener precaución al invertir en la compañía ABC debido a su tendencia bajista, mientras que la compañía XYZ podría ser una buena opción para invertir en el corto plazo. En cualquier caso, se recomienda siempre hacer un análisis exhaustivo antes de tomar cualquier decisión de inversión.')
+
             
 
 
@@ -276,7 +281,7 @@ with tab4:
     # Select para elegir el archivo
     archivo_seleccionado = st.selectbox(
         "Select a file",
-        ["spx_quotedata.csv", "ndx_quotedata.csv", "aapl_quotedata.csv", "googl_quotedata.csv", "meta_quotedata.csv", "msft_quotedata.csv", "amzn_quotedata.csv", "vix_quotedata.csv"]
+        ["spx_quotedata.csv", "ndx_quotedata.csv", "aapl_quotedata.csv", "googl_quotedata.csv", "meta_quotedata.csv", "msft_quotedata.csv", "amzn_quotedata.csv", "vix_quotedata.csv", "spy_quotedata.csv", "tsla_quotedata.csv", "ko_quotedata.csv"]
     )
 
     # Cargar el archivo seleccionado
@@ -299,7 +304,18 @@ with tab4:
 
     elif archivo_seleccionado == "amzn_quotedata.csv":
         df = pd.DataFrame(data_amzn)
-                
+        
+    elif archivo_seleccionado == "vix_quotedata.csv":
+        df = pd.DataFrame(df_volatilidad_vix)
+        
+    elif archivo_seleccionado == "ko_quotedata.csv":
+        df = pd.DataFrame(data_otros)
+        
+    elif archivo_seleccionado == "spy_quotedata.csv":
+        df = pd.DataFrame(data_spy)
+        
+    elif archivo_seleccionado == "tsla_quotedata.csv":
+        df = pd.DataFrame(df_tesla)                                        
     else:
         st.dataframe(df)
 
@@ -320,10 +336,10 @@ with tab4:
         "Select variables to graph",
         [
             'Calls', 'Calls Last Sale', 'Calls Net','Calls Bid', 'Calls Ask','Calls Volume', 'Calls IV','Calls Delta',
-            'Calls Gamma', 'Calls Open Interest', 'Strike', 'Puts', 'Puts Net', 'Puts Bid', 'Puts Ask', 'Puts Volume',
+            'Calls Gamma', 'Calls Open Interest', 'Strike', 'Puts', 'Puts Last Sale', 'Puts Net', 'Puts Bid', 'Puts Ask', 'Puts Volume',
             'Puts IV','Puts Delta', 'Puts Gamma', 'Puts Open Interest'
         ],
-        default=["Calls Volume","Puts Volume"]
+        default=["Calls Volume","Puts Volume", "Calls Open Interest", "Puts Open Interest"]
     )
 
     # Selección del tipo de gráfico
@@ -348,15 +364,15 @@ with tab4:
         fig.update_layout(
             title=f'Chart of {", ".join(selected_vars)} to date {fecha_seleccionada}',
             xaxis_title= 'Strike',
-            yaxis_title= variable
+            yaxis_title= variable,
+            barmode='stack'
         )
 
         # Muestra el gráfico en la página
-        st.plotly_chart(fig)
+        st.plotly_chart(fig, use_container_width=True)
     else:
         st.warning("Please select at least one input")
- 
- 
+
  
  
     # Crear un DataFrame con los datos de interés
@@ -385,6 +401,38 @@ with tab4:
 
  
     
+
+
+
+    # Transformar Expiration Date a formato fecha
+    data['Expiration Date'] = pd.to_datetime(data['Expiration Date'], format='%a %b %d %Y')
+
+    # Agregar una columna para el total de deltas en cada Expiration Date
+    data['Total Delta'] = data['Calls Delta'] + data['Puts Delta']
+
+    # Crear el gráfico con Plotly Express
+    fig = px.bar(data, x='Expiration Date', y='Total Delta',
+                color='Total Delta',
+                color_discrete_sequence=['red', 'green'],
+                labels={'Total Delta': 'Deltas'},
+                title='DELTA MARKET DIARY')
+
+    # Definir los colores para valores positivos y negativos
+    fig.update_traces(marker=dict(color=data['Total Delta'].apply(lambda x: 'green' if x >= 0 else 'red')))
+
+    # Añadir línea horizontal en y=0
+    fig.add_shape(type='line', x0=min(data['Expiration Date']), y0=0, x1=max(data['Expiration Date']), y1=0,
+                line=dict(color='black', width=1))
+
+    # Configurar el tooltip para mostrar la fecha y el valor de delta
+    fig.update_traces(hovertemplate='<b>%{x|%Y-%m-%d}</b><br>%{y:.0f} Deltas')
+
+
+
+    # Mostrar el gráfico en Streamlit
+    st.plotly_chart(fig, use_container_width=True)
+
+
     st.subheader('Squeezmetric')
     # Seleccionar todas las columnas numéricas excepto date
     numeric_cols = ['price', 'dix', 'gex']
@@ -423,111 +471,193 @@ with tab4:
     )
 
     # Mostrar la figura utilizando st.plotly_chart()
-    st.plotly_chart(fig)
+    st.plotly_chart(fig, use_container_width=True)
 
 
 
- 
-    # Agregar una columna para el total de deltas en cada Expiration Date
-    data['Total Delta'] = data['Calls Delta'] + data['Puts Delta']
+    
+    
 
-    #Transformar Expiration Date a formato fecha
-    data['Expiration Date'] = pd.to_datetime(data['Expiration Date'], format='%a %b %d %Y')
-
-    # Crear un gráfico de barras con los datos de Total Delta vs Expiration Date
-    chart = alt.Chart(data).mark_bar(width=15).encode(
-        x=alt.X('Expiration Date', sort=None),
-        y=alt.Y('Total Delta', axis=alt.Axis(title='Deltas', format='.0f')),
-        color=alt.condition(
-            alt.datum['Total Delta'] > 0,
-            alt.value("green"),  # cuando Total Delta es mayor que 0, la barra será verde
-            alt.value("red")  # cuando Total Delta es menor que 0, la barra será roja
-        )
+    st.subheader('Call & Put volume by maturities')
+    
+    # gráfico 1
+    alt.Chart(df).mark_circle(size=50).encode(
+        x='Calls Volume:Q',
+        y='Puts Volume:Q',
+        color=alt.Color('Expiration Date:N', scale=alt.Scale(scheme='category10')),
+        tooltip=['Expiration Date:N']
     ).properties(
-        width=800,
-        height=400,
-        title='DEALERS MARKET DIARY'
+        title='Call volume vs put options'
+    ).interactive()
+
+
+    # gráfico 2
+    alt.Chart(df).mark_bar().encode(
+        x=alt.X('Expiration Date:N', axis=alt.Axis(title=None)),
+        y=alt.Y('Calls Volume:Q', axis=alt.Axis(title='Volumen')),
+        color=alt.value('steelblue')
+    ).properties(
+        title='Call volume by due date'
+    ).interactive() | alt.Chart(df).mark_bar().encode(
+        x=alt.X('Expiration Date:N', axis=alt.Axis(title=None)),
+        y=alt.Y('Puts Volume:Q', axis=alt.Axis(title='Volumen')),
+        color=alt.value('orange')
+    ).properties(
+        title='Put Option Volume by Expiration Date'
+    ).interactive()
+    
+
+
+
+    st.subheader('Open interest of calls and put options by strike price')
+    
+    # filtrar los datos para incluir solo la fecha de vencimiento más reciente
+    latest_expiry = data['Expiration Date'].max()
+    data = data[data['Expiration Date'] == latest_expiry]
+
+    # crear el gráfico
+    chart = alt.Chart(data).mark_line().encode(
+        x='Strike',
+        y='Calls Open Interest:Q',
+        color=alt.value('#5b8ff9')
+    ).properties(
+        width=600,
+        height=400
     )
 
+    chart += alt.Chart(data).mark_line().encode(
+        x='Strike',
+        y='Puts Open Interest:Q',
+        color=alt.value('#ff6b81')
+    ).interactive()
 
-    # Agregar una línea horizontal para mostrar el nivel 0 de Delta
-    hline = alt.Chart(pd.DataFrame({'y': [0]})).mark_rule(color='black', strokeWidth=1).encode(y='y')
+    # mostrar el gráfico
+    chart
+        
+    
+    
+    
+    
+    col1, col2 = st.columns(2)
+    
+    
+    with col1:
 
-    # Configurar las opciones del gráfico y mostrarlo en Streamlit
-    st.altair_chart(chart + hline, use_container_width=True)
 
+        # Calculamos el Delta Notional y el Vanna
+        data['Delta Notional'] = data['Calls Delta'] * data['Calls Volume'] * 100
+        data['Vanna'] = data['Calls Gamma'] * data['Calls Volume'] * 100
 
-    st.info('The dealers current approximate total delta exposure for all expirations is a crucial metric to track. When calls are greater than zero, it indicates that the dealers are short calls, while customers are long calls. On the other hand, when puts are less than zero, it means dealers are short puts, while customers are long puts, implying they are well-hedged. The green and red lines represent the average short-term deltas, which are important indicators of market trends. Therefore, keeping an eye on the dealers delta exposure is essential to make informed trading decisions and minimize risks.', icon="ℹ️")
+        # Creamos el gráfico
+        chart = alt.Chart(data).mark_bar().encode(
+            x='Strike',
+            y=alt.Y('Delta Notional', title='Delta Notional'),
+            tooltip=['Strike', 'Delta Notional']
+        ).properties(
+            width=600,
+            height=400,
+            title='Gráfico Delta Notional vs Strike'
+        )
+
+        # Añadimos la línea del Vanna al gráfico con escala logarítmica
+        vanna_line = alt.Chart(data).mark_line(color='red').encode(
+            x='Strike',
+            y=alt.Y('Vanna', scale=alt.Scale(type='log'), title='Vanna'),
+            tooltip=['Strike', 'Vanna']
+        )
+
+        # Mostramos el gráfico completo con ambas líneas
+        st.altair_chart(chart + vanna_line)
+
 
 
 
 
 
     col1, col2 = st.columns(2)
-    
-    
+
     with col1:
-        st.subheader('Call & Put volume by maturities')
-        
-        # gráfico 1
-        alt.Chart(df).mark_circle(size=50).encode(
-            x='Calls Volume:Q',
-            y='Puts Volume:Q',
-            color=alt.Color('Expiration Date:N', scale=alt.Scale(scheme='category10')),
-            tooltip=['Expiration Date:N']
-        ).properties(
-            title='Call volume vs put options'
-        ).interactive()
-                # gráfico 2
-        alt.Chart(df).mark_bar().encode(
-            x=alt.X('Expiration Date:N', axis=alt.Axis(title=None)),
-            y=alt.Y('Calls Volume:Q', axis=alt.Axis(title='Volumen')),
-            color=alt.value('steelblue')
-        ).properties(
-            title='Call volume by due date'
-        ).interactive() | alt.Chart(df).mark_bar().encode(
-            x=alt.X('Expiration Date:N', axis=alt.Axis(title=None)),
-            y=alt.Y('Puts Volume:Q', axis=alt.Axis(title='Volumen')),
-            color=alt.value('orange')
-        ).properties(
-            title='Put Option Volume by Expiration Date'
-        ).interactive()
+        # Crear un gráfico de barras para mostrar las columnas de "Calls Volume" y "Puts Volume" para cada "Strike"
+        fig2 = go.Figure()
+        fig2.add_trace(go.Bar(x=df_top['Strike'], y=df_top['Calls Volume'], name='Calls Volume'))
+        fig2.add_trace(go.Bar(x=df_top['Strike'], y=df_top['Puts Volume'], name='Puts Volume'))
+
+        # Personaliza los títulos y ejes del gráfico
+        fig2.update_layout(
+            title='Volume of Calls and Puts for the Top 15 Strikes',
+            xaxis_title='Strike',
+            yaxis_title='Volume',
+            barmode='stack'
+        )
+
+        # Muestra el gráfico en la página
+        st.plotly_chart(fig2)
+
 
 
     with col2:
+        # Crear un gráfico de barras para mostrar las columnas de "Calls Open Interest" y "Puts Open Interest" para cada "Strike"
+        fig3 = go.Figure()
+        fig3.add_trace(go.Bar(x=df_top['Strike'], y=df_top['Calls Open Interest'], name='Calls Open Interest'))
+        fig3.add_trace(go.Bar(x=df_top['Strike'], y=df_top['Puts Open Interest'], name='Puts Open Interest'))
 
-        st.subheader('Open interest of calls and put options by strike price')
-        
-        # filtrar los datos para incluir solo la fecha de vencimiento más reciente
-        latest_expiry = data['Expiration Date'].max()
-        data = data[data['Expiration Date'] == latest_expiry]
-
-        # crear el gráfico
-        chart = alt.Chart(data).mark_line().encode(
-            x='Strike',
-            y='Calls Open Interest:Q',
-            color=alt.value('#5b8ff9')
+        # Personaliza los títulos y ejes del gráfico
+        fig3.update_layout(
+            title='Open Interest of Calls and Puts for the Top 15 Strikes',
+            xaxis_title='Strike',
+            yaxis_title='Open Interest',
+            #bar mode stack sirve para que se apilen las barras y no se superpongan
+            barmode='stack'
+            
+            
         )
 
-        chart += alt.Chart(data).mark_line().encode(
-            x='Strike',
-            y='Puts Open Interest:Q',
-            color=alt.value('#ff6b81')
-        ).interactive()
+        # Muestra el gráfico en la página
+        st.plotly_chart(fig3)
 
-        # mostrar el gráfico
-        chart
-        
-    
 
-    
+    col1, col2 = st.columns(2)
+        
+    with col1:
+        # Crear un gráfico de barras para mostrar las columnas de "Puts Net" y "Calls Net" para cada "Strike"
+        fig4 = go.Figure()
+        fig4.add_trace(go.Bar(x=data['Strike'], y=data['Puts Net'], name='Puts Net'))
+        fig4.add_trace(go.Bar(x=data['Strike'], y=data['Calls Net'], name='Calls Net'))
+        
+        # Personaliza los títulos y ejes del gráfico
+        fig4.update_layout(
+            title='Net of Calls and Puts for the Top 15 Strikes',
+            xaxis_title='Strike',
+            yaxis_title='Puts Net',
+            barmode='stack'
+            
+        )
+        
+        # Muestra el gráfico en la página
+        st.plotly_chart(fig4)
+        
+        
+    with col2:
+        # Crear un gráfico de barras para mostrar las columnas de "Puts IV" y "Calls IV" para cada "Strike"
+        fig5 = go.Figure()
+        fig5.add_trace(go.Bar(x=data['Strike'], y=data['Calls Gamma'], name='Puts Gamma'))
+        fig5.add_trace(go.Bar(x=data['Strike'], y=data['Puts Gamma'], name='Calls Gamma'))
+        
+        # Personaliza los títulos y ejes del gráfico
+        fig5.update_layout(
+            title='Gamma',
+            xaxis_title='Strike', 
+            yaxis_title='Gamma',
+            barmode='stack'
+        )
+        
+        # Muestra el gráfico en la página
+        st.plotly_chart(fig5)
+        
 
-        
-        
-        
 
-        
-    
+
+
 
 with tab5:
 
@@ -572,7 +702,6 @@ with tab5:
         st.subheader('Emerging Markets')
         st.write(dolaresEmergentes_df.tail(10))
         
-
 
 
 

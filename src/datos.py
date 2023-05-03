@@ -26,7 +26,8 @@ df_volatilidad = pd.read_csv("./Operativa/processed/spx_quotedata.csv", on_bad_l
 df_volatilidad_nq = pd.read_csv("./Operativa/processed/ndx_quotedata.csv", on_bad_lines='skip', delimiter=",")
 df_volatilidad_vix = pd.read_csv("./Operativa/processed/vix_quotedata.csv", on_bad_lines='skip', delimiter=",")
 
-
+#Teska
+df_tesla = pd.read_csv("./Operativa/processed/tsla_quotedata.csv", on_bad_lines='skip', delimiter=",")
 
 df_dix = pd.read_csv("./Operativa/processed/DIX.csv", on_bad_lines='skip', delimiter=",")
 
@@ -36,7 +37,11 @@ df_dix = pd.read_csv("./Operativa/processed/DIX.csv", on_bad_lines='skip', delim
 df_squeeze = pd.read_csv("./Operativa/processed/DIX.csv")
 
 #Datos CBOE
+#SPX
 data = pd.read_csv('./Operativa/processed/spx_quotedata.csv')
+#SPY
+data_spy = pd.read_csv('./Operativa/processed/spy_quotedata.csv')
+
 
 #CBOE Acciones
 data_apple = pd.read_csv('./Operativa/processed/aapl_quotedata.csv')
@@ -44,6 +49,14 @@ data_goog = pd.read_csv('./Operativa/processed/googl_quotedata.csv')
 data_meta = pd.read_csv('./Operativa/processed/meta_quotedata.csv')
 data_msft = pd.read_csv('./Operativa/processed/msft_quotedata.csv')
 data_amzn = pd.read_csv('./Operativa/processed/amzn_quotedata.csv')
+#Otras acciones esporadicas
+data_otros = pd.read_csv('./Operativa/processed/ko_quotedata.csv')
+
+
+#CotReport
+data_cot = pd.read_csv('./Operativa/processed/cot-report.csv')
+data_cot_noncommercial = pd.read_csv('./Operativa/processed/cot-report-noncommercial.csv')
+
 
 
 
