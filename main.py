@@ -129,25 +129,28 @@ with tab2:
     
 
 
-    # Crear un botón para aplicar el filtro
-    if st.button("Apply Filter"):
+    try:
+        # Crear un botón para aplicar el filtro
+        if st.button("Apply Filter"):
             # Filtrar la base de datos
             df_filtrado = df.drop("Unnamed: 0", axis=1)[(df["Date"].dt.date >= fecha_inicio) & (df["Date"].dt.date <= fecha_fin)]
             # Mostrar la tabla con los datos filtrados
             st.dataframe(df_filtrado)
-    
 
-    st.subheader("General statistics")
-    st.write(df.describe()) 
-              
-    st.subheader("Correlation Heatmap")
-    # Utilizar comentarios para explicar el propósito de cada sección de código
-    # Crear un gráfico de correlación utilizando la librería específica
-    fig = go.Figure(data=go.Heatmap(
+        st.subheader("General statistics")
+        st.write(df.describe()) 
+
+        st.subheader("Correlation Heatmap")
+        # Utilizar comentarios para explicar el propósito de cada sección de código
+        # Crear un gráfico de correlación utilizando la librería específica
+        fig = go.Figure(data=go.Heatmap(
             z=df.corr(),
             x=df.drop("Unnamed: 0", axis=1).columns,
             y=df.drop("Unnamed: 0", axis=1).columns))
-    st.plotly_chart(fig)
+        st.plotly_chart(fig)
+
+    except Exception as e:
+        st.error(f"Error: {e}")
 
 
 
@@ -535,38 +538,38 @@ with tab4:
     
     
     
-    """     
-        col1, col2 = st.columns(2)
-        
-        
-        with col1:
+    
+    col1, col2 = st.columns(2)
+    
+    
+    with col1:
 
 
-            # Calculamos el Delta Notional y el Vanna
-            data['Delta Notional'] = data['Calls Delta'] * data['Calls Volume'] * 100
-            data['Vanna'] = data['Calls Gamma'] * data['Calls Volume'] * 100
+        # Calculamos el Delta Notional y el Vanna
+        data['Delta Notional'] = data['Calls Delta'] * data['Calls Volume'] * 100
+        data['Vanna'] = data['Calls Gamma'] * data['Calls Volume'] * 100
 
-            # Creamos el gráfico
-            chart = alt.Chart(data).mark_bar().encode(
-                x='Strike',
-                y=alt.Y('Delta Notional', title='Delta Notional'),
-                tooltip=['Strike', 'Delta Notional']
-            ).properties(
-                width=600,
-                height=400,
-                title='Gráfico Delta Notional vs Strike'
-            )
+        # Creamos el gráfico
+        chart = alt.Chart(data).mark_bar().encode(
+            x='Strike',
+            y=alt.Y('Delta Notional', title='Delta Notional'),
+            tooltip=['Strike', 'Delta Notional']
+        ).properties(
+            width=600,
+            height=400,
+            title='Gráfico Delta Notional vs Strike'
+        )
 
-            # Añadimos la línea del Vanna al gráfico con escala logarítmica
-            vanna_line = alt.Chart(data).mark_line(color='red').encode(
-                x='Strike',
-                y=alt.Y('Vanna', scale=alt.Scale(type='log'), title='Vanna'),
-                tooltip=['Strike', 'Vanna']
-            )
+        # Añadimos la línea del Vanna al gráfico con escala logarítmica
+        vanna_line = alt.Chart(data).mark_line(color='red').encode(
+            x='Strike',
+            y=alt.Y('Vanna', scale=alt.Scale(type='log'), title='Vanna'),
+            tooltip=['Strike', 'Vanna']
+        )
 
-            # Mostramos el gráfico completo con ambas líneas
-            st.altair_chart(chart + vanna_line)
-    """
+        # Mostramos el gráfico completo con ambas líneas
+        st.altair_chart(chart + vanna_line)
+
 
 
 
