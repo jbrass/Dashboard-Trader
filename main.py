@@ -19,7 +19,6 @@ from sklearn.preprocessing import StandardScaler
 from datetime import timedelta
 import datetime
 import plotly.express as px
-import scipy
 from scipy.stats import norm
 from sklearn.linear_model import LinearRegression
 from plotly.subplots import make_subplots
@@ -145,7 +144,7 @@ with tab2:
     # Utilizar comentarios para explicar el propósito de cada sección de código
     # Crear un gráfico de correlación utilizando la librería específica
     fig = go.Figure(data=go.Heatmap(
-            z=df.corr() method='pearson',
+            z=df.corr(),
             x=df.drop("Unnamed: 0", axis=1).columns,
             y=df.drop("Unnamed: 0", axis=1).columns))
     st.plotly_chart(fig)
