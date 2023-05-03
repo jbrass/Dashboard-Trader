@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 from bokeh.plotting import figure
-import yfinance as yf
 import datetime as dt
 import ta
 from textos import *
@@ -146,7 +145,7 @@ with tab2:
     # Utilizar comentarios para explicar el propósito de cada sección de código
     # Crear un gráfico de correlación utilizando la librería específica
     fig = go.Figure(data=go.Heatmap(
-            z=df.corr(),
+            z=df.corr() method='pearson',
             x=df.drop("Unnamed: 0", axis=1).columns,
             y=df.drop("Unnamed: 0", axis=1).columns))
     st.plotly_chart(fig)
