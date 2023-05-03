@@ -98,7 +98,7 @@ with tab1:
 
     # Volatilidad
     st.subheader('Volatilidad')
-    st.write('En base a estos datos, se podría concluir que el mercado sigue siendo bastante inestable y que hay que estar atentos a las fluctuaciones de los precios. En cuanto a las recomendaciones, se sugiere tener precaución al invertir en la compañía ABC debido a su tendencia bajista, mientras que la compañía XYZ podría ser una buena opción para invertir en el corto plazo. En cualquier caso, se recomienda siempre hacer un análisis exhaustivo antes de tomar cualquier decisión de inversión.')
+    st.write('')
 
             
 
