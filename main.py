@@ -82,7 +82,7 @@ with tab1:
     st.image("./img/11Mayo/premercado.png")
     #ppner imagen
     #st.image("./img/5Mayo/cme-liquidez.jpeg")
-    st.image("./img/10Mayo/gamma.png")  
+    st.image("./img/11Mayo/gamma.png")  
     # Gráfico de precios de la semana
     st.subheader('Niveles importantes')
     st.write(txt_niveles)
