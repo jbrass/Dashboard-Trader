@@ -47,12 +47,12 @@ with open("fintra-logo.png", 'rb') as img:
     st.image(img.read(), width=200)
 
 # Utilizar una estructura de control de flujo más clara
-tab1, tab2, tab3, tab4, tab5= st.tabs(["Markets Report", "Statistics", "Charts/Forecast", "Options 0DTE", "Statics Macro"])
+tab1, tab2, tab3, tab4, tab5= st.tabs(["Reporte de Mercado", "Estadísticas", "Gráficos/Predicciones", "Opciones 0DTE", "Estadísticas Macroeconómicas"])
 
 with tab1:
 
     def mostrar_sidebar():
-        data_source = st.sidebar.selectbox("Select a data source", list(renombre.values()))
+        data_source = st.sidebar.selectbox("Selecciona un fichero de datos", list(renombre.values()))
 
         for archivo, nombre_amigable in renombre.items():
             if data_source == nombre_amigable:
@@ -67,7 +67,7 @@ with tab1:
                 break
         return df
 
-    st.sidebar.title("Data selection")
+    st.sidebar.title("Fuente de datos")
     df = mostrar_sidebar()
 
 
@@ -75,28 +75,30 @@ with tab1:
 
 
     # Título de la sección
-    st.header('Día 03/05/2023')
+    st.header('Día 11/05/2023')
 
     # Introducción
     st.write(txt_comentario)
+    st.image("./img/11Mayo/premercado.png")
     #ppner imagen
-    st.image("./img/3-mayo-preapertura.png")    
+    #st.image("./img/5Mayo/cme-liquidez.jpeg")
+    st.image("./img/10Mayo/gamma.png")  
     # Gráfico de precios de la semana
     st.subheader('Niveles importantes')
     st.write(txt_niveles)
-    st.image("./img/3-mayo-preapertura_niveles.png")
-    st.write(txt_delta)
-    st.image("./img/3-mayo-preapertura_delta.png")
-    st.image("./img/3-mayo-preapertura_estructura.png")
+    st.write(txt_sentiment)
+    st.image("./img/11Mayo/premercado_neto.png")
+
     
     # Análisis de los principales movimientos del mercado
     st.subheader('Planteamiento y escenarios operativos')
     st.write(txt_esperamos)
-    st.write('Durante la semana, las acciones de la compañía XYZ experimentaron una subida del 12%, mientras que las acciones de la compañía ABC cayeron un 8%. Por otro lado, el índice S&P 500 se mantuvo prácticamente sin cambios.')
-
+    st.image("./img/11Mayo/niveles.png")
+    
     # Volatilidad
     st.subheader('Volatilidad')
-    st.write('')
+    st.write(txt_volatilidad)
+    st.image("./img/11Mayo/volatilidad.png") 
 
             
 
@@ -113,34 +115,34 @@ with tab1:
     
 with tab2: 
     
-    st.subheader("Last 2 Days Statistics")
+    st.subheader("Últimos 2 días")
     # Mostrar la tabla completa al iniciar el programa
     st.dataframe(df.drop("Unnamed: 0", axis=1).tail(2))
     
-    st.subheader("General Statistics")
+    st.subheader("Estadísticas generales")
     # Mostrar la tabla completa al iniciar el programa
     st.dataframe(df.drop("Unnamed: 0", axis=1))
     
-    st.subheader("Statistics by Date Range")
+    st.subheader("Estadísticas por rango de fechas")
     # Crear campos de entrada de fecha
-    fecha_inicio = st.date_input("Select a Start Date")
-    fecha_fin = st.date_input("Select an End Date")
+    fecha_inicio = st.date_input("Selecciona una fecha de inicio")
+    fecha_fin = st.date_input("Selecciona una fecha de fin")
     df["Date"] = pd.to_datetime(df["Date"])
     
 
 
     try:
         # Crear un botón para aplicar el filtro
-        if st.button("Apply Filter"):
+        if st.button("Aplicar filtro"):
             # Filtrar la base de datos
             df_filtrado = df.drop("Unnamed: 0", axis=1)[(df["Date"].dt.date >= fecha_inicio) & (df["Date"].dt.date <= fecha_fin)]
             # Mostrar la tabla con los datos filtrados
             st.dataframe(df_filtrado)
 
-        st.subheader("General statistics")
+        st.subheader("Estadísticas descriptivas")
         st.write(df.describe()) 
 
-        st.subheader("Correlation Heatmap")
+        st.subheader("Mapa de correlaciones")
         # Utilizar comentarios para explicar el propósito de cada sección de código
         # Crear un gráfico de correlación utilizando la librería específica
         fig = go.Figure(data=go.Heatmap(
@@ -154,23 +156,25 @@ with tab2:
 
 
 
+
+
    
 
 with tab3:
 
     # Selección de la variable a graficar
-    selected_vars = st.multiselect("Select multiple inputs", ["Day's High", "Day's Low", "Closing Price", "Volume", "Range in ticks", "VIX Closing Price", "Vwap", "Volume in Vpoc Zone", "Volume Value Area Low", "Volume Value Area High"], default=["Closing Price"])
+    selected_vars = st.multiselect("Seleccione uno o múltiple variables", ["Day's High", "Day's Low", "Closing Price", "Volume", "Range in ticks", "VIX Closing Price", "Vwap", "Volume in Vpoc Zone", "Volume Value Area Low", "Volume Value Area High"], default=["Closing Price"])
     # Selección del tipo de gráfico
-    tipo_grafico = st.selectbox("Select a Chart Type", ["Line", "Scatter", "Bars"], key='tipo_grafico', index=0)
+    tipo_grafico = st.selectbox("Seleccione el tipo de gráfico", ["Linea", "Puntos", "Barras"], key='tipo_grafico', index=0)
     if len(selected_vars) > 0:
         fig = go.Figure()
         
         for variable in selected_vars:
             # Si el tipo de gráfico es línea
-            if tipo_grafico == 'Line':
+            if tipo_grafico == 'Linea':
                 fig.add_trace(go.Scatter(x=df['Date'], y=df[variable], mode='lines', name=variable))
             # Si el tipo de gráfico es dispersión
-            elif tipo_grafico == 'Scatter':
+            elif tipo_grafico == 'Puntos':
                 fig.add_trace(go.Scatter(x=df['Date'], y=df[variable], mode='markers', name=variable))
             # Si el tipo de gráfico es barras
             else:
@@ -186,7 +190,7 @@ with tab3:
         # Muestra el gráfico en la página
         st.plotly_chart(fig)
     else:
-        st.warning("Please select at least one variable")
+        st.warning("Por favor selecciona alguna variable para graficar")
 
 
 
@@ -212,8 +216,8 @@ with tab3:
 
     # Mostrar tabla de datos con 2 inputs
     # Mostrar gráfico de dispersión de dos columnas
-    col_x = st.selectbox('Select a column for the X axis', df.drop("Unnamed: 0", axis=1).columns)
-    col_y = st.selectbox('Select a column for the Y axis', df.drop("Unnamed: 0", axis=1).columns)
+    col_x = st.selectbox('Selecciona una columna para el eje x', df.drop("Unnamed: 0", axis=1).columns)
+    col_y = st.selectbox('Selecciona una columna para el eje y', df.drop("Unnamed: 0", axis=1).columns)
     scatter_plot = alt.Chart(df).mark_circle().encode(
         x=col_x,
         y=col_y,
@@ -226,17 +230,17 @@ with tab3:
 
 
 
-    st.subheader("Linear Regression Model to make different predictions to one day")
+    st.subheader("Regresión Linea para hacer predicciones a un día")
 
-    x_name = st.selectbox("Select the independent input", ["Closing Price", "VIX Closing Price", "Volume", "Opening", "Day's High", "Day's Low", "Vpoc", "Vwap", "Range in ticks"])
+    x_name = st.selectbox("Selecciona la variable independiente", ["Closing Price", "VIX Closing Price", "Volume", "Opening", "Day's High", "Day's Low", "Vpoc", "Vwap", "Range in ticks"])
 
-    y_name = st.selectbox("Select the input to predict", ["Closing Price", "VIX Closing Price", "Volume", "Opening", "Day's High", "Day's Low", "Vpoc", "Vwap", "Range in ticks"])
+    y_name = st.selectbox("Selecciona la variable a predecir", ["Closing Price", "VIX Closing Price", "Volume", "Opening", "Day's High", "Day's Low", "Vpoc", "Vwap", "Range in ticks"])
     latest_date = df['Date'].max() - timedelta(days=1)
     latest_row = df[df['Date'] == latest_date][x_name]
     if not latest_row.empty:
-        predict_value = st.number_input("Last value of the independent variable in yesterday or enter the data you want to make a relationship and with it you will have a prediction(" + x_name + "):", value=latest_row.values[0])
+        predict_value = st.number_input("Último valor de la variable independiente en ayer o ingresa los datos que deseas hacer una relación y con ello tendrás una predicción(" + x_name + "):", value=latest_row.values[0])
     else:
-        predict_value = st.number_input("Last value of the independent variable in yesterday or enter the data you want to make a relationship and with it you will have a prediction(" + x_name + "):")
+        predict_value = st.number_input("Último valor de la variable independiente en ayer o ingresa los datos que deseas hacer una relación y con ello tendrás una predicción(" + x_name + "):")
 
 
     x_std, y_std, slr, prediction = model(x_name, y_name, predict_value, 1)
@@ -262,7 +266,7 @@ with tab3:
 
     variable_dependiente = y_name
 
-    st.write("The prediction for the variable: ", variable_dependiente, "es", prediction[0][0])
+    st.write("La predicción para la variable: ", variable_dependiente, "es", prediction[0][0])
 
 
 
@@ -275,13 +279,13 @@ with tab3:
 with tab4:
 
     # Mostrar la tabla completa al iniciar el programa
-    st.subheader('Options 0DTE')
-    st.caption('Options on stock are important because they offer fast trading opportunities and can influence the futures market. Futures traders should keep an eye on these options to take advantage of opportunities and minimize risks.')
+    st.subheader('Opciones con expiración diarias 0DTE')
+    st.caption('Las opciones sobre acciones son importantes porque ofrecen oportunidades comerciales rápidas y pueden influir en el mercado de futuros. Los operadores de futuros deben estar atentos a estas opciones para aprovechar las oportunidades y minimizar los riesgos.')
     
     
     # Select para elegir el archivo
     archivo_seleccionado = st.selectbox(
-        "Select a file",
+        "Seleccione el activo a cargar: ",
         ["spx_quotedata.csv", "ndx_quotedata.csv", "aapl_quotedata.csv", "googl_quotedata.csv", "meta_quotedata.csv", "msft_quotedata.csv", "amzn_quotedata.csv", "vix_quotedata.csv", "spy_quotedata.csv", "tsla_quotedata.csv", "ko_quotedata.csv"]
     )
 
@@ -294,7 +298,7 @@ with tab4:
     elif archivo_seleccionado == "aapl_quotedata.csv":
         df = pd.DataFrame(data_apple)
         
-    elif archivo_seleccionado == "googl_quotedata.csv":
+    elif archivo_seleccionado == "goog_quotedata.csv":
         df = pd.DataFrame(data_goog)
         
     elif archivo_seleccionado == "meta_quotedata.csv":
@@ -325,16 +329,23 @@ with tab4:
 
     # Selectbox para seleccionar la fecha de vencimiento
     fecha_seleccionada = st.selectbox(
-        "Select expiration date",
+        "Seleccione la fecha de vencimiento: ",
         fechas_unicas
     )
 
     # Filtrar el DataFrame para seleccionar solo las filas que corresponden a la fecha de vencimiento seleccionada
     df_filtrado = df[df['Expiration Date'] == fecha_seleccionada]
 
+    # Obtener todos los valores de Strike en el DataFrame filtrado
+    strikes = df_filtrado['Strike'].unique()
+
+    # Crear un nuevo DataFrame con todos los valores de Strike y reindexar el DataFrame filtrado
+    df_strikes = pd.DataFrame({'Strike': strikes})
+    df_filtrado = pd.merge(df_filtrado, df_strikes, on='Strike', how='right').fillna(0)
+
     # Selección de la variable a graficar
     selected_vars = st.multiselect(
-        "Select variables to graph",
+        "Selecciones la variable a graficar",
         [
             'Calls', 'Calls Last Sale', 'Calls Net','Calls Bid', 'Calls Ask','Calls Volume', 'Calls IV','Calls Delta',
             'Calls Gamma', 'Calls Open Interest', 'Strike', 'Puts', 'Puts Last Sale', 'Puts Net', 'Puts Bid', 'Puts Ask', 'Puts Volume',
@@ -345,7 +356,7 @@ with tab4:
 
     # Selección del tipo de gráfico
     tipo_grafico2 = st.selectbox(
-        "Select chart type",
+        "Seleccione el tipo de gráfico",
         ["Bars", "Scatter"],
         key='tipo_grafico2',
         index=0
@@ -366,19 +377,26 @@ with tab4:
             title=f'Chart of {", ".join(selected_vars)} to date {fecha_seleccionada}',
             xaxis_title= 'Strike',
             yaxis_title= variable,
-            barmode='stack'
+            #barmode='relative',
+            barmode='overlay',
+            xaxis=dict(
+                tickmode='linear',
+                tick0=df_filtrado['Strike'].min(),
+                dtick=5
+            )
         )
 
         # Muestra el gráfico en la página
         st.plotly_chart(fig, use_container_width=True)
     else:
-        st.warning("Please select at least one input")
+        st.warning("Por favor seleccione al menos una variable")
+
 
  
  
     # Crear un DataFrame con los datos de interés
     df_top = df_filtrado[['Strike', 'Calls Volume', 'Calls Open Interest', 'Puts Volume', 'Puts Open Interest']]
-    df_top['Nuevo Strike'] = df_top['Strike'] + 30 # Agregar la nueva columna "Nuevo Strike" sumando 30 a cada fila
+    df_top['Nuevo Strike'] = df_top['Strike'] + 15 # Agregar la nueva columna "Nuevo Strike" sumando 30 a cada fila
     df_top = df_top.sort_values(by=['Calls Volume', 'Calls Open Interest', 'Puts Volume', 'Puts Open Interest'], ascending=False)
     df_top = df_top.head(15)
 
@@ -416,7 +434,7 @@ with tab4:
                 color='Total Delta',
                 color_discrete_sequence=['red', 'green'],
                 labels={'Total Delta': 'Deltas'},
-                title='DELTA MARKET DIARY')
+                title='Delta Diario')
 
     # Definir los colores para valores positivos y negativos
     fig.update_traces(marker=dict(color=data['Total Delta'].apply(lambda x: 'green' if x >= 0 else 'red')))
@@ -446,11 +464,11 @@ with tab4:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.info('**Dark Index (DIX)**, is a dollar-weighted measure of the Dark Pool Indicator (DPI) of the S&P 500 components. When the DIX is higher, market sentiment in dark pools is generally more bullish. When the DIX is lower, it is more bearish or uncertain.', icon="ℹ️")
+        st.info('**Dark Index (DIX)**, es una medida ponderada en dólares del Dark Pool Indicator (DPI) de los componentes del S&P 500. Cuando el DIX es más alto, el sentimiento del mercado en los fondos oscuros es generalmente más alcista. Cuando el DIX es más bajo, es más bajista o incierto.', icon="ℹ️")
         
 
     with col2:
-        st.info('**Gamma Exposure (GEX)**, is a dollar-denominated measure of option market-makers hedging obligations. When GEX is high, the option market is implying that volatility will be low. When GEX is low, volatility is high, and while we expect a choppy market, further losses are unlikely.', icon="ℹ️")
+        st.info('**Gamma Exposure (GEX)**, es una medida denominada en dólares de las obligaciones de cobertura de los creadores de mercado de opciones. Cuando GEX es alto, el mercado de opciones implica que la volatilidad será baja. Cuando GEX es bajo, la volatilidad es alta y, aunque esperamos un mercado agitado, es poco probable que se produzcan más pérdidas.', icon="ℹ️")
 
    
    
@@ -479,7 +497,7 @@ with tab4:
     
     
 
-    st.subheader('Call & Put volume by maturities')
+    st.subheader('Volumen Call & Put por vencimientos')
     
     # gráfico 1
     alt.Chart(df).mark_circle(size=50).encode(
@@ -504,13 +522,13 @@ with tab4:
         y=alt.Y('Puts Volume:Q', axis=alt.Axis(title='Volumen')),
         color=alt.value('orange')
     ).properties(
-        title='Put Option Volume by Expiration Date'
+        title='Volumen de opciones de venta por fecha de vencimiento'
     ).interactive()
     
 
 
 
-    st.subheader('Open interest of calls and put options by strike price')
+    st.subheader('Interés abierto de opciones call y put por precio de ejercicio')
     
     # filtrar los datos para incluir solo la fecha de vencimiento más reciente
     latest_expiry = data['Expiration Date'].max()
@@ -535,42 +553,7 @@ with tab4:
     # mostrar el gráfico
     chart
         
-    
-    
-    
-    
-    col1, col2 = st.columns(2)
-    
-    
-    with col1:
-
-
-        # Calculamos el Delta Notional y el Vanna
-        data['Delta Notional'] = data['Calls Delta'] * data['Calls Volume'] * 100
-        data['Vanna'] = data['Calls Gamma'] * data['Calls Volume'] * 100
-
-        # Creamos el gráfico
-        chart = alt.Chart(data).mark_bar().encode(
-            x='Strike',
-            y=alt.Y('Delta Notional', title='Delta Notional'),
-            tooltip=['Strike', 'Delta Notional']
-        ).properties(
-            width=600,
-            height=400,
-            title='Gráfico Delta Notional vs Strike'
-        )
-
-        # Añadimos la línea del Vanna al gráfico con escala logarítmica
-        vanna_line = alt.Chart(data).mark_line(color='red').encode(
-            x='Strike',
-            y=alt.Y('Vanna', scale=alt.Scale(type='log'), title='Vanna'),
-            tooltip=['Strike', 'Vanna']
-        )
-
-        # Mostramos el gráfico completo con ambas líneas
-        st.altair_chart(chart + vanna_line)
-
-
+       
 
 
 
@@ -585,7 +568,7 @@ with tab4:
 
         # Personaliza los títulos y ejes del gráfico
         fig2.update_layout(
-            title='Volume of Calls and Puts for the Top 15 Strikes',
+            title='Volumen de opciones call y put para los 15 strikes principales',
             xaxis_title='Strike',
             yaxis_title='Volume',
             barmode='stack'
@@ -604,7 +587,7 @@ with tab4:
 
         # Personaliza los títulos y ejes del gráfico
         fig3.update_layout(
-            title='Open Interest of Calls and Puts for the Top 15 Strikes',
+            title='Interés abierto de opciones call y put para los 15 strikes principales',
             xaxis_title='Strike',
             yaxis_title='Open Interest',
             #bar mode stack sirve para que se apilen las barras y no se superpongan
@@ -627,7 +610,7 @@ with tab4:
         
         # Personaliza los títulos y ejes del gráfico
         fig4.update_layout(
-            title='Net of Calls and Puts for the Top 15 Strikes',
+            title='Neto de opciones call y put para los 15 strikes principales',
             xaxis_title='Strike',
             yaxis_title='Puts Net',
             barmode='stack'
@@ -654,6 +637,8 @@ with tab4:
         
         # Muestra el gráfico en la página
         st.plotly_chart(fig5)
+        
+        
         
 
 
@@ -703,6 +688,7 @@ with tab5:
         st.subheader('Emerging Markets')
         st.write(dolaresEmergentes_df.tail(10))
         
+
 
 
 
