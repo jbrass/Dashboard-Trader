@@ -1,7 +1,5 @@
+Expiration Date,Calls,Calls Last Sale,Calls Net,Calls Bid,Calls Ask,Calls Volume,Calls IV,Calls Delta,Calls Gamma,Calls Open Interest,Strike,Puts,Puts Last Sale,Puts Net,Puts Bid,Puts Ask,Puts Volume,Puts IV,Puts Delta,Puts Gamma,Puts Open Interest
 
-Standard & Poors 500 Index,Last: 4138.54,Change:  7.92
-"Date: 12 de mayo de 2023, 9:45 GMT-4",Bid: 4132.9399,Ask: 4148.2598,Size: 1*1,Volume: 0
-Expiration Date,Calls,Last Sale,Net,Bid,Ask,Volume,IV,Delta,Gamma,Open Interest,Strike,Puts,Last Sale,Net,Bid,Ask,Volume,IV,Delta,Gamma,Open Interest
 Fri May 12 2023,SPXW230512C04090000,43.29,0,0,0,0,0,0,0,862,4090.00,SPXW230512P04090000,2.55,0,0,0,0,0,0,0,3158
 Fri May 12 2023,SPXW230512C04095000,38.89,0,0,0,0,0,0,0,219,4095.00,SPXW230512P04095000,3.07,0,0,0,0,0,0,0,1973
 Fri May 12 2023,SPXW230512C04100000,33.72,0,0,0,0,0,0,0,2722,4100.00,SPXW230512P04100000,3.8,0,0,0,0,0,0,0,7422
