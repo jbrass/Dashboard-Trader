@@ -286,7 +286,7 @@ with tab4:
     # Select para elegir el archivo
     archivo_seleccionado = st.selectbox(
         "Seleccione el activo a cargar: ",
-        ["spx_quotedata.csv", "ndx_quotedata.csv", "aapl_quotedata.csv", "googl_quotedata.csv", "meta_quotedata.csv", "msft_quotedata.csv", "amzn_quotedata.csv", "vix_quotedata.csv", "spy_quotedata.csv", "tsla_quotedata.csv", "ko_quotedata.csv"]
+        ["spx_quotedata.csv", "ndx_quotedata.csv", "aapl_quotedata.csv", "goog_quotedata.csv", "meta_quotedata.csv", "msft_quotedata.csv", "amzn_quotedata.csv", "vix_quotedata.csv", "spy_quotedata.csv", "tsla_quotedata.csv", "ko_quotedata.csv"]
     )
 
     # Cargar el archivo seleccionado
