@@ -8,11 +8,11 @@ txt_volatilidad = "Esperamos incrementos de volatilidad a partir de hoy día 16 
 
 
 title_esta_semana = "**Esta Semana: Noticias y Datos relevantes para esta semana**"
-esta_semana1 = " 1. :orange[**Lunes**] Hoy lunes no hay grandes referencias macro."
-esta_semana2 = " 2. :orange[**Martes**], Tendremos en China el dato de la balanza comercial correspondiente al mes de abril."
-esta_semana3 = " 3. :orange[**Miercoles**], Obtendremos los datos de IPC del mes de abril de EE.UU."
-esta_semana4 = " 4. :orange[**Jueves**], En EEUU los datos de IPP y en China tanto el IPP como el IPC. Y también tendremos la decisión de tipos de interés del Banco de Inglaterra."
-esta_semana5 = " 4. :orange[**Viernes**], Tenderemos los resultados preliminares de la encuesta de la Universidad de Michigan respecto a expectativas y percepción del a situación actual."
+esta_semana1 = " 1. :orange[**Lunes**] Publicación del dato de producción industrial de la zona Euro en el mes de marzo [-1.4% vs 2% anterior]."
+esta_semana2 = " 2. :orange[**Martes**], Datos de produccción industrial en China correspondientes al mes de abril [5.6% vs 3.9% anterior]. También hemos conocido el dato del mercado de empleo en el Reino Unido [Tasa de paro 3.9% vs 3.8% anterior] . Dato de venta minorista y producción en EEUU"
+esta_semana3 = " 3. :orange[**Miercoles**], Datos relativos al mercado inmmobiliario americano."
+esta_semana4 = " 4. :orange[**Jueves**], Volumen de posiciones semanales de subsidio de desempleo en EEUU."
+esta_semana5 = " 4. :orange[**Viernes**], Datao IPP de Alemania para el mes de Abril."
 
 
 
