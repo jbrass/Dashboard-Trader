@@ -1,9 +1,9 @@
 
-txt_comentario = "En el día de ayer 10 de mayo, la actividad ausente durante estos dos últimos días se hizo presente. Tras los datos del CPI y la apertura en WallStreet los operadores comenzaban a especular principalmente y con más notoriedad como viene siendo la tónica de estos últimos meses en el mercado del CBOE, las opciones con expiraciones a un día. Niveles relevantes que son testeados una y otra vez y donde ocurren eventos que dan pistas sobre el movimiento del precio."
-txt_niveles = "**Para hoy Jueves día 11 de mayo:** Niveles relevantes: **SPX: Call Wall 4150 y Put Wall 4100**. y para el **ES: Call Wall 4165 y Put Wall 4115**. **Nivel Gamma 0: SPX: 4156 y ES: 4171**. "
-txt_sentiment = "**Sentiment**  Sentimiento alcista, Niveles por encima de 4155 SPX y ES 4170 shortputs objetivos lateraliar precios y subida lenta, por debajo de 4120 SPX y ES 4135 compra de Calls para mover rápidamente el precio."
-txt_esperamos = "**¿Qué esperamos para hoy?** Esperamos movimientos donde haya interés en negociar precios. Tenemos un open PocNaked sin cubrir donde puede ser un primer punto de apoyo. Al observar el nivel de alto neto en shortputs la estrategia puede ser mover arriba y abajo sin perder algún nivel de soporte importante y siempre manteniendo un precio lateral-alcista en una sesión que esperamos que sea positiva sin grandes movimientos al alza."
-txt_volatilidad = "La volatilidad decrece y seguimos estando en niveles extremos de baja volatilidad."
+txt_comentario = "El mercado sigue anclado en un rango de 70 puntos. Estamos en semana de OPEX y esperamos algo mas de volatilidad a partir de hoy día 16 de Mayo. Observando el cotreport para el minisp500 hemos apreciado un aumento de neto en posiciones cortas. Creemos que son protecciones de cara a ese OPEX y a la incertidumbre de mercado."
+txt_niveles = "**Para hoy Martes día 16 de mayo:** Niveles relevantes en premercado: **SPX: Call Wall 4160 y Put Wall 4125**. y para el **ES: Call Wall 4175 y Put Wall 4140**. **Nivel Gamma 0: SPX: 4152 y ES: 4167**. "
+txt_sentiment = "**Sentiment**  Sentimiento alcista, Niveles por encima de 4165 SPX y ES 4180 shortputs objetivos lateraliar precios y subida lenta, por debajo de 4160 SPX y ES 4175 compra de puts y shortcalls hasta 4110 SPX y ES 4125."
+txt_esperamos = "**¿Qué esperamos para hoy?** Incremento de volatilidad donde a la llegada de niveles relevantes observaremos el flujo mas micro para ver si tenemos planteamientos operativos. "
+txt_volatilidad = "Esperamos incrementos de volatilidad a partir de hoy día 16 de Mayo. "
 
 
 

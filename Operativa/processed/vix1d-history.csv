@@ -2,10 +2,6 @@
 ,Cboe data is compiled for the convenience of site visitors and is furnished without responsibility for accuracy and is accepted by the site visitor on the condition that transmission or omissions shall not be made the basis for any claim demand or cause for action.Your use of Cboe data is subject to the Terms and Conditions for use of Cboe Websites.\n
 ,To access our full collection of comprehensive historical market data visit CBOE Data Shop at https://datashop.cboe.com.\n
 Date,Open,High,Low,Close
-2/13/2023,32.21,32.21,32.21,32.21
-2/14/2023,17.15,17.15,17.15,17.15
-2/15/2023,16.19,16.19,16.19,16.19
-2/16/2023,22.86,22.86,22.86,22.86
 2/17/2023,18.72,18.72,18.72,18.72
 2/21/2023,19.94,19.94,19.94,19.94
 2/22/2023,17.96,17.96,17.96,17.96
@@ -62,3 +58,6 @@ Date,Open,High,Low,Close
 5/5/2023,13.02,14.58,11.77,14.12
 5/8/2023,10.14,12.45,9.57,11.32
 5/9/2023,10.06,18.33,9.76,18.33
+5/10/2023,11.69,14.86,10.98,13.39
+5/11/2023,11.91,13.82,10.98,13.82
+5/12/2023,10.08,15.94,9.86,14.18
