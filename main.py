@@ -23,6 +23,11 @@ from scipy.stats import norm
 from sklearn.linear_model import LinearRegression
 from plotly.subplots import make_subplots
 
+
+
+
+
+
 st.set_page_config(page_title="Mi tablero de Streamlit",
                    page_icon=":guardsman:",
                    layout="wide",
@@ -622,27 +627,208 @@ with tab4:
         
         
     with col2:
-        # Crear un gráfico de barras para mostrar las columnas de "Puts IV" y "Calls IV" para cada "Strike"
+         
+        # Crear un gráfico de barras para mostrar las columnas de "Puts Net" y "Calls Net" para cada "Strike"
         fig5 = go.Figure()
-        fig5.add_trace(go.Bar(x=data['Strike'], y=data['Calls Gamma'], name='Puts Gamma'))
-        fig5.add_trace(go.Bar(x=data['Strike'], y=data['Puts Gamma'], name='Calls Gamma'))
+        fig5.add_trace(go.Bar(x=data['Strike'], y=data['Puts Gamma'], name='Puts Gamma'))
+        fig5.add_trace(go.Bar(x=data['Strike'], y=data['Calls Gamma'], name='Calls GAmma'))
         
         # Personaliza los títulos y ejes del gráfico
         fig5.update_layout(
-            title='Gamma',
-            xaxis_title='Strike', 
-            yaxis_title='Gamma',
+            title='Neto de opciones call y put para los 15 strikes principales',
+            xaxis_title='Strike',
+            yaxis_title='Puts Gamma',
             barmode='stack'
+            
         )
         
         # Muestra el gráfico en la página
         st.plotly_chart(fig5)
-        
-        
-        
 
 
 
+
+    col1, col2 = st.columns(2)
+    
+    
+    with col1:
+
+        # Obtener los datos del dataframe df_acciones
+        # Supongamos que el dataframe contiene las columnas ['Expiration Date', 'Calls Net', 'Puts Net']
+
+        # Crear un nuevo dataframe para los datos del gráfico
+        df_chart = pd.DataFrame({
+            'Expiration Date': df_acciones['Expiration Date'],
+            'Calls Net': df_acciones['Calls Net'],
+            'Puts Net': df_acciones['Puts Net']
+        })
+
+        # Establecer la columna 'Expiration Date' como índice
+        df_chart.set_index('Expiration Date', inplace=True)
+
+        # Ordenar el dataframe por Calls Net descendente
+        df_chart = df_chart.sort_values('Calls Net', ascending=False)
+
+        # Limitar el número de acciones a mostrar en el gráfico
+        num_acciones_mostrar = 10
+        df_chart = df_chart.head(num_acciones_mostrar)
+
+        # Título del gráfico
+        titulo = "Neto de Principales Acciones: AMZN, AAPL, GOOG, MSFT, META..."
+
+        # Crear un gráfico de barras
+        fig6 = go.Figure()
+        fig6.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Net'], name='Calls Net', marker=dict(color='green')))
+        fig6.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Net'], name='Puts Net', marker=dict(color='red')))
+
+        # Personalizar el diseño del gráfico
+        fig6.update_layout(
+            title=titulo,
+            xaxis_title='Expiration Date',
+            yaxis_title='Neto',
+            barmode='group'
+        )
+
+        # Mostrar el gráfico en la página web
+        st.plotly_chart(fig6, container_width=1000, container_height=500)
+
+    with col2:
+        
+
+        # Obtener los datos del dataframe df_acciones
+        # Supongamos que el dataframe contiene las columnas ['Expiration Date', 'Calls Volume', 'Puts Volume']
+
+        # Crear un nuevo dataframe para los datos del gráfico
+        df_chart = pd.DataFrame({
+            'Expiration Date': df_acciones['Expiration Date'],
+            'Calls Volume': df_acciones['Calls Volume'],
+            'Puts Volume': df_acciones['Puts Volume']
+        })
+
+        # Establecer la columna 'Expiration Date' como índice
+        df_chart.set_index('Expiration Date', inplace=True)
+
+        # Ordenar el dataframe por Calls Net descendente
+        df_chart = df_chart.sort_values('Calls Volume', ascending=False)
+
+        # Limitar el número de acciones a mostrar en el gráfico
+        num_acciones_mostrar = 10
+        df_chart = df_chart.head(num_acciones_mostrar)
+
+        # Título del gráfico
+        titulo = "Volumen de los principales índices: SPX, SPY, NDX"
+
+        # Crear un gráfico de barras
+        fig6 = go.Figure()
+        fig6.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Volume'], name='Calls Volume'))
+        fig6.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Volume'], name='Puts Volume'))
+
+        # Personalizar el diseño del gráfico
+        fig6.update_layout(
+            title=titulo,
+            xaxis_title='Expiration Date',
+            yaxis_title='Volume',
+            barmode='group'
+        )
+
+        # Mostrar el gráfico en la página web
+        st.plotly_chart(fig6, container_width=1000, container_height=500)
+
+
+
+
+
+    col1, col2 = st.columns(2)
+    
+    
+    with col1:
+
+        #INDICES
+        # Obtener los datos del dataframe df_acciones
+        # Supongamos que el dataframe contiene las columnas ['Expiration Date', 'Calls Net', 'Puts Net']
+
+        # Crear un nuevo dataframe para los datos del gráfico
+        df_chart = pd.DataFrame({
+            'Expiration Date': df_index['Expiration Date'],
+            'Calls Net': df_index['Calls Net'],
+            'Puts Net': df_index['Puts Net']
+        })
+
+        # Establecer la columna 'Expiration Date' como índice
+        df_chart.set_index('Expiration Date', inplace=True)
+
+        # Ordenar el dataframe por Calls Net descendente
+        df_chart = df_chart.sort_values('Calls Net', ascending=False)
+
+        # Limitar el número de acciones a mostrar en el gráfico
+        num_acciones_mostrar = 10
+        df_chart = df_chart.head(num_acciones_mostrar)
+
+        # Título del gráfico
+        titulo = "Neto de Principales Índices: SPX, SPY, NDX"
+
+        # Crear un gráfico de barras
+        fig8 = go.Figure()
+        fig8.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Net'], name='Calls Net', marker=dict(color='green')))
+        fig8.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Net'], name='Puts Net', marker=dict(color='red')))
+
+        # Personalizar el diseño del gráfico
+        fig8.update_layout(
+            title=titulo,
+            xaxis_title='Expiration Date',
+            yaxis_title='Neto',
+            barmode='group'
+        )
+
+        # Mostrar el gráfico en la página web
+        st.plotly_chart(fig8, container_width=1000, container_height=500)
+
+    with col2:
+        
+
+        # Obtener los datos del dataframe df_acciones
+        # Supongamos que el dataframe contiene las columnas ['Expiration Date', 'Calls Volume', 'Puts Volume']
+
+        # Crear un nuevo dataframe para los datos del gráfico
+        df_chart = pd.DataFrame({
+            'Expiration Date': df_index['Expiration Date'],
+            'Calls Volume': df_index['Calls Volume'],
+            'Puts Volume': df_index['Puts Volume']
+        })
+
+        # Establecer la columna 'Expiration Date' como índice
+        df_chart.set_index('Expiration Date', inplace=True)
+
+        # Ordenar el dataframe por Calls Net descendente
+        df_chart = df_chart.sort_values('Calls Volume', ascending=False)
+
+        # Limitar el número de acciones a mostrar en el gráfico
+        num_acciones_mostrar = 10
+        df_chart = df_chart.head(num_acciones_mostrar)
+
+        # Título del gráfico
+        titulo = "Volumen de las Principales Acciones: AMZN, AAPL, GOOG, MSFT, META..."
+
+        # Crear un gráfico de barras
+        fig9 = go.Figure()
+        fig9.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Volume'], name='Calls Volume'))
+        fig9.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Volume'], name='Puts Volume'))
+
+        # Personalizar el diseño del gráfico
+        fig9.update_layout(
+            title=titulo,
+            xaxis_title='Expiration Date',
+            yaxis_title='Volume',
+            barmode='group'
+        )
+
+        # Mostrar el gráfico en la página web
+        st.plotly_chart(fig9, container_width=1000, container_height=500)
+
+
+
+       
+        
 
 
 with tab5:

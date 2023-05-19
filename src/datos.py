@@ -2,7 +2,6 @@ import pandas as pd
 
 
 
-
 df_diarios_ES = pd.read_csv("./Operativa/processed/Diarios-ES.csv")
 df_diarios_ES['dia'] = pd.to_datetime(df_diarios_ES['dia'], format='%m/%d/%Y', errors = 'coerce')
 df_diarios_ES['dia'] = df_diarios_ES['dia'].dt.date
@@ -36,19 +35,30 @@ df_dix = pd.read_csv("./Operativa/processed/DIX.csv", on_bad_lines='skip', delim
 # Cargar el archivo
 df_squeeze = pd.read_csv("./Operativa/processed/DIX.csv")
 
+
+
+
 #Datos CBOE
 #SPX
 data = pd.read_csv('./Operativa/processed/spx_quotedata.csv')
 #SPY
 data_spy = pd.read_csv('./Operativa/processed/spy_quotedata.csv')
-
-
 #CBOE Acciones
 data_apple = pd.read_csv('./Operativa/processed/aapl_quotedata.csv')
 data_goog = pd.read_csv('./Operativa/processed/goog_quotedata.csv')
 data_meta = pd.read_csv('./Operativa/processed/meta_quotedata.csv')
 data_msft = pd.read_csv('./Operativa/processed/msft_quotedata.csv')
 data_amzn = pd.read_csv('./Operativa/processed/amzn_quotedata.csv')
+
+#Union Acciones 
+df_acciones = pd.concat([data_apple, data_goog, data_meta, data_msft, data_amzn], ignore_index=True)
+
+
+#Union Indices
+df_index = pd.concat([data, data_spy, df_volatilidad_nq], ignore_index=True)
+
+
+
 #Otras acciones esporadicas
 data_otros = pd.read_csv('./Operativa/processed/ko_quotedata.csv')
 
