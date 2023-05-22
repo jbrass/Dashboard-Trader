@@ -26,12 +26,13 @@ from plotly.subplots import make_subplots
 
 
 
-
+    
 
 st.set_page_config(page_title="Mi tablero de Streamlit",
-                   page_icon=":guardsman:",
-                   layout="wide",
-                   initial_sidebar_state="expanded")
+                page_icon=":guardsman:",
+                layout="wide",
+                initial_sidebar_state="expanded"                
+                )
 st.markdown(
     """
     <style>
@@ -43,6 +44,16 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -163,7 +174,7 @@ with tab2:
 
 
 
-   
+
 
 with tab3:
 
@@ -199,7 +210,7 @@ with tab3:
 
 
 
-    @st.cache
+    @st.cache_data
     def model(x_name, y_name, predict_value, num_days):
         x = df[x_name].dropna().values.reshape(-1, 1)
         y = df[y_name].dropna().values.reshape(-1, 1)
@@ -287,47 +298,20 @@ with tab4:
     st.subheader('Opciones con expiración diarias 0DTE')
     st.caption('Las opciones sobre acciones son importantes porque ofrecen oportunidades comerciales rápidas y pueden influir en el mercado de futuros. Los operadores de futuros deben estar atentos a estas opciones para aprovechar las oportunidades y minimizar los riesgos.')
     
-    
-    # Select para elegir el archivo
-    archivo_seleccionado = st.selectbox(
-        "Seleccione el activo a cargar: ",
-        ["spx_quotedata.csv", "ndx_quotedata.csv", "aapl_quotedata.csv", "goog_quotedata.csv", "meta_quotedata.csv", "msft_quotedata.csv", "amzn_quotedata.csv", "vix_quotedata.csv", "spy_quotedata.csv", "tsla_quotedata.csv", "ko_quotedata.csv"]
-    )
+    ticker_input = st.text_input("Ingrese el nombre del ticker o de la acción:","SPX")
 
-    # Cargar el archivo seleccionado
-    if archivo_seleccionado == "spx_quotedata.csv":
-        df = pd.DataFrame(df_volatilidad)
-    elif archivo_seleccionado == "ndx_quotedata.csv":
-        df = pd.DataFrame(df_volatilidad_nq)
-        
-    elif archivo_seleccionado == "aapl_quotedata.csv":
-        df = pd.DataFrame(data_apple)
-        
-    elif archivo_seleccionado == "goog_quotedata.csv":
-        df = pd.DataFrame(data_goog)
-        
-    elif archivo_seleccionado == "meta_quotedata.csv":
-        df = pd.DataFrame(data_meta)
+    archivo_seleccionado = None
 
-    elif archivo_seleccionado == "msft_quotedata.csv":
-        df = pd.DataFrame(data_msft)
+    # Buscar el archivo correspondiente basado en el ticker_input
+    for archivo, datos in data_files.items():
+        if ticker_input.lower() in archivo.lower():
+            archivo_seleccionado = archivo
+            df = pd.DataFrame(datos)
+            break
 
-    elif archivo_seleccionado == "amzn_quotedata.csv":
-        df = pd.DataFrame(data_amzn)
-        
-    elif archivo_seleccionado == "vix_quotedata.csv":
-        df = pd.DataFrame(df_volatilidad_vix)
-        
-    elif archivo_seleccionado == "ko_quotedata.csv":
-        df = pd.DataFrame(data_otros)
-        
-    elif archivo_seleccionado == "spy_quotedata.csv":
-        df = pd.DataFrame(data_spy)
-        
-    elif archivo_seleccionado == "tsla_quotedata.csv":
-        df = pd.DataFrame(df_tesla)                                        
-    else:
-        st.dataframe(df)
+    if archivo_seleccionado is None:
+        st.write("Ticker o acción no encontrado")
+        st.stop()
 
     # Crear lista de fechas únicas en la columna "Expiration Date"
     fechas_unicas = df['Expiration Date'].unique()
@@ -347,6 +331,8 @@ with tab4:
     # Crear un nuevo DataFrame con todos los valores de Strike y reindexar el DataFrame filtrado
     df_strikes = pd.DataFrame({'Strike': strikes})
     df_filtrado = pd.merge(df_filtrado, df_strikes, on='Strike', how='right').fillna(0)
+
+
 
     # Selección de la variable a graficar
     selected_vars = st.multiselect(
@@ -397,33 +383,41 @@ with tab4:
         st.warning("Por favor seleccione al menos una variable")
 
 
- 
- 
-    # Crear un DataFrame con los datos de interés
+
+
+# Crear un DataFrame con los datos de interés
     df_top = df_filtrado[['Strike', 'Calls Volume', 'Calls Open Interest', 'Puts Volume', 'Puts Open Interest']]
-    df_top['Nuevo Strike'] = df_top['Strike'] + 15 # Agregar la nueva columna "Nuevo Strike" sumando 30 a cada fila
-    df_top = df_top.sort_values(by=['Calls Volume', 'Calls Open Interest', 'Puts Volume', 'Puts Open Interest'], ascending=False)
-    df_top = df_top.head(15)
 
-    # Mostrar las dos tablas en dos columnas
-    col1, col2 = st.columns(2)
+    if archivo_seleccionado not in ["spx_quotedata.csv", "spy_quotedata.csv"]:
+        st.markdown(f"**{archivo_seleccionado.replace('_quotedata.csv', '').upper()}**")
+        st.dataframe(df_top)
+    else:
+        if archivo_seleccionado == "spx_quotedata.csv":
+            df_top['Price'] = df_top['Strike'] + 15
+        else:  # archivo_seleccionado == "spy_quotedata.csv"
+            df_top['Price'] = df_top['Strike'] * 10
 
-    # En la primera columna, mostrar la tabla original con la columna "Strike"
-    with col1:
-        st.write("SPX")
-        st.dataframe(df_top[['Strike', 'Calls Volume', 'Calls Open Interest', 'Puts Volume', 'Puts Open Interest']])
+        df_top = df_top.sort_values(by=['Calls Volume', 'Calls Open Interest', 'Puts Volume', 'Puts Open Interest'], ascending=False)
+        df_top = df_top.head(15)
 
-    # En la segunda columna, mostrar la tabla actualizada con la nueva columna "Nuevo Strike"
-    with col2:
-        st.write("ES")
-        st.dataframe(df_top[['Nuevo Strike', 'Calls Volume', 'Calls Open Interest', 'Puts Volume', 'Puts Open Interest']])
+        # Mostrar las dos tablas en dos columnas
+        col1, col2 = st.columns(2)
+
+        # En la primera columna, mostrar la tabla original con la columna "Strike"
+        with col1:
+            if ticker_input.upper() not in ["SPX", "SPY"]:
+                st.dataframe(df_top[['Calls Volume', 'Calls Open Interest', 'Puts Volume', 'Puts Open Interest']], width=0)
+            else:
+                st.markdown(f"**{ticker_input.upper()}**")
+                st.dataframe(df_top[['Strike', 'Calls Volume', 'Calls Open Interest', 'Puts Volume', 'Puts Open Interest']])
+
+        # En la segunda columna, mostrar la tabla actualizada con la nueva columna "Nuevo Strike"
+        with col2:
+            st.write("**Futuros E-Mini S&P 500**")
+            st.dataframe(df_top[['Price', 'Calls Volume', 'Calls Open Interest', 'Puts Volume', 'Puts Open Interest']])
 
 
-    
 
-    
-
- 
     
 
 
@@ -439,7 +433,7 @@ with tab4:
                 color='Total Delta',
                 color_discrete_sequence=['red', 'green'],
                 labels={'Total Delta': 'Deltas'},
-                title='Delta Diario')
+                title=f"Delta {archivo_seleccionado.replace('_quotedata.csv', '').upper()}".upper())
 
     # Definir los colores para valores positivos y negativos
     fig.update_traces(marker=dict(color=data['Total Delta'].apply(lambda x: 'green' if x >= 0 else 'red')))
@@ -475,8 +469,8 @@ with tab4:
     with col2:
         st.info('**Gamma Exposure (GEX)**, es una medida denominada en dólares de las obligaciones de cobertura de los creadores de mercado de opciones. Cuando GEX es alto, el mercado de opciones implica que la volatilidad será baja. Cuando GEX es bajo, la volatilidad es alta y, aunque esperamos un mercado agitado, es poco probable que se produzcan más pérdidas.', icon="ℹ️")
 
-   
-   
+
+
     # Agregar cada gráfico de línea a la figura
     fig.add_trace(go.Scatter(x=df_squeeze['date'], y=df_squeeze['price'], name='SP500'), row=1, col=1)
     fig.add_trace(go.Scatter(x=df_squeeze['date'], y=df_squeeze['dix'], name='Dark Index'), row=2, col=1)
@@ -500,65 +494,67 @@ with tab4:
 
 
     
+    col1, col2 = st.columns(2)
     
+    with col1:
 
-    st.subheader('Volumen Call & Put por vencimientos')
-    
-    # gráfico 1
-    alt.Chart(df).mark_circle(size=50).encode(
-        x='Calls Volume:Q',
-        y='Puts Volume:Q',
-        color=alt.Color('Expiration Date:N', scale=alt.Scale(scheme='category10')),
-        tooltip=['Expiration Date:N']
-    ).properties(
-        title='Call volume vs put options'
-    ).interactive()
-
-
-    # gráfico 2
-    alt.Chart(df).mark_bar().encode(
-        x=alt.X('Expiration Date:N', axis=alt.Axis(title=None)),
-        y=alt.Y('Calls Volume:Q', axis=alt.Axis(title='Volumen')),
-        color=alt.value('steelblue')
-    ).properties(
-        title='Call volume by due date'
-    ).interactive() | alt.Chart(df).mark_bar().encode(
-        x=alt.X('Expiration Date:N', axis=alt.Axis(title=None)),
-        y=alt.Y('Puts Volume:Q', axis=alt.Axis(title='Volumen')),
-        color=alt.value('orange')
-    ).properties(
-        title='Volumen de opciones de venta por fecha de vencimiento'
-    ).interactive()
-    
-
-
-
-    st.subheader('Interés abierto de opciones call y put por precio de ejercicio')
-    
-    # filtrar los datos para incluir solo la fecha de vencimiento más reciente
-    latest_expiry = data['Expiration Date'].max()
-    data = data[data['Expiration Date'] == latest_expiry]
-
-    # crear el gráfico
-    chart = alt.Chart(data).mark_line().encode(
-        x='Strike',
-        y='Calls Open Interest:Q',
-        color=alt.value('#5b8ff9')
-    ).properties(
-        width=600,
-        height=400
-    )
-
-    chart += alt.Chart(data).mark_line().encode(
-        x='Strike',
-        y='Puts Open Interest:Q',
-        color=alt.value('#ff6b81')
-    ).interactive()
-
-    # mostrar el gráfico
-    chart
+        st.subheader('Volumen Call & Put por vencimientos')
         
-       
+        # gráfico 1
+        alt.Chart(df).mark_circle(size=50).encode(
+            x='Calls Volume:Q',
+            y='Puts Volume:Q',
+            color=alt.Color('Expiration Date:N', scale=alt.Scale(scheme='category10')),
+            tooltip=['Expiration Date:N']
+        ).properties(
+            title='Call volume vs put options'
+        ).interactive()
+
+
+        # gráfico 2
+        alt.Chart(df).mark_bar().encode(
+            x=alt.X('Expiration Date:N', axis=alt.Axis(title=None)),
+            y=alt.Y('Calls Volume:Q', axis=alt.Axis(title='Volumen')),
+            color=alt.value('steelblue')
+        ).properties(
+            title='Call volume by due date'
+        ).interactive() | alt.Chart(df).mark_bar().encode(
+            x=alt.X('Expiration Date:N', axis=alt.Axis(title=None)),
+            y=alt.Y('Puts Volume:Q', axis=alt.Axis(title='Volumen')),
+            color=alt.value('orange')
+        ).properties(
+            title='Volumen de opciones de venta por fecha de vencimiento'
+        ).interactive()
+    
+    with col2:
+
+
+        st.subheader('Interés abierto de opciones call y put por precio de ejercicio')
+        
+        # filtrar los datos para incluir solo la fecha de vencimiento más reciente
+        latest_expiry = data['Expiration Date'].max()
+        data = data[data['Expiration Date'] == latest_expiry]
+
+        # crear el gráfico
+        chart = alt.Chart(data).mark_line().encode(
+            x='Strike',
+            y='Calls Open Interest:Q',
+            color=alt.value('#5b8ff9')
+        ).properties(
+            width=600,
+            height=400
+        )
+
+        chart += alt.Chart(data).mark_line().encode(
+            x='Strike',
+            y='Puts Open Interest:Q',
+            color=alt.value('#ff6b81')
+        ).interactive()
+
+        # mostrar el gráfico
+        chart
+            
+    
 
 
 
@@ -627,7 +623,7 @@ with tab4:
         
         
     with col2:
-         
+        
         # Crear un gráfico de barras para mostrar las columnas de "Puts Net" y "Calls Net" para cada "Strike"
         fig5 = go.Figure()
         fig5.add_trace(go.Bar(x=data['Strike'], y=data['Puts Gamma'], name='Puts Gamma'))
@@ -667,19 +663,19 @@ with tab4:
         df_chart.set_index('Expiration Date', inplace=True)
 
         # Ordenar el dataframe por Calls Net descendente
-        df_chart = df_chart.sort_values('Calls Net', ascending=False)
+        #df_chart = df_chart.sort_values('Calls Net', ascending=False)
 
         # Limitar el número de acciones a mostrar en el gráfico
-        num_acciones_mostrar = 10
-        df_chart = df_chart.head(num_acciones_mostrar)
+        #num_acciones_mostrar = 10
+        #df_chart = df_chart.head(num_acciones_mostrar)
 
         # Título del gráfico
-        titulo = "Neto de Principales Acciones: AMZN, AAPL, GOOG, MSFT, META..."
+        titulo = "Neto de Principales Acciones: AMZN, AAPL, GOOG, MSFT, META, TSLA, NVDA"
 
         # Crear un gráfico de barras
         fig6 = go.Figure()
-        fig6.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Net'], name='Calls Net', marker=dict(color='green')))
-        fig6.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Net'], name='Puts Net', marker=dict(color='red')))
+        fig6.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Net'], name='Calls Net'))
+        fig6.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Net'], name='Puts Net'))
 
         # Personalizar el diseño del gráfico
         fig6.update_layout(
@@ -712,11 +708,11 @@ with tab4:
         df_chart = df_chart.sort_values('Calls Volume', ascending=False)
 
         # Limitar el número de acciones a mostrar en el gráfico
-        num_acciones_mostrar = 10
-        df_chart = df_chart.head(num_acciones_mostrar)
+        #num_acciones_mostrar = 10
+        #df_chart = df_chart.head(num_acciones_mostrar)
 
         # Título del gráfico
-        titulo = "Volumen de los principales índices: SPX, SPY, NDX"
+        titulo = "Volumen de las principales acciones: AMZN, AAPL, GOOG, MSFT, META, TSLA, NVDA"
 
         # Crear un gráfico de barras
         fig6 = go.Figure()
@@ -733,6 +729,206 @@ with tab4:
 
         # Mostrar el gráfico en la página web
         st.plotly_chart(fig6, container_width=1000, container_height=500)
+
+
+
+
+
+
+    col1, col2 = st.columns(2)
+    with col1:
+
+        #ACCIONES
+        #DELTA
+
+        # Crear un nuevo dataframe para los datos del gráfico
+        df_chart = pd.DataFrame({
+            'Expiration Date': df_acciones['Expiration Date'],
+            'Calls Delta': df_acciones['Calls Delta'],
+            'Puts Delta': df_acciones['Puts Delta']
+        })
+
+        # Establecer la columna 'Expiration Date' como índice
+        df_chart.set_index('Expiration Date', inplace=True)
+
+        # Ordenar el dataframe por Calls Net descendente
+        df_chart = df_chart.sort_values('Calls Delta', ascending=False)
+
+        # Limitar el número de acciones a mostrar en el gráfico
+        #num_acciones_mostrar = 10
+        #df_chart = df_chart.head(num_acciones_mostrar)
+
+        # Título del gráfico
+        titulo = "Delta de las principales acciones: AMZN, AAPL, GOOG, MSFT, META, TSLA, NVDA"
+
+        # Crear un gráfico de barras
+        fig14 = go.Figure()
+        fig14.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Delta'], name='Calls Delta', marker=dict(color='green')))
+        fig14.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Delta'], name='Puts Delta', marker=dict(color='red')))
+
+        # Personalizar el diseño del gráfico
+        fig14.update_layout(
+            title=titulo,
+            xaxis_title='Expiration Date',
+            yaxis_title='Delta',
+            barmode='group'
+        )
+
+        # Mostrar el gráfico en la página web
+        st.plotly_chart(fig14, container_width=1000, container_height=500)
+
+    with col2:
+        
+
+        # Obtener los datos del dataframe df_acciones
+        # Gamma
+
+        # Crear un nuevo dataframe para los datos del gráfico
+        df_chart = pd.DataFrame({
+            'Expiration Date': df_acciones['Expiration Date'],
+            'Calls Gamma': df_acciones['Calls Gamma'],
+            'Puts Gamma': df_acciones['Puts Gamma']
+        })
+
+        # Establecer la columna 'Expiration Date' como índice
+        df_chart.set_index('Expiration Date', inplace=True)
+
+        # Ordenar el dataframe por Calls Net descendente
+        df_chart = df_chart.sort_values('Calls Gamma', ascending=False)
+
+        # Limitar el número de acciones a mostrar en el gráfico
+        #num_acciones_mostrar = 10
+        #df_chart = df_chart.head(num_acciones_mostrar)
+
+        # Título del gráfico
+        titulo = "Gamma de las principales acciones: AMZN, AAPL, GOOG, MSFT, META, TSLA, NVDA"
+
+        # Crear un gráfico de barras
+        fig15 = go.Figure()
+        fig15.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Gamma'], name='Calls Gamma'))
+        fig15.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Gamma'], name='Puts Gamma'))
+
+        # Personalizar el diseño del gráfico
+        fig15.update_layout(
+            title=titulo,
+            xaxis_title='Expiration Date',
+            yaxis_title='Gamma',
+            barmode='group'
+        )
+
+        # Mostrar el gráfico en la página web
+        st.plotly_chart(fig15, container_width=1000, container_height=500)
+
+
+
+
+
+
+
+    col1, col2 = st.columns(2)
+        
+        
+    with col1:
+
+        #INDICES
+        #Last Sale Mayor actividad en las opciones de compra (calls): La barra más alta y el color verde indican que ha habido una mayor actividad en las opciones de compra en comparación con las opciones de venta. Esto podría sugerir que los inversores tienen un mayor interés en la compra de opciones de compra en este vencimiento en particular.
+        #Posible expectativa alcista: La diferencia de altura entre las barras de Calls Last Sale y Puts Last Sale puede indicar una mayor preferencia de los inversores por las posiciones alcistas. La actividad en las opciones de compra podría reflejar una expectativa de que el precio del activo subyacente aumente antes del vencimiento.
+
+        # Crear un nuevo dataframe para los datos del gráfico
+        df_chart = pd.DataFrame({
+            'Expiration Date': df_acciones['Expiration Date'],
+            'Calls Last Sale': df_acciones['Calls Last Sale'],
+            'Puts Last Sale': df_acciones['Puts Last Sale']
+        })
+
+        # Establecer la columna 'Expiration Date' como índice
+        df_chart.set_index('Expiration Date', inplace=True)
+
+        # Ordenar el dataframe por Calls Net descendente
+        df_chart = df_chart.sort_values('Calls Last Sale', ascending=False)
+
+        # Limitar el número de acciones a mostrar en el gráfico
+        #num_acciones_mostrar = 10
+        #df_chart = df_chart.head(num_acciones_mostrar)
+
+        # Título del gráfico
+        titulo = "Calls/Puts Last Sale de las principales acciones: AMZN, AAPL, GOOG, MSFT, META, TSLA, NVDA"
+
+        # Crear un gráfico de barras
+        fig16 = go.Figure()
+        fig16.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Last Sale'], name='Calls Last Sale', marker=dict(color='green')))
+        fig16.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Last Sale'], name='Puts Last Sale', marker=dict(color='red')))
+
+        # Personalizar el diseño del gráfico
+        fig16.update_layout(
+            title=titulo,
+            xaxis_title='Expiration Date',
+            yaxis_title='Last Sale',
+            barmode='group'
+        )
+
+        # Mostrar el gráfico en la página web
+        st.plotly_chart(fig16, container_width=1000, container_height=500)
+
+    with col2:
+        
+
+        # Obtener los datos del dataframe df_acciones
+        # Open Interest
+
+        # Crear un nuevo dataframe para los datos del gráfico
+        df_chart = pd.DataFrame({
+            'Expiration Date': df_acciones['Expiration Date'],
+            'Calls Open Interest': df_acciones['Calls Open Interest'],
+            'Puts Open Interest': df_acciones['Puts Open Interest']
+        })
+
+        # Establecer la columna 'Expiration Date' como índice
+        df_chart.set_index('Expiration Date', inplace=True)
+
+        # Ordenar el dataframe por Calls Net descendente
+        df_chart = df_chart.sort_values('Calls Open Interest', ascending=False)
+
+        # Limitar el número de acciones a mostrar en el gráfico
+        #num_acciones_mostrar = 10
+        #df_chart = df_chart.head(num_acciones_mostrar)
+
+        # Título del gráfico
+        titulo = "Open Interest de las principales acciones: AMZN, AAPL, GOOG, MSFT, META, TSLA, NVDA"
+
+        # Crear un gráfico de barras
+        fig17 = go.Figure()
+        fig17.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Open Interest'], name='Calls Open Interest'))
+        fig17.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Open Interest'], name='Puts Open Interest'))
+
+        # Personalizar el diseño del gráfico
+        fig17.update_layout(
+            title=titulo,
+            xaxis_title='Expiration Date',
+            yaxis_title='Open Interest',
+            barmode='group'
+        )
+
+        # Mostrar el gráfico en la página web
+        st.plotly_chart(fig17, container_width=1000, container_height=500)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##########################INFDICES#############################################
+
+
 
 
 
@@ -756,24 +952,27 @@ with tab4:
 
         # Establecer la columna 'Expiration Date' como índice
         df_chart.set_index('Expiration Date', inplace=True)
+        # Ordenar el índice de forma descendente (de la fecha más reciente a la más antigua)
+        df_chart.sort_index(ascending=False, inplace=False)
 
         # Ordenar el dataframe por Calls Net descendente
-        df_chart = df_chart.sort_values('Calls Net', ascending=False)
+        #df_chart = df_chart.sort_values('Calls Net', ascending=True)
+    
 
         # Limitar el número de acciones a mostrar en el gráfico
-        num_acciones_mostrar = 10
-        df_chart = df_chart.head(num_acciones_mostrar)
+        #num_acciones_mostrar = 10
+        #df_chart = df_chart.head(num_acciones_mostrar)
 
         # Título del gráfico
-        titulo = "Neto de Principales Índices: SPX, SPY, NDX"
+        titulo = "Neto de los principales Índices: SPX, SPY, NDX"
 
         # Crear un gráfico de barras
-        fig8 = go.Figure()
-        fig8.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Net'], name='Calls Net', marker=dict(color='green')))
-        fig8.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Net'], name='Puts Net', marker=dict(color='red')))
+        fig18 = go.Figure()
+        fig18.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Net'], name='Calls Net'))
+        fig18.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Net'], name='Puts Net') )
 
         # Personalizar el diseño del gráfico
-        fig8.update_layout(
+        fig18.update_layout(
             title=titulo,
             xaxis_title='Expiration Date',
             yaxis_title='Neto',
@@ -781,7 +980,7 @@ with tab4:
         )
 
         # Mostrar el gráfico en la página web
-        st.plotly_chart(fig8, container_width=1000, container_height=500)
+        st.plotly_chart(fig18, container_width=1000, container_height=500)
 
     with col2:
         
@@ -800,22 +999,21 @@ with tab4:
         df_chart.set_index('Expiration Date', inplace=True)
 
         # Ordenar el dataframe por Calls Net descendente
-        df_chart = df_chart.sort_values('Calls Volume', ascending=False)
+        #df_chart = df_chart.sort_values('Calls Volume', ascending=False)
 
         # Limitar el número de acciones a mostrar en el gráfico
-        num_acciones_mostrar = 10
-        df_chart = df_chart.head(num_acciones_mostrar)
+        #num_acciones_mostrar = 10
+        #df_chart = df_chart.head(num_acciones_mostrar)
 
         # Título del gráfico
-        titulo = "Volumen de las Principales Acciones: AMZN, AAPL, GOOG, MSFT, META..."
-
+        titulo = "Volumen de los principales Índices: SPX, SPY, NDX"
         # Crear un gráfico de barras
-        fig9 = go.Figure()
-        fig9.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Volume'], name='Calls Volume'))
-        fig9.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Volume'], name='Puts Volume'))
+        fig19 = go.Figure()
+        fig19.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Volume'], name='Calls Volume'))
+        fig19.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Volume'], name='Puts Volume'))
 
         # Personalizar el diseño del gráfico
-        fig9.update_layout(
+        fig19.update_layout(
             title=titulo,
             xaxis_title='Expiration Date',
             yaxis_title='Volume',
@@ -823,12 +1021,202 @@ with tab4:
         )
 
         # Mostrar el gráfico en la página web
-        st.plotly_chart(fig9, container_width=1000, container_height=500)
+        st.plotly_chart(fig19, container_width=1000, container_height=500)
 
 
 
-       
+
+
+
+    col1, col2 = st.columns(2)
+    
+    
+    with col1:
+
+        #INDICES
+        #DELTA
+
+        # Crear un nuevo dataframe para los datos del gráfico
+        df_chart = pd.DataFrame({
+            'Expiration Date': df_index['Expiration Date'],
+            'Calls Delta': df_index['Calls Delta'],
+            'Puts Delta': df_index['Puts Delta']
+        })
+
+        # Establecer la columna 'Expiration Date' como índice
+        df_chart.set_index('Expiration Date', inplace=True)
+
+        # Ordenar el dataframe por Calls Net descendente
+        #df_chart = df_chart.sort_values('Calls Delta', ascending=False)
+
+        # Limitar el número de acciones a mostrar en el gráfico
+        #num_acciones_mostrar = 10
+        #df_chart = df_chart.head(num_acciones_mostrar)
+
+        # Título del gráfico
+        titulo = "Delta de los principales Índices: SPX, SPY, NDX"
+
+        # Crear un gráfico de barras
+        fig10 = go.Figure()
+        fig10.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Delta'], name='Calls Delta', marker=dict(color='green')))
+        fig10.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Delta'], name='Puts Delta', marker=dict(color='red')))
+
+        # Personalizar el diseño del gráfico
+        fig10.update_layout(
+            title=titulo,
+            xaxis_title='Expiration Date',
+            yaxis_title='Delta',
+            barmode='group'
+        )
+
+        # Mostrar el gráfico en la página web
+        st.plotly_chart(fig10, container_width=1000, container_height=500)
+
+    with col2:
         
+
+        # Obtener los datos del dataframe df_acciones
+        # Gamma
+
+        # Crear un nuevo dataframe para los datos del gráfico
+        df_chart = pd.DataFrame({
+            'Expiration Date': df_index['Expiration Date'],
+            'Calls Gamma': df_index['Calls Gamma'],
+            'Puts Gamma': df_index['Puts Gamma']
+        })
+
+        # Establecer la columna 'Expiration Date' como índice
+        df_chart.set_index('Expiration Date', inplace=True)
+
+        # Ordenar el dataframe por Calls Net descendente
+        #df_chart = df_chart.sort_values('Calls Gamma', ascending=False)
+
+        # Limitar el número de acciones a mostrar en el gráfico
+        #num_acciones_mostrar = 10
+        #df_chart = df_chart.head(num_acciones_mostrar)
+
+        # Título del gráfico
+        titulo = "Gamma de los principales índices: SPX, SPY, NDX"
+
+        # Crear un gráfico de barras
+        fig11 = go.Figure()
+        fig11.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Gamma'], name='Calls Gamma'))
+        fig11.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Gamma'], name='Puts Gamma'))
+
+        # Personalizar el diseño del gráfico
+        fig11.update_layout(
+            title=titulo,
+            xaxis_title='Expiration Date',
+            yaxis_title='Gamma',
+            barmode='group'
+        )
+
+        # Mostrar el gráfico en la página web
+        st.plotly_chart(fig11, container_width=1000, container_height=500)
+
+
+
+
+
+
+
+    col1, col2 = st.columns(2)
+        
+        
+    with col1:
+
+        #INDICES
+        #Last Sale Mayor actividad en las opciones de compra (calls): La barra más alta y el color verde indican que ha habido una mayor actividad en las opciones de compra en comparación con las opciones de venta. Esto podría sugerir que los inversores tienen un mayor interés en la compra de opciones de compra en este vencimiento en particular.
+        #Posible expectativa alcista: La diferencia de altura entre las barras de Calls Last Sale y Puts Last Sale puede indicar una mayor preferencia de los inversores por las posiciones alcistas. La actividad en las opciones de compra podría reflejar una expectativa de que el precio del activo subyacente aumente antes del vencimiento.
+
+        # Crear un nuevo dataframe para los datos del gráfico
+        df_chart = pd.DataFrame({
+            'Expiration Date': df_index['Expiration Date'],
+            'Calls Last Sale': df_index['Calls Last Sale'],
+            'Puts Last Sale': df_index['Puts Last Sale']
+        })
+
+        # Establecer la columna 'Expiration Date' como índice
+        df_chart.set_index('Expiration Date', inplace=True)
+
+        # Ordenar el dataframe por Calls Net descendente
+        #df_chart = df_chart.sort_values('Calls Last Sale', ascending=False)
+        #df_chart.sort_values('Expiration Date', inplace=True)
+
+        # Limitar el número de acciones a mostrar en el gráfico
+        #num_acciones_mostrar = 10
+        #df_chart = df_chart.head(num_acciones_mostrar)
+
+        # Título del gráfico
+        titulo = "Calls/Puts Last Sale de las Principales Índices: SPX, SPY, NDX"
+
+        # Crear un gráfico de barras
+        fig12 = go.Figure()
+        fig12.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Last Sale'], name='Calls Last Sale', marker=dict(color='green')))
+        fig12.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Last Sale'], name='Puts Last Sale', marker=dict(color='red')))
+
+        # Personalizar el diseño del gráfico
+        fig12.update_layout(
+            title=titulo,
+            xaxis_title='Expiration Date',
+            yaxis_title='Last Sale',
+            barmode='group'
+        )
+
+        # Mostrar el gráfico en la página web
+        st.plotly_chart(fig12, container_width=1000, container_height=500)
+
+    with col2:
+        
+
+        # Obtener los datos del dataframe df_acciones
+        # Open Interest
+
+        # Crear un nuevo dataframe para los datos del gráfico
+        df_chart = pd.DataFrame({
+            'Expiration Date': df_index['Expiration Date'],
+            'Calls Open Interest': df_index['Calls Open Interest'],
+            'Puts Open Interest': df_index['Puts Open Interest']
+        })
+
+        # Establecer la columna 'Expiration Date' como índice
+        df_chart.set_index('Expiration Date', inplace=True)
+
+        # Ordenar el dataframe por Calls Net descendente
+        #df_chart = df_chart.sort_values('Calls Open Interest', ascending=False)
+
+        # Limitar el número de acciones a mostrar en el gráfico
+        #num_acciones_mostrar = 10
+        #df_chart = df_chart.head(num_acciones_mostrar)
+
+        # Título del gráfico
+        titulo = "Open Interest de los principales índices: SPX, SPY, NDX"
+
+        # Crear un gráfico de barras
+        fig13 = go.Figure()
+        fig13.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Open Interest'], name='Calls Open Interest'))
+        fig13.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Open Interest'], name='Puts Open Interest'))
+
+        # Personalizar el diseño del gráfico
+        fig13.update_layout(
+            title=titulo,
+            xaxis_title='Expiration Date',
+            yaxis_title='Open Interest',
+            barmode='group'
+        )
+
+        # Mostrar el gráfico en la página web
+        st.plotly_chart(fig13, container_width=1000, container_height=500)
+
+
+
+
+
+
+
+
+
+
 
 
 with tab5:
@@ -874,9 +1262,5 @@ with tab5:
         st.subheader('Emerging Markets')
         st.write(dolaresEmergentes_df.tail(10))
         
-
-
-
-
 
 

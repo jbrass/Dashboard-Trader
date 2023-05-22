@@ -49,9 +49,9 @@ data_goog = pd.read_csv('./Operativa/processed/goog_quotedata.csv')
 data_meta = pd.read_csv('./Operativa/processed/meta_quotedata.csv')
 data_msft = pd.read_csv('./Operativa/processed/msft_quotedata.csv')
 data_amzn = pd.read_csv('./Operativa/processed/amzn_quotedata.csv')
-
+data_nvda = pd.read_csv('./Operativa/processed/nvda_quotedata.csv')
 #Union Acciones 
-df_acciones = pd.concat([data_apple, data_goog, data_meta, data_msft, data_amzn], ignore_index=True)
+df_acciones = pd.concat([data_apple, data_goog, data_meta, data_msft, data_amzn, data_nvda, df_tesla], ignore_index=True)
 
 
 #Union Indices
@@ -61,6 +61,26 @@ df_index = pd.concat([data, data_spy, df_volatilidad_nq], ignore_index=True)
 
 #Otras acciones esporadicas
 data_otros = pd.read_csv('./Operativa/processed/ko_quotedata.csv')
+
+#DIccionario de Acciones e Indices
+data_files = {
+    "spx_quotedata.csv": df_volatilidad,
+    "ndx_quotedata.csv": df_volatilidad_nq,
+    "aapl_quotedata.csv": data_apple,
+    "goog_quotedata.csv": data_goog,
+    "meta_quotedata.csv": data_meta,
+    "msft_quotedata.csv": data_msft,
+    "amzn_quotedata.csv": data_amzn,
+    "vix_quotedata.csv": df_volatilidad_vix,
+    "ko_quotedata.csv": data_otros,
+    "spy_quotedata.csv": data_spy,
+    "tsla_quotedata.csv": df_tesla,
+    "nvda_quotedata.csv": data_nvda
+}
+
+
+
+
 
 
 #CotReport
