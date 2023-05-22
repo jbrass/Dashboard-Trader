@@ -91,30 +91,30 @@ with tab1:
 
 
     # Título de la sección
-    st.header('Día 16/05/2023')
+    st.header('Día 22/05/2023')
 
     # Introducción
     st.write(txt_comentario)
-    st.image("./img/16Mayo/premercado.png")
+    st.image("./img/22Mayo/premercado.png")
     #ppner imagen
     #st.image("./img/5Mayo/cme-liquidez.jpeg")
-    st.image("./img/16Mayo/gamma.png")  
+    st.image("./img/22Mayo/gamma.png")  
     # Gráfico de precios de la semana
     st.subheader('Niveles importantes')
     st.write(txt_niveles)
     st.write(txt_sentiment)
-    st.image("./img/16Mayo/premercado_neto.png")
+    st.image("./img/22Mayo/neto_premercado.png")
 
     
     # Análisis de los principales movimientos del mercado
     st.subheader('Planteamiento y escenarios operativos')
     st.write(txt_esperamos)
-    st.image("./img/16Mayo/estructura_premercado.png")
+    st.image("./img/22Mayo/estructura.png")
     
     # Volatilidad
     st.subheader('Volatilidad')
     st.write(txt_volatilidad)
-    st.image("./img/16Mayo/volatilidad.png") 
+    st.image("./img/22Mayo/volatilidad.png") 
 
             
 
