@@ -91,30 +91,30 @@ with tab1:
 
 
     # Título de la sección
-    st.header('Día 22/05/2023')
+    st.header('Día 23/05/2023')
 
     # Introducción
     st.write(txt_comentario)
-    st.image("./img/22Mayo/premercado.png")
+    st.image("./img/23Mayo/premercado.png")
     #ppner imagen
     #st.image("./img/5Mayo/cme-liquidez.jpeg")
-    st.image("./img/22Mayo/gamma.png")  
+    st.image("./img/23Mayo/gamma.png")  
     # Gráfico de precios de la semana
     st.subheader('Niveles importantes')
     st.write(txt_niveles)
     st.write(txt_sentiment)
-    st.image("./img/22Mayo/neto_premercado.png")
+    st.image("./img/23Mayo/neto_premercado.png")
 
     
     # Análisis de los principales movimientos del mercado
     st.subheader('Planteamiento y escenarios operativos')
     st.write(txt_esperamos)
-    st.image("./img/22Mayo/estructura.png")
+    st.image("./img/23Mayo/estructura.png")
     
     # Volatilidad
     st.subheader('Volatilidad')
     st.write(txt_volatilidad)
-    st.image("./img/22Mayo/volatilidad.png") 
+    st.image("./img/23Mayo/volatilidad.png") 
 
             
 
@@ -670,7 +670,7 @@ with tab4:
         #df_chart = df_chart.head(num_acciones_mostrar)
 
         # Título del gráfico
-        titulo = "Neto de Principales Acciones: AMZN, AAPL, GOOG, MSFT, META, TSLA, NVDA"
+        titulo = "Neto de Principales Acciones: AMZN, AAPL, GOOG, MSFT, META, TSLA, NVDA, AMD"
 
         # Crear un gráfico de barras
         fig6 = go.Figure()
@@ -712,7 +712,7 @@ with tab4:
         #df_chart = df_chart.head(num_acciones_mostrar)
 
         # Título del gráfico
-        titulo = "Volumen de las principales acciones: AMZN, AAPL, GOOG, MSFT, META, TSLA, NVDA"
+        titulo = "Volumen de las principales acciones: AMZN, AAPL, GOOG, MSFT, META, TSLA, NVDA, AMD"
 
         # Crear un gráfico de barras
         fig6 = go.Figure()
@@ -759,7 +759,7 @@ with tab4:
         #df_chart = df_chart.head(num_acciones_mostrar)
 
         # Título del gráfico
-        titulo = "Delta de las principales acciones: AMZN, AAPL, GOOG, MSFT, META, TSLA, NVDA"
+        titulo = "Delta de las principales acciones: AMZN, AAPL, GOOG, MSFT, META, TSLA, NVDA, AMD"
 
         # Crear un gráfico de barras
         fig14 = go.Figure()
@@ -801,7 +801,7 @@ with tab4:
         #df_chart = df_chart.head(num_acciones_mostrar)
 
         # Título del gráfico
-        titulo = "Gamma de las principales acciones: AMZN, AAPL, GOOG, MSFT, META, TSLA, NVDA"
+        titulo = "Gamma de las principales acciones: AMZN, AAPL, GOOG, MSFT, META, TSLA, NVDA, AMD"
 
         # Crear un gráfico de barras
         fig15 = go.Figure()
@@ -852,7 +852,7 @@ with tab4:
         #df_chart = df_chart.head(num_acciones_mostrar)
 
         # Título del gráfico
-        titulo = "Calls/Puts Last Sale de las principales acciones: AMZN, AAPL, GOOG, MSFT, META, TSLA, NVDA"
+        titulo = "Calls/Puts Last Sale de las principales acciones: AMZN, AAPL, GOOG, MSFT, META, TSLA, NVDA, AMD"
 
         # Crear un gráfico de barras
         fig16 = go.Figure()
@@ -894,7 +894,7 @@ with tab4:
         #df_chart = df_chart.head(num_acciones_mostrar)
 
         # Título del gráfico
-        titulo = "Open Interest de las principales acciones: AMZN, AAPL, GOOG, MSFT, META, TSLA, NVDA"
+        titulo = "Open Interest de las principales acciones: AMZN, AAPL, GOOG, MSFT, META, TSLA, NVDA, AMD"
 
         # Crear un gráfico de barras
         fig17 = go.Figure()

@@ -1,8 +1,8 @@
 
-txt_comentario = "Despues del OPEX de la semana pasada tenemos hoy que ver como siguen los mercados. Seguimos escalando posiciones en el SPX y en el ES. "
-txt_niveles = "**Para hoy Lunes día 22 de mayo:** Niveles relevantes en premercado: **SPX: Call Wall 4200 y Put Wall 4150**. y para el **ES: Call Wall 4215 y Put Wall 4165**. **Nivel Gamma 0: SPX: 4191 y ES: 4206**. "
+txt_comentario = "Comenzabamos la semana buscando esa call wall en 4200 para el contado y en el futuro el 4215 una zona donde se han ido deshaciendo posiciones largas y reduciendo asi el open interest. Es lo que ha sucedido el Lunes, dejando una zona de resistencia muy imporntante en esos niveles."
+txt_niveles = "**Para hoy Martes día 23 de mayo:** Niveles relevantes en premercado: **SPX: Call Wall 4200 y Put Wall 4150**. y para el **ES: Call Wall 4215 y Put Wall 4165**. **Nivel Gamma 0: SPX: 4191 y ES: 4206**. "
 txt_sentiment = "**Sentiment**  Sentimiento negativo. Si observamos el gráfico de netos, observamos una masificación de venta de calls predominantes sobre venta de puts que si tienen cierto caracter más alcista."
-txt_esperamos = "**¿Qué esperamos para hoy?** Después de tocar niveles superiores y notar cierto rechazo fuerte en zona de 4225/4230 el precio cae y encuentra apoyo en la zona de 4200 puntos. Ahora tenemos soporte importante Put Wall en zona de 4165 donde el precio puede buscar liquidez en esos niveles. Por arriba tebemos el nivel 0 gamma muy importante que tiene que sostener el precio y por tanto tenemos ahí la primera resistencia importante."
+txt_esperamos = "**¿Qué esperamos para hoy?** Esperamos algún movimiento a la baja buscando en el futuro la zona de los 4190 que es la zona donde hemos detectado incremento desde ayer al cierre a hoy de open interest en las Puts. Interpretamos algun posicionamiento direccional hacia esos niveles en sesión europea. Luego esperaremos la apertura para monitorear el posicionamiento 0dte."
 txt_volatilidad = "Seguimos estando en unos niveles de volatilidad bajos, aunque si se aprecia una escalada lenta hacia arriba en los principales índices de volatilidad, sobre todo en el VIX1D "
 
 

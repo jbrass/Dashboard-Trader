@@ -50,8 +50,9 @@ data_meta = pd.read_csv('./Operativa/processed/meta_quotedata.csv')
 data_msft = pd.read_csv('./Operativa/processed/msft_quotedata.csv')
 data_amzn = pd.read_csv('./Operativa/processed/amzn_quotedata.csv')
 data_nvda = pd.read_csv('./Operativa/processed/nvda_quotedata.csv')
+data_amd = pd.read_csv('./Operativa/processed/amd_quotedata.csv')
 #Union Acciones 
-df_acciones = pd.concat([data_apple, data_goog, data_meta, data_msft, data_amzn, data_nvda, df_tesla], ignore_index=True)
+df_acciones = pd.concat([data_apple, data_goog, data_meta, data_msft, data_amzn, data_nvda, data_amd, df_tesla], ignore_index=True)
 
 
 #Union Indices
@@ -75,7 +76,8 @@ data_files = {
     "ko_quotedata.csv": data_otros,
     "spy_quotedata.csv": data_spy,
     "tsla_quotedata.csv": df_tesla,
-    "nvda_quotedata.csv": data_nvda
+    "nvda_quotedata.csv": data_nvda,
+    "amd_quotedata.csv": data_amd
 }
 
 
