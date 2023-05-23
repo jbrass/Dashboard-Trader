@@ -298,7 +298,7 @@ with tab4:
     st.subheader('Opciones con expiración diarias 0DTE')
     st.caption('Las opciones sobre acciones son importantes porque ofrecen oportunidades comerciales rápidas y pueden influir en el mercado de futuros. Los operadores de futuros deben estar atentos a estas opciones para aprovechar las oportunidades y minimizar los riesgos.')
     
-    ticker_input = st.text_input("Ingrese el nombre del ticker o de la acción:","SPX")
+    ticker_input = st.text_input("Ingrese el nombre, ticker del Índice o Acción:","SPX")
 
     archivo_seleccionado = None
 
