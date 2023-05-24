@@ -369,7 +369,7 @@ with tab4:
             xaxis_title= 'Strike',
             yaxis_title= variable,
             #barmode='relative',
-            barmode='overlay',
+            barmode= 'stack',
             xaxis=dict(
                 tickmode='linear',
                 tick0=df_filtrado['Strike'].min(),
