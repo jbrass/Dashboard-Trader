@@ -91,7 +91,7 @@ with tab1:
 
 
     # Título de la sección
-    st.header('Día 23/05/2023')
+    st.header('Día 25/05/2023')
 
     # Introducción
     st.write(txt_comentario)
@@ -659,17 +659,6 @@ with tab4:
         
         # Muestra el gráfico en la página
         st.plotly_chart(fig5)
-
-
-
-
-    
-
-
-
-
-
-
 
 
 
