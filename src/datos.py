@@ -54,6 +54,8 @@ data_amd = pd.read_csv('./Operativa/processed/amd_quotedata.csv')
 #Union Acciones 
 df_acciones = pd.concat([data_apple, data_goog, data_meta, data_msft, data_amzn, data_nvda, data_amd, df_tesla], ignore_index=True)
 
+#Acciones tecnologicas puras
+df_acciones_tech = pd.concat([data_apple, data_goog, data_msft, data_nvda], ignore_index=True)
 
 #Union Indices
 df_index = pd.concat([data, data_spy, df_volatilidad_nq], ignore_index=True)

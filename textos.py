@@ -1,8 +1,8 @@
 
-txt_comentario = "Comenzabamos la semana buscando esa call wall en 4200 para el contado y en el futuro el 4215 una zona donde se han ido deshaciendo posiciones largas y reduciendo asi el open interest. Es lo que ha sucedido el Lunes, dejando una zona de resistencia muy imporntante en esos niveles."
-txt_niveles = "**Para hoy Martes día 23 de mayo:** Niveles relevantes en premercado: **SPX: Call Wall 4200 y Put Wall 4150**. y para el **ES: Call Wall 4215 y Put Wall 4165**. **Nivel Gamma 0: SPX: 4191 y ES: 4206**. "
-txt_sentiment = "**Sentiment**  Sentimiento negativo. Si observamos el gráfico de netos, observamos una masificación de venta de calls predominantes sobre venta de puts que si tienen cierto caracter más alcista."
-txt_esperamos = "**¿Qué esperamos para hoy?** Esperamos algún movimiento a la baja buscando en el futuro la zona de los 4190 que es la zona donde hemos detectado incremento desde ayer al cierre a hoy de open interest en las Puts. Interpretamos algun posicionamiento direccional hacia esos niveles en sesión europea. Luego esperaremos la apertura para monitorear el posicionamiento 0dte."
+txt_comentario = "Ayer día 24 de Mayo el mercado tuvo un comportamiento similar al que viene siguiendo en estas últimas semanas. En sesión Europea caía y luego en sesión americana recupera."
+txt_niveles = "**Para hoy Martes día 25 de mayo:** Niveles relevantes en premercado: **SPX: Call Wall 4140 y Put Wall 4080**. y para el **ES: Call Wall 4155 y Put Wall 4095**. **Nivel Gamma 0: SPX: 4191 y ES: 4206**. "
+txt_sentiment = "**Sentiment**  Sentimiento negativo. Seguimos observando un neto más vendedor que comprador, aunque para hoy si se obervan ya entrada de demanda pero de forma aún poco relevante. Esperaremos la apertura para actualizar el reposicionamiento institucional."
+txt_esperamos = "**¿Qué esperamos para hoy?** Tenemos definido zonas relevantes de Call Wall y Put Wall y trabajaremos en esas zonas a la llegada de precios, observando con detalle las microestructuras del derivado sobre futuros para intentar posicionarnos con ventaja."
 txt_volatilidad = "Seguimos estando en unos niveles de volatilidad bajos, aunque si se aprecia una escalada lenta hacia arriba en los principales índices de volatilidad, sobre todo en el VIX1D "
 
 
@@ -13,8 +13,6 @@ esta_semana2 = " 2. :orange[**Martes**], Se publicarán los PMIs preliminares de
 esta_semana3 = " 3. :orange[**Miercoles**], Tendremos el dato de inflación de abril en Reino Unido, el IFO en Alemania y las actas de la última reunión de la Fed."
 esta_semana4 = " 4. :orange[**Jueves**], Conoceremos el dato final de PIB del 1T en Alemania y la segunda revisión en Estados Unidos"
 esta_semana5 = " 4. :orange[**Viernes**], Conoceremos el dato PCE de inflación en Estados Unidos, así como información de la renta disponible de los hogares estadounidenses y pedidos de bienes industriales."
-
-
 
 
 
