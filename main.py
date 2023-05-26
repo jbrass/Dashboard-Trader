@@ -63,7 +63,7 @@ with open("fintra-logo.png", 'rb') as img:
     st.image(img.read(), width=200)
 
 # Utilizar una estructura de control de flujo más clara
-tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["Reporte de Mercado", "Estadísticas", "Gráficos/Predicciones", "Opciones 0DTE", "Charts Índices", "Charts Acciones", "Estadísticas Macroeconómicas"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs(["Reporte de Mercado", "Estadísticas", "Gráficos/Predicciones", "Opciones 0DTE", "Charts Índices", "Charts Acciones", "Meme Stocks", "Gamma", "Estadísticas Macroeconómicas"])
 
 with tab1:
 
@@ -470,45 +470,6 @@ with tab4:
     st.plotly_chart(fig, use_container_width=True)
 
 
-    st.subheader('Squeezmetric')
-    # Seleccionar todas las columnas numéricas excepto date
-    numeric_cols = ['price', 'dix', 'gex']
-    df_numeric = df_squeeze[numeric_cols]
-
-    # Crear figura con 3 subplots
-    fig = make_subplots(rows=3, cols=1, shared_xaxes=True)
-
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.info('**Dark Index (DIX)**, es una medida ponderada en dólares del Dark Pool Indicator (DPI) de los componentes del S&P 500. Cuando el DIX es más alto, el sentimiento del mercado en los fondos oscuros es generalmente más alcista. Cuando el DIX es más bajo, es más bajista o incierto.', icon="ℹ️")
-        
-
-    with col2:
-        st.info('**Gamma Exposure (GEX)**, es una medida denominada en dólares de las obligaciones de cobertura de los creadores de mercado de opciones. Cuando GEX es alto, el mercado de opciones implica que la volatilidad será baja. Cuando GEX es bajo, la volatilidad es alta y, aunque esperamos un mercado agitado, es poco probable que se produzcan más pérdidas.', icon="ℹ️")
-
-
-
-    # Agregar cada gráfico de línea a la figura
-    fig.add_trace(go.Scatter(x=df_squeeze['date'], y=df_squeeze['price'], name='SP500'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=df_squeeze['date'], y=df_squeeze['dix'], name='Dark Index'), row=2, col=1)
-    fig.add_trace(go.Scatter(x=df_squeeze['date'], y=df_squeeze['gex'], name='Gamma Exposure'), row=3, col=1)
-
-    # Personalizar la figura
-    fig.update_layout(
-        height=800,
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            xanchor="right",
-            x=1
-        )
-    )
-
-    # Mostrar la figura utilizando st.plotly_chart()
-    st.plotly_chart(fig, use_container_width=True)
 
 
 
@@ -669,7 +630,7 @@ with tab4:
 
     with tab5:
 
-        st.subheader("Índices más representativos: SPX, SPY, NDX")
+        st.subheader("Options Data. Índices más representativos: SPX, SPY, NDX")
 
         col1, col2 = st.columns(2)
         
@@ -948,7 +909,7 @@ with tab4:
 
 
     with tab6:
-        st.subheader("Acciones más representativas del SP500")
+        st.subheader("Options Data. Acciones más representativas del SP500")
         col1, col2 = st.columns(2)
         
         
@@ -1247,7 +1208,7 @@ with tab4:
             #df_chart = df_chart.head(num_acciones_mostrar)
 
             # Título del gráfico
-            titulo = "Neto de Principales Acciones: AAPL, GOOG, MSFT, NVDA"
+            titulo = "Options Data. Neto de Principales Acciones: AAPL, GOOG, MSFT, NVDA"
 
             # Crear un gráfico de barras
             fig6 = go.Figure()
@@ -1492,11 +1453,348 @@ with tab4:
 
 
 
-
-
-
-
     with tab7:
+        
+        #Chart de Memes Stocks
+        st.subheader("Options Data. Meme Stocks")
+        col1, col2 = st.columns(2)
+        
+        
+        with col1:
+
+            # Obtener los datos del dataframe df_acciones
+            # Supongamos que el dataframe contiene las columnas ['Expiration Date', 'Calls Net', 'Puts Net']
+
+            # Crear un nuevo dataframe para los datos del gráfico
+            df_chart = pd.DataFrame({
+                'Expiration Date': df_memestock['Expiration Date'],
+                'Calls Net': df_memestock['Calls Net'],
+                'Puts Net': df_memestock['Puts Net']
+            })
+
+            # Establecer la columna 'Expiration Date' como índice
+            df_chart.set_index('Expiration Date', inplace=True)
+
+            # Ordenar el dataframe por Calls Net descendente
+            #df_chart = df_chart.sort_values('Calls Net', ascending=False)
+
+            # Limitar el número de acciones a mostrar en el gráfico
+            #num_acciones_mostrar = 10
+            #df_chart = df_chart.head(num_acciones_mostrar)
+
+            # Título del gráfico
+            titulo = "Neto de Principales Memes: LCID, AMC, PLTR, RIVN"
+
+            # Crear un gráfico de barras
+            fig6 = go.Figure()
+            fig6.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Net'], name='Calls Net'))
+            fig6.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Net'], name='Puts Net'))
+
+            # Personalizar el diseño del gráfico
+            fig6.update_layout(
+                title=titulo,
+                xaxis_title='Expiration Date',
+                yaxis_title='Neto',
+                barmode='group'
+            )
+
+            # Mostrar el gráfico en la página web
+            st.plotly_chart(fig6, container_width=1000, container_height=500)
+
+        with col2:
+            
+
+            # Obtener los datos del dataframe df_acciones
+            # Supongamos que el dataframe contiene las columnas ['Expiration Date', 'Calls Volume', 'Puts Volume']
+
+            # Crear un nuevo dataframe para los datos del gráfico
+            df_chart = pd.DataFrame({
+                'Expiration Date': df_memestock['Expiration Date'],
+                'Calls Volume': df_memestock['Calls Volume'],
+                'Puts Volume': df_memestock['Puts Volume']
+            })
+
+            # Establecer la columna 'Expiration Date' como índice
+            df_chart.set_index('Expiration Date', inplace=True)
+
+            # Ordenar el dataframe por Calls Net descendente
+            df_chart = df_chart.sort_values('Calls Volume', ascending=False)
+
+            # Limitar el número de acciones a mostrar en el gráfico
+            #num_acciones_mostrar = 10
+            #df_chart = df_chart.head(num_acciones_mostrar)
+
+            # Título del gráfico
+            titulo = "Volumen de Principales Memes: LCID, AMC, PLTR, RIVN"
+
+            # Crear un gráfico de barras
+            fig6 = go.Figure()
+            fig6.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Volume'], name='Calls Volume'))
+            fig6.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Volume'], name='Puts Volume'))
+
+            # Personalizar el diseño del gráfico
+            fig6.update_layout(
+                title=titulo,
+                xaxis_title='Expiration Date',
+                yaxis_title='Volume',
+                barmode='group'
+            )
+
+            # Mostrar el gráfico en la página web
+            st.plotly_chart(fig6, container_width=1000, container_height=500)
+
+
+
+
+
+
+        col1, col2 = st.columns(2)
+        with col1:
+
+            #ACCIONES
+            #DELTA
+
+            # Crear un nuevo dataframe para los datos del gráfico
+            df_chart = pd.DataFrame({
+                'Expiration Date': df_memestock['Expiration Date'],
+                'Calls Delta': df_memestock['Calls Delta'],
+                'Puts Delta': df_memestock['Puts Delta']
+            })
+
+            # Establecer la columna 'Expiration Date' como índice
+            df_chart.set_index('Expiration Date', inplace=True)
+
+            # Ordenar el dataframe por Calls Net descendente
+            df_chart = df_chart.sort_values('Calls Delta', ascending=False)
+
+            # Limitar el número de acciones a mostrar en el gráfico
+            #num_acciones_mostrar = 10
+            #df_chart = df_chart.head(num_acciones_mostrar)
+
+            # Título del gráfico
+            titulo = "Delta de Principales Memes: LCID, AMC, PLTR, RIVN"
+
+            # Crear un gráfico de barras
+            fig14 = go.Figure()
+            fig14.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Delta'], name='Calls Delta', marker=dict(color='green')))
+            fig14.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Delta'], name='Puts Delta', marker=dict(color='red')))
+
+            # Personalizar el diseño del gráfico
+            fig14.update_layout(
+                title=titulo,
+                xaxis_title='Expiration Date',
+                yaxis_title='Delta',
+                barmode='group'
+            )
+
+            # Mostrar el gráfico en la página web
+            st.plotly_chart(fig14, container_width=1000, container_height=500)
+
+        with col2:
+            
+
+            # Obtener los datos del dataframe df_acciones
+            # Gamma
+
+            # Crear un nuevo dataframe para los datos del gráfico
+            df_chart = pd.DataFrame({
+                'Expiration Date': df_memestock['Expiration Date'],
+                'Calls Gamma': df_memestock['Calls Gamma'],
+                'Puts Gamma': df_memestock['Puts Gamma']
+            })
+
+            # Establecer la columna 'Expiration Date' como índice
+            df_chart.set_index('Expiration Date', inplace=True)
+
+            # Ordenar el dataframe por Calls Net descendente
+            df_chart = df_chart.sort_values('Calls Gamma', ascending=False)
+
+            # Limitar el número de acciones a mostrar en el gráfico
+            #num_acciones_mostrar = 10
+            #df_chart = df_chart.head(num_acciones_mostrar)
+
+            # Título del gráfico
+            titulo = "Gamma de Principales Memes: LCID, AMC, PLTR, RIVN"
+
+            # Crear un gráfico de barras
+            fig15 = go.Figure()
+            fig15.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Gamma'], name='Calls Gamma'))
+            fig15.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Gamma'], name='Puts Gamma'))
+
+            # Personalizar el diseño del gráfico
+            fig15.update_layout(
+                title=titulo,
+                xaxis_title='Expiration Date',
+                yaxis_title='Gamma',
+                barmode='group'
+            )
+
+            # Mostrar el gráfico en la página web
+            st.plotly_chart(fig15, container_width=1000, container_height=500)
+
+
+
+
+
+
+
+        col1, col2 = st.columns(2)
+            
+            
+        with col1:
+
+            #INDICES
+            #Last Sale Mayor actividad en las opciones de compra (calls): La barra más alta y el color verde indican que ha habido una mayor actividad en las opciones de compra en comparación con las opciones de venta. Esto podría sugerir que los inversores tienen un mayor interés en la compra de opciones de compra en este vencimiento en particular.
+            #Posible expectativa alcista: La diferencia de altura entre las barras de Calls Last Sale y Puts Last Sale puede indicar una mayor preferencia de los inversores por las posiciones alcistas. La actividad en las opciones de compra podría reflejar una expectativa de que el precio del activo subyacente aumente antes del vencimiento.
+
+            # Crear un nuevo dataframe para los datos del gráfico
+            df_chart = pd.DataFrame({
+                'Expiration Date': df_memestock['Expiration Date'],
+                'Calls Last Sale': df_memestock['Calls Last Sale'],
+                'Puts Last Sale': df_memestock['Puts Last Sale']
+            })
+
+            # Establecer la columna 'Expiration Date' como índice
+            df_chart.set_index('Expiration Date', inplace=True)
+
+            # Ordenar el dataframe por Calls Net descendente
+            df_chart = df_chart.sort_values('Calls Last Sale', ascending=False)
+
+            # Limitar el número de acciones a mostrar en el gráfico
+            #num_acciones_mostrar = 10
+            #df_chart = df_chart.head(num_acciones_mostrar)
+
+            # Título del gráfico
+            titulo = "Calls/Puts Last Sale de los Principales Memes: LCID, AMC, PLTR, RIVN"
+
+            # Crear un gráfico de barras
+            fig16 = go.Figure()
+            fig16.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Last Sale'], name='Calls Last Sale', marker=dict(color='green')))
+            fig16.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Last Sale'], name='Puts Last Sale', marker=dict(color='red')))
+
+            # Personalizar el diseño del gráfico
+            fig16.update_layout(
+                title=titulo,
+                xaxis_title='Expiration Date',
+                yaxis_title='Last Sale',
+                barmode='group'
+            )
+
+            # Mostrar el gráfico en la página web
+            st.plotly_chart(fig16, container_width=1000, container_height=500)
+
+        with col2:
+            
+
+            # Obtener los datos del dataframe df_acciones
+            # Open Interest
+
+            # Crear un nuevo dataframe para los datos del gráfico
+            df_chart = pd.DataFrame({
+                'Expiration Date': df_memestock['Expiration Date'],
+                'Calls Open Interest': df_memestock['Calls Open Interest'],
+                'Puts Open Interest': df_memestock['Puts Open Interest']
+            })
+
+            # Establecer la columna 'Expiration Date' como índice
+            df_chart.set_index('Expiration Date', inplace=True)
+
+            # Ordenar el dataframe por Calls Net descendente
+            df_chart = df_chart.sort_values('Calls Open Interest', ascending=False)
+
+            # Limitar el número de acciones a mostrar en el gráfico
+            #num_acciones_mostrar = 10
+            #df_chart = df_chart.head(num_acciones_mostrar)
+
+            # Título del gráfico
+            titulo = "Open Interest de Principales Memes: LCID, AMC, PLTR, RIVN"
+
+            # Crear un gráfico de barras
+            fig17 = go.Figure()
+            fig17.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Open Interest'], name='Calls Open Interest'))
+            fig17.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Open Interest'], name='Puts Open Interest'))
+
+            # Personalizar el diseño del gráfico
+            fig17.update_layout(
+                title=titulo,
+                xaxis_title='Expiration Date',
+                yaxis_title='Open Interest',
+                barmode='group'
+            )
+
+            # Mostrar el gráfico en la página web
+            st.plotly_chart(fig17, container_width=1000, container_height=500)
+
+
+    with tab8:
+
+        st.subheader("Dark Index (DIX), Gamma Exposure (GEX)")
+
+        # Convertir la columna 'date' en un objeto datetime
+        df_squeeze['date'] = pd.to_datetime(df_squeeze['date'])
+
+        # Seleccionar rango de fechas según el select 3 meses , 6 meses, 1 año, 1 año y medio, 2 años , 3 años, o todos los datos
+        time_range = st.selectbox("Seleccionar rango de fechas", ["1 Semana" , "1 mes", "3 meses", "6 meses", "1 año", "1 año y medio", "2 años", "3 años",  "Todos los datos"])
+        if time_range == "1 Semana":
+            df_squeeze = df_squeeze[df_squeeze['date'] >= df_squeeze['date'].max() - pd.DateOffset(weeks=1)]
+        elif time_range == "1 mes":
+            df_squeeze = df_squeeze[df_squeeze['date'] >= df_squeeze['date'].max() - pd.DateOffset(months=1)]
+        elif time_range == "3 meses":
+            df_squeeze = df_squeeze[df_squeeze['date'] >= df_squeeze['date'].max() - pd.DateOffset(months=3)]
+        elif time_range == "6 meses":
+            df_squeeze = df_squeeze[df_squeeze['date'] >= df_squeeze['date'].max() - pd.DateOffset(months=6)]
+        elif time_range == "1 año":
+            df_squeeze = df_squeeze[df_squeeze['date'] >= df_squeeze['date'].max() - pd.DateOffset(years=1)]
+        elif time_range == "1 año y medio":
+            df_squeeze = df_squeeze[df_squeeze['date'] >= df_squeeze['date'].max() - pd.DateOffset(years=1)]
+        elif time_range == "2 años":
+            df_squeeze = df_squeeze[df_squeeze['date'] >= df_squeeze['date'].max() - pd.DateOffset(years=2)]
+        elif time_range == "3 años":
+            df_squeeze = df_squeeze[df_squeeze['date'] >= df_squeeze['date'].max() - pd.DateOffset(years=3)]
+        elif time_range == "Todos los datos":
+            df_squeeze = df_squeeze
+            
+
+
+
+        # Seleccionar todas las columnas numéricas excepto date
+        numeric_cols = ['price', 'dix', 'gex']
+        df_numeric = df_squeeze[numeric_cols]
+
+        # Crear figura con 3 subplots
+        fig = make_subplots(rows=3, cols=1, shared_xaxes=True)
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.info('**Dark Index (DIX)**, es una medida ponderada en dólares del Dark Pool Indicator (DPI) de los componentes del S&P 500. Cuando el DIX es más alto, el sentimiento del mercado en los fondos oscuros es generalmente más alcista. Cuando el DIX es más bajo, es más bajista o incierto.', icon="ℹ️")
+
+        with col2:
+            st.info('**Gamma Exposure (GEX)**, es una medida denominada en dólares de las obligaciones de cobertura de los creadores de mercado de opciones. Cuando GEX es alto, el mercado de opciones implica que la volatilidad será baja. Cuando GEX es bajo, la volatilidad es alta y, aunque esperamos un mercado agitado, es poco probable que se produzcan más pérdidas.', icon="ℹ️")
+
+        # Agregar cada gráfico de línea a la figura
+        fig.add_trace(go.Scatter(x=df_squeeze['date'], y=df_squeeze['price'], name='SP500'), row=1, col=1)
+        fig.add_trace(go.Scatter(x=df_squeeze['date'], y=df_squeeze['dix'], name='Dark Index'), row=2, col=1)
+        fig.add_trace(go.Scatter(x=df_squeeze['date'], y=df_squeeze['gex'], name='Gamma Exposure'), row=3, col=1)
+
+        # Personalizar la figura
+        fig.update_layout(
+            height=800,
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1
+            )
+        )
+
+
+        # Mostrar la figura utilizando st.plotly_chart()
+        st.plotly_chart(fig, use_container_width=True)
+                    
+
+    with tab9:
 
 
         # Dividir en dos columnas
@@ -1541,3 +1839,6 @@ with tab4:
             
 
 
+
+    
+    

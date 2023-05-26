@@ -22,11 +22,11 @@ df_semanal_NQ['dia'] = df_semanal_NQ['dia'].dt.date
 df_vivienda = pd.read_csv("./Operativa/processed/indicadores_del_mercado_inmobiliario.csv", delimiter=";")
 
 df_volatilidad = pd.read_csv("./Operativa/processed/spx_quotedata.csv", on_bad_lines='skip', delimiter=",")
-df_volatilidad_nq = pd.read_csv("./Operativa/processed/ndx_quotedata.csv", on_bad_lines='skip', delimiter=",")
+
 df_volatilidad_vix = pd.read_csv("./Operativa/processed/vix_quotedata.csv", on_bad_lines='skip', delimiter=",")
 
-#Teska
-df_tesla = pd.read_csv("./Operativa/processed/tsla_quotedata.csv", on_bad_lines='skip', delimiter=",")
+
+
 
 df_dix = pd.read_csv("./Operativa/processed/DIX.csv", on_bad_lines='skip', delimiter=",")
 
@@ -38,11 +38,12 @@ df_squeeze = pd.read_csv("./Operativa/processed/DIX.csv")
 
 
 
-#Datos CBOE
-#SPX
+
+#CBOE INDICES
 data = pd.read_csv('./Operativa/processed/spx_quotedata.csv')
-#SPY
 data_spy = pd.read_csv('./Operativa/processed/spy_quotedata.csv')
+df_volatilidad_nq = pd.read_csv("./Operativa/processed/ndx_quotedata.csv", on_bad_lines='skip', delimiter=",")
+
 #CBOE Acciones
 data_apple = pd.read_csv('./Operativa/processed/aapl_quotedata.csv')
 data_goog = pd.read_csv('./Operativa/processed/goog_quotedata.csv')
@@ -51,6 +52,25 @@ data_msft = pd.read_csv('./Operativa/processed/msft_quotedata.csv')
 data_amzn = pd.read_csv('./Operativa/processed/amzn_quotedata.csv')
 data_nvda = pd.read_csv('./Operativa/processed/nvda_quotedata.csv')
 data_amd = pd.read_csv('./Operativa/processed/amd_quotedata.csv')
+df_tesla = pd.read_csv("./Operativa/processed/tsla_quotedata.csv", on_bad_lines='skip', delimiter=",")
+
+#Acciones Esporadicas
+data_otros = pd.read_csv('./Operativa/processed/ko_quotedata.csv')
+df_ares =  pd.read_csv('./Operativa/processed/ares_quotedata.csv')
+
+
+
+#Acciones Memes
+df_lcid = pd.read_csv('./Operativa/processed/lcid_quotedata.csv')
+df_amc = pd.read_csv('./Operativa/processed/amc_quotedata.csv')
+df_sofi = pd.read_csv('./Operativa/processed/sofi_quotedata.csv')
+df_pltr = pd.read_csv('./Operativa/processed/pltr_quotedata.csv')
+df_rivn = pd.read_csv('./Operativa/processed/rivn_quotedata.csv')
+
+#Union Acciones Memes
+df_memestock = pd.concat([df_lcid, df_amc, df_sofi, df_pltr, df_rivn ], ignore_index=True)
+
+
 #Union Acciones 
 df_acciones = pd.concat([data_apple, data_goog, data_meta, data_msft, data_amzn, data_nvda, data_amd, df_tesla], ignore_index=True)
 
@@ -62,8 +82,7 @@ df_index = pd.concat([data, data_spy, df_volatilidad_nq], ignore_index=True)
 
 
 
-#Otras acciones esporadicas
-data_otros = pd.read_csv('./Operativa/processed/ko_quotedata.csv')
+
 
 #DIccionario de Acciones e Indices
 data_files = {
@@ -79,7 +98,13 @@ data_files = {
     "spy_quotedata.csv": data_spy,
     "tsla_quotedata.csv": df_tesla,
     "nvda_quotedata.csv": data_nvda,
-    "amd_quotedata.csv": data_amd
+    "amd_quotedata.csv": data_amd,
+    "lcid_quotedata.csv": df_lcid,
+    "ares_quotedata.csv": df_ares,
+    "amc_quotedata.csv": df_amc,
+    "sofi_quotedata.csv": df_sofi,
+    "pltr_quotedata.csv": df_pltr,
+    "rivn_quotedata.csv": df_rivn
 }
 
 
