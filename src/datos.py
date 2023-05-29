@@ -44,6 +44,10 @@ data = pd.read_csv('./Operativa/processed/spx_quotedata.csv')
 data_spy = pd.read_csv('./Operativa/processed/spy_quotedata.csv')
 df_volatilidad_nq = pd.read_csv("./Operativa/processed/ndx_quotedata.csv", on_bad_lines='skip', delimiter=",")
 
+
+#CBOE INDICES TODA EXPIRACION COMPLETA
+data_all = pd.read_csv('./Operativa/processed/spx_quotedata_all.csv')
+
 #CBOE Acciones
 data_apple = pd.read_csv('./Operativa/processed/aapl_quotedata.csv')
 data_goog = pd.read_csv('./Operativa/processed/goog_quotedata.csv')
@@ -104,7 +108,8 @@ data_files = {
     "amc_quotedata.csv": df_amc,
     "sofi_quotedata.csv": df_sofi,
     "pltr_quotedata.csv": df_pltr,
-    "rivn_quotedata.csv": df_rivn
+    "rivn_quotedata.csv": df_rivn,
+    "spx_all_quotedata.csv": data_all
 }
 
 

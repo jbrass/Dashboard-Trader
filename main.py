@@ -405,7 +405,7 @@ with tab4:
 
 
 # Crear un DataFrame con los datos de interés
-    df_top = df_filtrado[['Strike', 'Calls Volume', 'Calls Open Interest', 'Puts Volume', 'Puts Open Interest']]
+    df_top = df_filtrado[['Strike', 'Calls Volume', 'Calls Open Interest', 'Puts Volume', 'Puts Open Interest', 'Puts Net', 'Calls Net', 'Puts Gamma', 'Calls Gamma']]
 
     if archivo_seleccionado not in ["spx_quotedata.csv", "spy_quotedata.csv"]:
         st.markdown(f"**{archivo_seleccionado.replace('_quotedata.csv', '').upper()}**")
@@ -473,68 +473,6 @@ with tab4:
 
 
 
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-
-        st.subheader('Volumen Call & Put por vencimientos')
-        
-        # gráfico 1
-        alt.Chart(df).mark_circle(size=50).encode(
-            x='Calls Volume:Q',
-            y='Puts Volume:Q',
-            color=alt.Color('Expiration Date:N', scale=alt.Scale(scheme='category10')),
-            tooltip=['Expiration Date:N']
-        ).properties(
-            title='Call volume vs put options'
-        ).interactive()
-
-
-        # gráfico 2
-        alt.Chart(df).mark_bar().encode(
-            x=alt.X('Expiration Date:N', axis=alt.Axis(title=None)),
-            y=alt.Y('Calls Volume:Q', axis=alt.Axis(title='Volumen')),
-            color=alt.value('steelblue')
-        ).properties(
-            title='Call volume by due date'
-        ).interactive() | alt.Chart(df).mark_bar().encode(
-            x=alt.X('Expiration Date:N', axis=alt.Axis(title=None)),
-            y=alt.Y('Puts Volume:Q', axis=alt.Axis(title='Volumen')),
-            color=alt.value('orange')
-        ).properties(
-            title='Volumen de opciones de venta por fecha de vencimiento'
-        ).interactive()
-    
-    with col2:
-
-
-        st.subheader('Interés abierto de opciones call y put por precio de ejercicio')
-        
-        # filtrar los datos para incluir solo la fecha de vencimiento más reciente
-        latest_expiry = data['Expiration Date'].max()
-        data = data[data['Expiration Date'] == latest_expiry]
-
-        # crear el gráfico
-        chart = alt.Chart(data).mark_line().encode(
-            x='Strike',
-            y='Calls Open Interest:Q',
-            color=alt.value('#5b8ff9')
-        ).properties(
-            width=600,
-            height=400
-        )
-
-        chart += alt.Chart(data).mark_line().encode(
-            x='Strike',
-            y='Puts Open Interest:Q',
-            color=alt.value('#ff6b81')
-        ).interactive()
-
-        # mostrar el gráfico
-        chart
-            
-    
 
 
 
@@ -586,8 +524,8 @@ with tab4:
     with col1:
         # Crear un gráfico de barras para mostrar las columnas de "Puts Net" y "Calls Net" para cada "Strike"
         fig4 = go.Figure()
-        fig4.add_trace(go.Bar(x=data['Strike'], y=data['Puts Net'], name='Puts Net'))
-        fig4.add_trace(go.Bar(x=data['Strike'], y=data['Calls Net'], name='Calls Net'))
+        fig4.add_trace(go.Bar(x=df_top['Strike'], y=df_top['Puts Net'], name='Puts Net'))
+        fig4.add_trace(go.Bar(x=df_top['Strike'], y=df_top['Calls Net'], name='Calls Net'))
         
         # Personaliza los títulos y ejes del gráfico
         fig4.update_layout(
@@ -606,8 +544,8 @@ with tab4:
         
         # Crear un gráfico de barras para mostrar las columnas de "Puts Net" y "Calls Net" para cada "Strike"
         fig5 = go.Figure()
-        fig5.add_trace(go.Bar(x=data['Strike'], y=data['Puts Gamma'], name='Puts Gamma'))
-        fig5.add_trace(go.Bar(x=data['Strike'], y=data['Calls Gamma'], name='Calls GAmma'))
+        fig5.add_trace(go.Bar(x=df_top['Strike'], y=df_top['Puts Gamma'], name='Puts Gamma'))
+        fig5.add_trace(go.Bar(x=df_top['Strike'], y=df_top['Calls Gamma'], name='Calls GAmma'))
         
         # Personaliza los títulos y ejes del gráfico
         fig5.update_layout(
@@ -627,6 +565,93 @@ with tab4:
 
 
 
+
+#INDICES ALL ###
+
+        
+        
+    
+    st.header("Todas las expiraciones SPX")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        # Crear un gráfico de barras para mostrar las columnas de "Calls Volume" y "Puts Volume" para cada "Strike"
+        fig2 = go.Figure()
+        fig2.add_trace(go.Bar(x=data_all['Strike'], y=data_all['Calls Volume'], name='Calls Volume'))
+        fig2.add_trace(go.Bar(x=data_all['Strike'], y=data_all['Puts Volume'], name='Puts Volume'))
+
+        # Personaliza los títulos y ejes del gráfico
+        fig2.update_layout(
+            title='Volumen de opciones call y put para todas las expiraciones',
+            xaxis_title='Strike',
+            yaxis_title='Volume',
+            barmode='stack'
+        )
+
+        # Muestra el gráfico en la página
+        st.plotly_chart(fig2)
+
+    with col2:
+        # Crear un gráfico de barras para mostrar las columnas de "Calls Open Interest" y "Puts Open Interest" para cada "Strike"
+        fig3 = go.Figure()
+        fig3.add_trace(go.Bar(x=df_top['Strike'], y=data_all['Calls Open Interest'], name='Calls Open Interest'))
+        fig3.add_trace(go.Bar(x=df_top['Strike'], y=data_all['Puts Open Interest'], name='Puts Open Interest'))
+
+        # Personaliza los títulos y ejes del gráfico
+        fig3.update_layout(
+            title='Interés abierto de opciones call y put para todas las expiraciones',
+            xaxis_title='Strike',
+            yaxis_title='Open Interest',
+            barmode='stack'
+        )
+
+        # Muestra el gráfico en la página
+        st.plotly_chart(fig3)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        # Crear un gráfico de barras para mostrar las columnas de "Puts Net" y "Calls Net" para cada "Strike"
+        fig4 = go.Figure()
+        fig4.add_trace(go.Bar(x=data_all['Strike'], y=data_all['Puts Net'], name='Puts Net'))
+        fig4.add_trace(go.Bar(x=data_all['Strike'], y=data_all['Calls Net'], name='Calls Net'))
+
+        # Personaliza los títulos y ejes del gráfico
+        fig4.update_layout(
+            title='Neto de opciones call y put para todas las expiraciones',
+            xaxis_title='Strike',
+            yaxis_title='Puts Net',
+            barmode='stack'
+        )
+
+        # Muestra el gráfico en la página
+        st.plotly_chart(fig4)
+
+    with col2:
+        # Crear un gráfico de barras para mostrar las columnas de "Puts Gamma" y "Calls Gamma" para cada "Strike"
+        fig5 = go.Figure()
+        fig5.add_trace(go.Bar(x=data_all['Strike'], y=data_all['Puts Gamma'], name='Puts Gamma'))
+        fig5.add_trace(go.Bar(x=data_all['Strike'], y=data_all['Calls Gamma'], name='Calls Gamma'))
+                    
+        # Personaliza los títulos y ejes del gráfico
+        fig5.update_layout(
+            title='Gamma de opciones call y put para todas las expiraciones',
+            xaxis_title='Strike',
+            yaxis_title='Puts Gamma',
+            barmode='stack'
+        )
+
+        # Muestra el gráfico en la página
+        st.plotly_chart(fig5)
+                    
+
+
+
+
+
+
+##########
 
     with tab5:
 
