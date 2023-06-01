@@ -59,8 +59,11 @@ st.markdown(
 
     
 # Cargar la imagen de logo
-with open("fintra-logo.png", 'rb') as img:
+with open("fintra-logo-blanco.png", 'rb') as img:
     st.image(img.read(), width=200)
+    
+    
+    
 
 # Utilizar una estructura de control de flujo más clara
 tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs(["Reporte de Mercado", "Estadísticas", "Gráficos/Predicciones", "Opciones 0DTE", "Charts Índices", "Charts Acciones", "Meme Stocks", "Gamma", "Estadísticas Macroeconómicas"])
@@ -91,30 +94,30 @@ with tab1:
 
 
     # Título de la sección
-    st.header('Día 30/05/2023')
+    st.header('Día 01/06/2023')
 
     # Introducción
     st.write(txt_comentario)
-    st.image("./img/30Mayo/premercado.png")
+    st.image("./img/Junio/1Junio/premercado.png")
     #ppner imagen
     #st.image("./img/5Mayo/cme-liquidez.jpeg")
-    st.image("./img/30Mayo/gamma.png")  
+    st.image("./img/Junio/1Junio/gamma.png")  
     # Gráfico de precios de la semana
     st.subheader('Niveles importantes')
     st.write(txt_niveles)
     st.write(txt_sentiment)
-    st.image("./img/30Mayo/premercado_neto.png")
-    st.image("./img/30Mayo/premercado_delta.png")
+    st.image("./img/Junio/1Junio/premercado_neto.png")
+    #st.image("./img/1Junio/premercado_delta.png")
     
     # Análisis de los principales movimientos del mercado
     st.subheader('Planteamiento y escenarios operativos')
     st.write(txt_esperamos)
-    st.image("./img/30Mayo/estructura.png")
+    st.image("./img/Junio/1Junio/estructura.png")
     
     # Volatilidad
     st.subheader('Volatilidad')
     st.write(txt_volatilidad)
-    st.image("./img/30Mayo/volatilidad.png") 
+    st.image("./img/Junio/1Junio/volatilidad.png") 
 
 
 
@@ -1823,40 +1826,68 @@ with tab4:
 
 
         # Dividir en dos columnas
-        col1, col2, col3, col4,  = st.columns(4)
+        col1, col2 = st.columns(2)
 
         # Tabla de inflación en la primera columna
         with col1:
             st.subheader('CPI')
             st.write(inflacion_df.tail(10))
-
+        
 
 
 
         # Gráfico de tipos de interés en la segunda columna
         with col2:
-            st.subheader('Interest Rate')
-            st.write(tipos_interes_df.tail(10))
-            
-        # Gráfico de tipos de interés en la segunda columna
-        with col3:
-            st.subheader('M2')
-            st.write(m2_df.tail(10))
+            chart = alt.Chart(inflacion_df).mark_bar().encode(
+            x='Inflation:Q',
+            y='Date'
+        )
 
-        # Gráfico de tipos de interés en la segunda columna
-        with col4:
-            st.subheader('Unemployment Rate')
-            st.write(empleo_df.tail(10))
-            
-            
+ 
+            st.altair_chart(chart, theme="streamlit", use_container_width=True)
+
+
+
+
         # Dividir en dos columnas
-        col1, col2, col3, col4,  = st.columns(4)
+        col1, col2 = st.columns(2)
 
         # Tabla de inflación en la primera columna
         with col1:
+            st.subheader('Interest Rate')
+            st.write(tipos_interes_df.tail(10))
+        
+        with col2:
+            
+            
+            # Gráfico de tipos de interés en la segunda columna
+            with col2:
+                chart = alt.Chart(tipos_interes_df).mark_bar().encode(
+                x='Tax:Q',
+                y='Date'
+            )
+
+ 
+            st.altair_chart(chart, theme="streamlit", use_container_width=True)
+
+            
+        # Dividir en dos columnas
+        col1, col2 = st.columns(2)
+
+        # Tabla de inflación en la primera columna
+        with col1:
+            st.subheader('Unemployment Rate')
+            st.write(empleo_df.tail(10))
+            
+        with col2:  
             st.subheader('Dollar to Euro')
             st.write(dolar_df.tail(10))
+            
 
+        col1, col2 = st.columns(2)
+        with col1:
+            st.subheader('M2')
+            st.write(m2_df.tail(10))
         # Gráfico de tipos de interés en la segunda columna
         with col2:
             st.subheader('Emerging Markets')
