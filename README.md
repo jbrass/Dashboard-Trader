@@ -24,5 +24,12 @@ Para ejecutar este proyecto, simplemente clone este repositorio a su equipo loca
 ## Contribuciones
 Si deseas contribuir al proyecto, por favor envía una solicitud de pull. Para cualquier consulta o problema, abre un issue en este repositorio.
 
+Data source:
+    - tipos-interes.csv:https://fred.stlouisfed.org/series/FEDFUNDS
+    - empleo.csv: https://fred.stlouisfed.org/series/UNRATE
+    - m2.csv: https://fred.stlouisfed.org/series/WM2NS
+    - dolares-emergentes.csv:https://fred.stlouisfed.org/series/RTWEXEMEGS
+
+
 ## Autor
 Este proyecto ha sido desarrollado por José Mª Martin jmmartinnu@hotmail.com

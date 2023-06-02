@@ -1823,78 +1823,236 @@ with tab4:
                     
 
     with tab9:
+        
 
+        # Select para elegir el tipo de gráfico
+        tipo_grafico = st.selectbox('Tipo de Gráfico', ['Barras', 'Líneas'], index=0)
 
-        # Dividir en dos columnas
+        # Select para elegir la visualización por mes o por año
+        visualizacion = st.selectbox('Visualización', ['Mes', 'Año'], index=0)
+
         col1, col2 = st.columns(2)
 
-        # Tabla de inflación en la primera columna
         with col1:
+            # Gráfico de inflación
             st.subheader('CPI')
-            st.write(inflacion_df.tail(10))
-        
+            fig_inflacion = go.Figure()
+            if tipo_grafico == "Barras":
+                fig_inflacion.add_trace(go.Bar(
+                    x=inflacion_df['Date'],
+                    y=inflacion_df['Inflation'],
+                    marker_color='blue'
+                ))
+            else:
+                fig_inflacion.add_trace(go.Line(
+                    x=inflacion_df['Date'],
+                    y=inflacion_df['Inflation'],
+                    marker_color='blue'
+                ))
+            fig_inflacion.update_layout(
+                xaxis_title='Fecha',
+                yaxis_title='Inflación',
+                title='CPI'
+            )
+            st.plotly_chart(fig_inflacion, use_container_width=True)
 
+        with col2:  
+            # Gráfico de tipos de interés
+            st.subheader('Interest Rate')
+            fig_tipos_interes = go.Figure()
+            if tipo_grafico == "Barras":
+                fig_tipos_interes.add_trace(go.Bar(
+                    x=tipos_interes_df['Date'],
+                    y=tipos_interes_df['Valor'],
+                    marker_color='red'
+                ))
+            else:
+                fig_tipos_interes.add_trace(go.Line(
+                    x=tipos_interes_df['Date'],
+                    y=tipos_interes_df['Valor'],
+                    marker_color='red'
+                ))
+            fig_tipos_interes.update_layout(
+                xaxis_title='Fecha',
+                yaxis_title='Tasa de Interés',
+                title='Interest Rate'
+            )
+            st.plotly_chart(fig_tipos_interes, use_container_width=True)
 
-
-        # Gráfico de tipos de interés en la segunda columna
-        with col2:
-            chart = alt.Chart(inflacion_df).mark_bar().encode(
-            x='Inflation:Q',
-            y='Date'
-        )
-
- 
-            st.altair_chart(chart, theme="streamlit", use_container_width=True)
-
-
-
-
-        # Dividir en dos columnas
         col1, col2 = st.columns(2)
 
-        # Tabla de inflación en la primera columna
         with col1:
-            st.subheader('Interest Rate')
-            st.write(tipos_interes_df.tail(10))
-        
+            # Gráfico de tasa de desempleo
+            st.subheader('Unemployment Rate')
+            fig_empleo = go.Figure()
+            if tipo_grafico == "Barras":
+                fig_empleo.add_trace(go.Bar(
+                    x=empleo_df['Date'],
+                    y=empleo_df['Cant'],
+                    marker_color='green'
+                ))
+            else:
+                fig_empleo.add_trace(go.Line(
+                    x=empleo_df['Date'],
+                    y=empleo_df['Cant'],
+                    marker_color='green'
+                ))
+            fig_empleo.update_layout(
+                xaxis_title='Fecha',
+                yaxis_title='Tasa de Desempleo',
+                title='Unemployment Rate'
+            )
+            st.plotly_chart(fig_empleo, use_container_width=True)
+
         with col2:
-            
-            
-            # Gráfico de tipos de interés en la segunda columna
-            with col2:
-                chart = alt.Chart(tipos_interes_df).mark_bar().encode(
-                x='Tax:Q',
-                y='Date'
+            # Gráfico de M2
+            st.subheader('M2')
+            fig_m2 = go.Figure()
+            if tipo_grafico == "Barras":
+                fig_m2.add_trace(go.Bar(
+                    x=m2_df['Date'],
+                    y=m2_df['Dato'],
+                    marker_color='purple'
+                ))
+            else:
+                fig_m2.add_trace(go.Line(
+                    x=m2_df['Date'],
+                    y=m2_df['Dato'],
+                    marker_color='purple'
+                ))
+            fig_m2.update_layout(
+                xaxis_title='Fecha',
+                yaxis_title='M2',
+                title='M2'
+            )
+            st.plotly_chart(fig_m2, use_container_width=True)
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            # Gráfico de Mercados Emergentes
+            st.subheader('Emerging Markets')
+            fig_dolares_emergentes = go.Figure()
+            if tipo_grafico == "Barras":
+                fig_dolares_emergentes.add_trace(go.Bar(
+                    x=dolaresEmergentes_df['Date'],
+                    y=dolaresEmergentes_df['Cant'],
+                    marker_color='orange'
+                ))
+            else:
+                fig_dolares_emergentes.add_trace(go.Line(
+                    x=dolaresEmergentes_df['Date'],
+                    y=dolaresEmergentes_df['Cant'],
+                    marker_color='orange'
+                ))
+            fig_dolares_emergentes.update_layout(
+                xaxis_title='Fecha',
+                yaxis_title='Mercados Emergentes',
+                title='Emerging Markets'
+            )
+            st.plotly_chart(fig_dolares_emergentes, use_container_width=True)
+
+        with col2:
+
+            # Gráfico de inflación y tipos de interés
+            st.subheader('Inflación y Tipos de Interés')
+
+            # Fusionar los datos de inflación y tipos de interés en un solo DataFrame
+            combined_df = pd.merge(inflacion_df, tipos_interes_df, on='Date')
+
+            # Crear una figura de Plotly
+            fig_combined = go.Figure()
+
+            if tipo_grafico == "Barras":
+                fig_combined.add_trace(go.Bar(
+                    x=combined_df['Date'],
+                    y=combined_df['Inflation'],
+                    name='Inflación',
+                    marker_color='blue'
+                ))
+                fig_combined.add_trace(go.Bar(
+                    x=combined_df['Date'],
+                    y=combined_df['Valor'],
+                    name='Tasa de Interés',
+                    marker_color='red'
+                ))
+            else:
+                fig_combined.add_trace(go.Line(
+                    x=combined_df['Date'],
+                    y=combined_df['Inflation'],
+                    name='Inflación',
+                    marker_color='blue'
+                ))
+                fig_combined.add_trace(go.Line(
+                    x=combined_df['Date'],
+                    y=combined_df['Valor'],
+                    name='Tasa de Interés',
+                    marker_color='red'
+                ))
+
+            # Configurar el diseño del gráfico
+            fig_combined.update_layout(
+                xaxis_title='Fecha',
+                yaxis_title='Valor',
+                title='Inflación y Tipos de Interés'
             )
 
- 
-            st.altair_chart(chart, theme="streamlit", use_container_width=True)
-
-            
-        # Dividir en dos columnas
-        col1, col2 = st.columns(2)
-
-        # Tabla de inflación en la primera columna
-        with col1:
-            st.subheader('Unemployment Rate')
-            st.write(empleo_df.tail(10))
-            
-        with col2:  
-            st.subheader('Dollar to Euro')
-            st.write(dolar_df.tail(10))
-            
-
-        col1, col2 = st.columns(2)
-        with col1:
-            st.subheader('M2')
-            st.write(m2_df.tail(10))
-        # Gráfico de tipos de interés en la segunda columna
-        with col2:
-            st.subheader('Emerging Markets')
-            st.write(dolaresEmergentes_df.tail(10))
-            
+            # Mostrar el gráfico en Streamlit
+            st.plotly_chart(fig_combined, use_container_width=True)
 
 
 
-    
-    
+
+       
+
+        # Fusionar los datos de desempleo y PIB en un solo DataFrame
+        combined_df = pd.merge(empleo_df, gdp_df, on='Date')
+
+        # Crear una figura de Plotly
+        fig_combined = go.Figure()
+
+        if tipo_grafico == "Barras":
+            fig_combined.add_trace(go.Bar(
+                x=combined_df['Date'],
+                y=combined_df['Cant'],
+                name='Desempleo',
+                marker_color='orange'
+            ))
+            fig_combined.add_trace(go.Bar(
+                x=combined_df['Date'],
+                y=combined_df['gdp'],
+                name='PIB',
+                marker_color='cyan',
+                yaxis='y2'  # Asignar la escala secundaria al eje y del PIB
+            ))
+        else:
+            fig_combined.add_trace(go.Line(
+                x=combined_df['Date'],
+                y=combined_df['Cant'],
+                name='Desempleo',
+                marker_color='orange'
+            ))
+            fig_combined.add_trace(go.Line(
+                x=combined_df['Date'],
+                y=combined_df['gdp'],
+                name='PIB',
+                marker_color='cyan',
+                yaxis='y2'  # Asignar la escala secundaria al eje y del PIB
+            ))
+
+        # Configurar el diseño del gráfico
+        fig_combined.update_layout(
+            xaxis_title='Fecha',
+            title='Desempleo y PIB',
+            yaxis=dict(
+                title='Desempleo'
+            ),
+            yaxis2=dict(
+                title='PIB',
+                overlaying='y',  # Superponer la escala secundaria al eje y principal
+                side='right'  # Posicionar la escala secundaria a la derecha
+            )
+        )
+
+        # Mostrar el gráfico en Streamlit
+        st.plotly_chart(fig_combined, use_container_width=True)

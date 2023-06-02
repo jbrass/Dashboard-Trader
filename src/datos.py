@@ -125,11 +125,13 @@ data_cot_noncommercial = pd.read_csv('./Operativa/processed/cot-report-noncommer
 
 
 inflacion_df = pd.read_csv('./Operativa/processed/inflacion.csv', names=['Date', 'Inflation'])
-tipos_interes_df = pd.read_csv('./Operativa/processed/tipos-interes.csv', names=['Date', 'Tax'])
+tipos_interes_df = pd.read_csv('./Operativa/processed/tipos-interes.csv', names=['Date', 'Valor'])
 m2_df = pd.read_csv('./Operativa/processed/m2.csv', names=['Date', 'Dato'])
 empleo_df = pd.read_csv('./Operativa/processed/empleo.csv', names=['Date', 'Tax'])
 dolar_df = pd.read_csv('./Operativa/processed/dolar.csv', names=['Date', 'Price'])
 dolaresEmergentes_df = pd.read_csv('./Operativa/processed/dolares-emergentes.csv', names=['Date', 'Cant'])
+gdp_df = pd.read_csv('./Operativa/processed/GDP.csv', names=['Date', 'gdp'])
+
 
 #elimino la fila 0
 # Eliminar la fila 0 de inflacion_df
