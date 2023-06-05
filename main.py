@@ -94,30 +94,30 @@ with tab1:
 
 
     # Título de la sección
-    st.header('Día 01/06/2023')
+    st.header('Día 05/06/2023')
 
     # Introducción
     st.write(txt_comentario)
-    st.image("./img/Junio/1Junio/premercado.png")
+    st.image("./img/Junio/5Junio/premercado.png")
     #ppner imagen
     #st.image("./img/5Mayo/cme-liquidez.jpeg")
-    st.image("./img/Junio/1Junio/gamma.png")  
+    st.image("./img/Junio/5Junio/gamma.png")  
     # Gráfico de precios de la semana
     st.subheader('Niveles importantes')
     st.write(txt_niveles)
     st.write(txt_sentiment)
-    st.image("./img/Junio/1Junio/premercado_neto.png")
+    st.image("./img/Junio/5Junio/putcall.png")
     #st.image("./img/1Junio/premercado_delta.png")
     
     # Análisis de los principales movimientos del mercado
     st.subheader('Planteamiento y escenarios operativos')
     st.write(txt_esperamos)
-    st.image("./img/Junio/1Junio/estructura.png")
+    st.image("./img/Junio/5Junio/estructura.png")
     
     # Volatilidad
     st.subheader('Volatilidad')
     st.write(txt_volatilidad)
-    st.image("./img/Junio/1Junio/volatilidad.png") 
+    st.image("./img/Junio/5Junio/volatilidad.png") 
 
 
 
@@ -415,7 +415,7 @@ with tab4:
         st.dataframe(df_top)
     else:
         if archivo_seleccionado == "spx_quotedata.csv":
-            df_top['Price'] = df_top['Strike'] + 10
+            df_top['Price'] = df_top['Strike'] + 5
         else:  # archivo_seleccionado == "spy_quotedata.csv"
             df_top['Price'] = df_top['Strike'] * 10
 
