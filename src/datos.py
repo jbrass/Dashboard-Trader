@@ -39,6 +39,10 @@ df_squeeze = pd.read_csv("./Operativa/processed/DIX.csv")
 
 
 
+#COT REPORT
+df_cotNQ = pd.read_csv('./Operativa/processed/cotreport_NQ.csv')
+df_cotSP = pd.read_csv('./Operativa/processed/cotreport_ES.csv')
+
 #CBOE INDICES
 data = pd.read_csv('./Operativa/processed/spx_quotedata.csv')
 data_spy = pd.read_csv('./Operativa/processed/spy_quotedata.csv')

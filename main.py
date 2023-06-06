@@ -66,7 +66,7 @@ with open("fintra-logo-blanco.png", 'rb') as img:
     
 
 # Utilizar una estructura de control de flujo más clara
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs(["Reporte de Mercado", "Estadísticas", "Gráficos/Predicciones", "Opciones 0DTE", "Charts Índices", "Charts Acciones", "Meme Stocks", "Gamma", "Estadísticas Macroeconómicas"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs(["Reporte de Mercado", "Estadísticas", "Gráficos/Predicciones", "Opciones 0DTE", "Charts Índices", "Charts Acciones", "Meme Stocks", "Gamma", "CotReport", "Estadísticas Macroeconómicas"])
 
 with tab1:
 
@@ -94,30 +94,30 @@ with tab1:
 
 
     # Título de la sección
-    st.header('Día 05/06/2023')
+    st.header('Día 06/06/2023')
 
     # Introducción
     st.write(txt_comentario)
-    st.image("./img/Junio/5Junio/premercado.png")
+    st.image("./img/Junio/6Junio/premercado.png")
     #ppner imagen
     #st.image("./img/5Mayo/cme-liquidez.jpeg")
-    st.image("./img/Junio/5Junio/gamma.png")  
+    st.image("./img/Junio/6Junio/gamma.png")  
     # Gráfico de precios de la semana
     st.subheader('Niveles importantes')
     st.write(txt_niveles)
     st.write(txt_sentiment)
-    st.image("./img/Junio/5Junio/putcall.png")
-    #st.image("./img/1Junio/premercado_delta.png")
+    st.image("./img/Junio/6Junio/premercado_neto.png")
+    st.image("./img/Junio/6Junio/premercado_delta.png")
     
     # Análisis de los principales movimientos del mercado
     st.subheader('Planteamiento y escenarios operativos')
     st.write(txt_esperamos)
-    st.image("./img/Junio/5Junio/estructura.png")
+    st.image("./img/Junio/6Junio/estructura.png")
     
     # Volatilidad
     st.subheader('Volatilidad')
     st.write(txt_volatilidad)
-    st.image("./img/Junio/5Junio/volatilidad.png") 
+    st.image("./img/Junio/6Junio/volatilidad.png") 
 
 
 
@@ -552,7 +552,7 @@ with tab4:
         
         # Personaliza los títulos y ejes del gráfico
         fig5.update_layout(
-            title='Neto de opciones call y put para los 15 strikes principales',
+            title='Gamma de opciones call y put para los 15 strikes principales',
             xaxis_title='Strike',
             yaxis_title='Puts Gamma',
             barmode='stack'
@@ -650,11 +650,76 @@ with tab4:
                     
 
 
+    #DELTA TODAS LAS EXPIRACIONES SPX
+    # Transformar Expiration Date a formato fecha
+    data_all['Expiration Date'] = pd.to_datetime(data_all['Expiration Date'], format='%a %b %d %Y')
+
+    # Agregar una columna para el total de deltas en cada Expiration Date
+    data_all['Total Delta'] = data_all['Calls Delta'] + data_all['Puts Delta']
+
+    # Crear el gráfico con Plotly Express
+    fig = px.bar(data_all, x='Expiration Date', y='Total Delta',
+                color='Total Delta',
+                color_discrete_sequence=['red', 'green'],
+                labels={'Total Delta': 'Deltas'},
+                title=f"Delta {archivo_seleccionado.replace('_quotedata.csv', '').upper()}".upper())
+
+    # Definir los colores para valores positivos y negativos
+    fig.update_traces(marker=dict(color=data_all['Total Delta'].apply(lambda x: 'green' if x >= 0 else 'red')))
+
+    # Añadir línea horizontal en y=0
+    fig.add_shape(type='line', x0=min(data_all['Expiration Date']), y0=0, x1=max(data_all['Expiration Date']), y1=0,
+                line=dict(color='black', width=1))
+
+    # Configurar el tooltip para mostrar la fecha y el valor de delta
+    fig.update_traces(hovertemplate='<b>%{x|%Y-%m-%d}</b><br>%{y:.0f} Deltas')
+
+
+
+    # Mostrar el gráfico en Streamlit
+    st.plotly_chart(fig, use_container_width=True)
 
 
 
 
-##########
+    
+    #Calcular CHARM por fecha de expiracion
+    #calculo: para calcular la diferencia entre los precios de las opciones de Calls y Puts en días consecutivos,
+    # y luego dividimos esta diferencia por el número de días que separan las fechas de vencimiento (Expiration Date).
+    # Esto nos dará una medida del cambio diario en el precio de la opción, es decir, el Charm.
+    
+    # Ordenar los datos por fecha de vencimiento
+    data = data.sort_values('Expiration Date')
+
+    # Calcular el Charm
+    data['Charm'] = data['Calls Delta'].diff() / data['Calls Last Sale'].diff()
+
+    # Crear el gráfico de Charm
+    chart = alt.Chart(data).mark_bar().encode(
+        x='Strike:Q',
+        y=alt.Y('Charm:Q', axis=alt.Axis(format='%', title='Charm (%)')),
+        color=alt.condition(alt.datum.Charm >= 0, alt.value('cyan'), alt.value('orange'))
+    ).properties(
+        title='Charm Near the Money '
+    )
+
+    # Mostrar el gráfico en Streamlit
+    st.altair_chart(chart, use_container_width=True)
+
+
+
+
+
+  
+
+    # Filtrar los datos para mostrar solo los strikes mayores a 3000
+
+
+
+
+
+
+    ##########
 
     with tab5:
 
@@ -1823,6 +1888,101 @@ with tab4:
                     
 
     with tab9:
+        # Gráfico de barras para comparar posicionamiento commercial y non-commercial
+        fig = go.Figure()
+
+        fig.add_trace(go.Bar(
+            x=df_cotSP['dia'],
+            y=df_cotSP['cot_commercial'],
+            name='Commercial',
+            marker_color='#C2BB00'
+        ))
+
+        fig.add_trace(go.Bar(
+            x=df_cotSP['dia'],
+            y=df_cotSP['cot_noncommercial'],
+            name='Non-Commercial',
+            marker_color='#E1523D'
+        ))
+
+        # Configurar el diseño del gráfico
+        fig.update_layout(
+            title='Posicionamiento Neto Commercial vs. Non-Commercial',
+            xaxis_title='Periodo',
+            yaxis_title='Posicionamiento',
+            barmode='group',
+            xaxis=dict(
+                tickformat='%d-%m-%Y',  # Formato de las fechas
+                tickmode='auto',
+                nticks=10  # Número de ticks en el eje x
+            )
+        )
+
+        # Mostrar el gráfico en Streamlit
+        st.plotly_chart(fig, use_container_width=True)
+                
+       # Gráfico de barras para comparar el posicionamiento de los participantes
+        fig = go.Figure()
+
+        fig.add_trace(go.Bar(
+            x=df_cotSP['dia'],
+            y=df_cotSP['cot_commercial'],
+            name='Commercial',
+            marker_color='#C2BB00'
+        ))
+
+        fig.add_trace(go.Bar(
+            x=df_cotSP['dia'],
+            y=df_cotSP['cot_noncommercial'],
+            name='Non-Commercial',
+            marker_color='#E1523D'
+        ))
+
+        fig.add_trace(go.Bar(
+            x=df_cotSP['dia'],
+            y=df_cotSP['cot_dealer'],
+            name='Dealer',
+            marker_color='#ED8B16'
+        ))
+
+        fig.add_trace(go.Bar(
+            x=df_cotSP['dia'],
+            y=df_cotSP['cot_institutional'],
+            name='Asset Manager/Instituional',
+            marker_color='#005E54'
+        ))
+
+        fig.add_trace(go.Bar(
+            x=df_cotSP['dia'],
+            y=df_cotSP['cot_leveragedfunds'],
+            name='Leveraged Funds',
+            marker_color='#72F2EB'
+        ))
+
+        fig.add_trace(go.Bar(
+            x=df_cotSP['dia'],
+            y=df_cotSP['cot_other'],
+            name='Other Reportables',
+            marker_color='#FF4858'
+        ))
+
+        # Configurar el diseño del gráfico
+        fig.update_layout(
+            title='Posicionamiento Neto de todos los participantes',
+            xaxis_title='Periodo',
+            yaxis_title='Posicionamiento',
+            barmode='group',
+            xaxis=dict(
+                tickformat='%d-%m-%Y',  # Formato de las fechas
+                tickmode='auto',
+                nticks=10  # Número de ticks en el eje x
+            )
+        )
+
+        # Mostrar el gráfico en Streamlit
+        st.plotly_chart(fig, use_container_width=True)
+    
+    with tab10:
         
 
         # Select para elegir el tipo de gráfico
