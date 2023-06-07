@@ -15,3 +15,4 @@ timedelta
 datetime
 plotly.express
 scipy
+networkx
