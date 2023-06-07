@@ -24,8 +24,6 @@ from sklearn.linear_model import LinearRegression
 from plotly.subplots import make_subplots
 
 
-
-
     
 
 st.set_page_config(page_title="Mi tablero de Streamlit",
@@ -1887,6 +1885,11 @@ with tab4:
         st.plotly_chart(fig, use_container_width=True)
                     
 
+    
+
+
+
+
     with tab9:
         # Gráfico de barras para comparar posicionamiento commercial y non-commercial
         fig = go.Figure()
@@ -1981,6 +1984,55 @@ with tab4:
 
         # Mostrar el gráfico en Streamlit
         st.plotly_chart(fig, use_container_width=True)
+        
+        
+        
+        
+        st.info("En este gráfico se muestra la evolución de los cambios en la posición neta de diferentes participantes del mercado a lo largo del tiempo. Cada línea representa a un grupo de participantes y su respectivo cambio en la posición neta en relación con la fecha. El eje x muestra las fechas en las que se registraron los datos, mientras que el eje y representa el cambio en la posición neta para cada grupo de participantes.")
+
+        # Ordenar los datos por fecha
+        df_cotSP["dia"] = pd.to_datetime(df_cotSP["dia"])  # Convertir columna "dia" a formato de fecha
+        df_cotSP = df_cotSP.sort_values("dia")
+
+        # Obtener la lista de participantes del mercado
+        participantes = ['cot_commercial', 'cot_noncommercial', 'cot_dealer', 'cot_institutional', 'cot_leveragedfunds', 'cot_other']
+
+        # Definir una paleta de colores personalizada
+        colores = ['blue', 'green', 'orange', 'purple', 'red']
+
+        # Crear el gráfico de líneas
+        fig = go.Figure()
+
+        for participante, color in zip(participantes, colores):
+            fig.add_trace(go.Line(
+                x=df_cotSP['dia'],
+                y=df_cotSP[participante],
+                name=participante,
+                line=dict(color=color),
+                hovertemplate='Fecha: %{x}<br>' +
+                            'Participante: ' + participante + '<br>' +
+                            'Cambio en Posición Neta: %{y}<br>'
+            ))
+
+        # Configurar el diseño del gráfico
+        fig.update_layout(
+            xaxis=dict(title='Fecha'),
+            yaxis=dict(title='Cambio en Posición Neta'),
+            title='Cambios en la Posición Neta de los Participantes del Mercado'
+        )
+
+        # Mostrar el gráfico en Streamlit
+        st.plotly_chart(fig, use_container_width=True)
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
     
     with tab10:
         
