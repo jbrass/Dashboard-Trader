@@ -1,8 +1,8 @@
 
-txt_comentario = "Comenzamos la semana ayer Lunes con un mercado algo sobrecomprado, y con el sesgo pensando más en el lado de la oferta que de la demanda. Teníamos referencias y niveles relevantes que fueron decisivos de cara a plantear operaciones"
-txt_niveles = "**Para hoy 6 de Junio:** Niveles relevantes en premercado: **SPX: Call Wall 4300 y Put Wall 4260**. y para el **ES: Call Wall 4305 y Put Wall 4265**. **Nivel Gamma 0: SPX: 4265 y ES: 4270, Estamos en gamma positiva y bajando.**. "
-txt_sentiment = "**Sentiment** Negativo "
-txt_esperamos = "**¿Qué esperamos para hoy?** En entornos de baja volatilidad lo lógico es tener un mercado lento, y subiendo poco a poco. Un cambio en la volatilidad implica movimientos más rápidos y esto es algo que debe de estar al caer. Clave el soporte Put Wall."
+txt_comentario = "Cerramos el Martes día 6 de Junio con un mercado en rango, Observamos como la Call Wall para el precio y hace de resistencia. Las opciones van expirando dia a dia y lo que si hay es una intención por seguir escalando precios."
+txt_niveles = "**Para hoy 7 de Junio:** Niveles relevantes en premercado: **SPX: Call Wall 4300 y Put Wall 4260**. y para el **ES: Call Wall 4305 y Put Wall 4265**. **Nivel Gamma 0: SPX: 4265 y ES: 4270, Estamos en gamma positiva y bajando.**. "
+txt_sentiment = "**Sentiment** Positivo "
+txt_esperamos = "**¿Qué esperamos para hoy?** Una subida y una rotura de la CallWall nos hace pensar en un mercado alcista dado los flujos institucionales que están entrando en estas útlimas semanas."
 txt_volatilidad = "Seguimos estando en unos niveles de volatilidad bajos en los mínimos anuales."
 
 
