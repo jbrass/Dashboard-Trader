@@ -22,7 +22,7 @@ import plotly.express as px
 from scipy.stats import norm
 from sklearn.linear_model import LinearRegression
 from plotly.subplots import make_subplots
-
+import networkx as nx
 
     
 
@@ -1988,7 +1988,7 @@ with tab4:
         
         
         
-        st.info("En este gráfico se muestra la evolución de los cambios en la posición neta de diferentes participantes del mercado a lo largo del tiempo. Cada línea representa a un grupo de participantes y su respectivo cambio en la posición neta en relación con la fecha. El eje x muestra las fechas en las que se registraron los datos, mientras que el eje y representa el cambio en la posición neta para cada grupo de participantes.")
+        st.info("En este gráfico se muestra la evolución de los cambios en la posición neta de diferentes participantes del mercado a lo largo del tiempo. Cada línea representa a un grupo de participantes y su respectivo cambio en la posición neta en relación con la fecha. El eje x muestra las fechas en las que se registraron los datos, mientras que el eje y representa el cambio en la posición neta para cada grupo de participantes.",  icon="ℹ️" )
 
         # Ordenar los datos por fecha
         df_cotSP["dia"] = pd.to_datetime(df_cotSP["dia"])  # Convertir columna "dia" a formato de fecha
@@ -2026,13 +2026,203 @@ with tab4:
 
         
         
+        st.info("El gráfico de proporción de posiciones muestra la distribución de las posiciones largas y cortas de los diferentes participantes del mercado en forma de un gráfico de pastel o un gráfico de barras apiladas. Este tipo de gráfico nos ayuda a comprender la estructura general de las posiciones en el mercado y la relación entre las posiciones largas y cortas.",  icon="ℹ️")
+        df_cotSP['Total_Position'] = df_cotSP['cot_commercial'] + df_cotSP['cot_noncommercial'] + df_cotSP['cot_dealer'] + df_cotSP['cot_institutional'] + df_cotSP['cot_leveragedfunds'] + df_cotSP['cot_other']
+        df_cotSP['Commercial'] = df_cotSP['cot_commercial'] / df_cotSP['Total_Position']
+        df_cotSP['NonCommercial'] = df_cotSP['cot_noncommercial'] / df_cotSP['Total_Position']
+        df_cotSP['Dealer'] = df_cotSP['cot_dealer'] / df_cotSP['Total_Position']
+        df_cotSP['Institutional'] = df_cotSP['cot_institutional'] / df_cotSP['Total_Position']
+        df_cotSP['LeverageFunds'] = df_cotSP['cot_leveragedfunds'] / df_cotSP['Total_Position']
+        df_cotSP['Other'] = df_cotSP['cot_other'] / df_cotSP['Total_Position']
+
+        # Crear el gráfico de proporción de posiciones con Altair
+        chart = alt.Chart(df_cotSP).mark_area(opacity=0.8).encode(
+            x='dia:T',
+            y=alt.Y('value:Q', stack='normalize'),
+            color='variable:N'
+        ).transform_fold(
+            ['Commercial', 'NonCommercial', 'Dealer', 'Institutional', 'LeverageFunds', 'Other'],
+            as_=['variable', 'value']
+        ).properties(
+            width=600,
+            height=400,
+            title='Proporción de Posiciones'
+        )
+
+        # Mostrar el gráfico en Streamlit
+        st.altair_chart(chart, use_container_width=True)
+
+        # Crear el gráfico de proporción de posiciones con Plotly Express
+        fig = px.area(df_cotSP, x='dia', y=['Commercial', 'NonCommercial', 'Dealer', 'Other'],
+                    title='Proporción de Posiciones', labels={'value': 'Proporción', 'variable': 'Categoría'})
+
+        # Mostrar el gráfico en Streamlit
+        st.plotly_chart(fig, use_container_width=True)     
         
         
         
         
         
         
-        
+        # Información sobre el mapa de correlaciones
+        st.info("El mapa de correlaciones en el CotReport representa las correlaciones entre las diferentes categorías de participantes en el mercado financiero. Cada celda del mapa muestra la correlación entre dos categorías específicas en una fecha determinada. Los valores de correlación varían entre -1 y 1, donde -1 indica una correlación negativa perfecta, 1 indica una correlación positiva perfecta y 0 indica ausencia de correlación. Este mapa proporciona una visualización visualmente intuitiva de las relaciones entre las categorías y cómo han cambiado a lo largo del tiempo. Al explorar el mapa de proporciones, se pueden identificar patrones y tendencias en la participación de los diferentes actores del mercado, lo que puede ser útil para tomar decisiones informadas en el ámbito financiero.",  icon="ℹ️")         # Calcular la proporción de posiciones
+      
+        # Calcular la matriz de correlaciones
+        corr_matrix = df_cotSP[['cot_commercial', 'cot_noncommercial', 'cot_dealer', 'cot_institutional', 'cot_leveragedfunds', 'cot_other']].corr()
+
+        # Crear el heatmap de correlaciones con Plotly
+        fig = go.Figure(data=go.Heatmap(
+            z=corr_matrix.values,
+            x=corr_matrix.columns,
+            y=corr_matrix.columns,
+            colorscale='Viridis'
+        ))
+
+        fig.update_layout(
+            title='Heatmap de Correlaciones',
+            xaxis=dict(title='Variables'),
+            yaxis=dict(title='Variables')
+        )
+
+        # Mostrar el heatmap en Streamlit
+        st.plotly_chart(fig, use_container_width=True)
+
+        # Crear el heatmap de correlaciones con Seaborn y Matplotlib
+        plt.figure(figsize=(8, 6))
+        sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
+
+ 
+ 
+
+
+ 
+ 
+ 
+ 
+        st.info("Gráfico de Flujos o Cambios por Categoría es una herramienta visual que nos ayuda a entender los cambios en las posiciones de diferentes categorías de participantes del mercado, proporcionando información valiosa sobre la dirección y magnitud de los flujos de capital en cada categoría.",  icon="ℹ️")
+        # Variables de interés
+        variables = ['cot_commercial', 'cot_noncommercial', 'cot_dealer', 'cot_institutional', 'cot_leveragedfunds', 'cot_other']
+
+        # Calcular los cambios por categoría
+        df_changes = df_cotSP[variables].diff()
+
+        # Crear la figura
+        fig = go.Figure()
+
+        # Agregar las líneas de cambio por categoría
+        for variable in variables:
+            fig.add_trace(go.Scatter(x=df_cotSP['dia'], y=df_changes[variable], mode='lines', name=variable))
+
+        # Personalizar el diseño del gráfico
+        fig.update_layout(
+            title='Gráfico de flujo de posiciones por Categoría',
+            xaxis=dict(title='Día'),
+            yaxis=dict(title='Cambio'),
+        )
+
+        # Mostrar el gráfico en Streamlit
+        st.plotly_chart(fig, use_container_width=True)
+ 
+ 
+ 
+ 
+        st.info("Para analizar el gráfico, podemos observar la distribución de las conexiones y las interacciones entre las categorías en función de la ubicación de los puntos en el gráfico", icon="ℹ️")
+        st.info("1. Proximidad: Si dos puntos en el gráfico están cercanos entre sí, indica una mayor interacción o relación entre las categorías que representan. Esto puede sugerir que estas categorías están influenciando o interactuando directamente en el mercado.")
+        st.info("2. Tendencia: Si hay una tendencia clara en la dirección de las conexiones en el gráfico (por ejemplo, una línea ascendente o descendente), puede indicar una relación sistemática entre las categorías. Esto puede ser útil para identificar patrones o comportamientos consistentes en el mercado.")
+        st.info("3. Concentración: Si hay una concentración de puntos alrededor de ciertas áreas del gráfico, puede indicar una interacción significativa o una mayor actividad entre esas categorías. Esto puede sugerir áreas de mayor liquidez, acumulación o distribución de posiciones.")
+        st.info("4. Anomalías: Si hay puntos aislados o alejados del grupo principal en el gráfico, pueden representar situaciones atípicas o anómalas en las interacciones entre las categorías. Estas anomalías podrían ser señales de cambios inesperados o eventos inusuales en el mercado.")
+        # Crear un subconjunto del dataframe con las variables necesarias
+        df_subset = df_cotSP[['cot_commercial', 'cot_noncommercial', 'cot_dealer', 'cot_institutional', 'cot_leveragedfunds', 'cot_other']]
+
+        # Calcular la matriz de correlación entre las variables
+        correlation_matrix = df_subset.corr()
+
+        # Crear un grafo dirigido a partir de la matriz de correlación
+        G = nx.from_pandas_adjacency(correlation_matrix, create_using=nx.DiGraph)
+
+        # Configurar el diseño del grafo
+        pos = nx.spring_layout(G, seed=42)
+
+        # Crear los nodos y las conexiones del grafo
+        node_trace = go.Scatter(
+            x=[pos[k][0] for k in G.nodes()],
+            y=[pos[k][1] for k in G.nodes()],
+            mode='markers',
+            hoverinfo='text',
+            marker=dict(
+                size=10,
+                color='blue',
+            ),
+            text=list(G.nodes()),
+        )
+
+        edge_trace = go.Scatter(
+            x=[pos[k[0]][0] for k in G.edges()],
+            y=[pos[k[0]][1] for k in G.edges()],
+            line=dict(width=1, color='gray'),
+            hoverinfo='none',
+            mode='lines',
+        )
+
+        # Crear el layout del gráfico
+        layout = go.Layout(
+            title='Red de Interacciones',
+            showlegend=False,
+            hovermode='closest',
+            margin=dict(b=20, l=5, r=5, t=40),
+        )
+
+        # Crear la figura
+        fig = go.Figure(data=[edge_trace, node_trace], layout=layout)
+
+        # Mostrar el gráfico con Plotly
+        st.plotly_chart(fig, use_container_width=True)
+
+
+
+
+
+        st.info("El gráfico de barras de comparación de influencias es una herramienta visual efectiva para determinar las variables más influyentes en un conjunto de datos y tomar decisiones informadas basadas en su magnitud absoluta de influencia.", icon="ℹ️")
+        # Crear un subconjunto del dataframe con las variables necesarias
+        df_subset = df_cotSP[['cot_commercial', 'cot_noncommercial', 'cot_dealer', 'cot_institutional', 'cot_leveragedfunds', 'cot_other']]
+
+        # Calcular la matriz de correlación entre las variables
+        correlation_matrix = df_subset.corr()
+
+        # Crear una lista con los nombres de las variables
+        variables = list(correlation_matrix.columns)
+
+        # Crear una matriz de influencia a partir de la matriz de correlación
+        influence_matrix = correlation_matrix.copy()
+
+        # Calcular las magnitudes de influencia en magnitud absoluta
+        total_influence = influence_matrix.sum()
+
+        # Crear un dataframe con las variables y sus influencias en magnitud absoluta
+        df_influences = pd.DataFrame({'Variable': variables, 'Influencia': total_influence})
+
+        # Ordenar el dataframe por la columna de influencia en orden descendente
+        df_influences = df_influences.sort_values(by='Influencia', ascending=False)
+
+        # Crear el gráfico de barras de comparación de influencias con Altair
+        chart = alt.Chart(df_influences).mark_bar().encode(
+            x=alt.X('Variable:N', sort=None),
+            y=alt.Y('Influencia:Q'),
+            color=alt.Color('Variable:N', legend=None),
+            tooltip=['Variable', alt.Tooltip('Influencia', format='.2f')]
+        ).properties(
+            title='Comparación de Influencias'
+        )
+
+        # Mostrar el gráfico de barras de comparación de influencias con Altair y Streamlit
+        st.altair_chart(chart, use_container_width=True)
+
+
+
+
+ 
+ 
+                
     
     with tab10:
         
