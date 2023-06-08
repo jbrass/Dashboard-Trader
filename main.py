@@ -224,7 +224,7 @@ with tab3:
         )
         
         # Muestra el gráfico en la página
-        st.plotly_chart(fig)
+        st.plotly_chart(fig, use_container_width=True)
     else:
         st.warning("Por favor selecciona alguna variable para graficar")
 
