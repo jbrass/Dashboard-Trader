@@ -22,7 +22,7 @@ import plotly.express as px
 from scipy.stats import norm
 from sklearn.linear_model import LinearRegression
 from plotly.subplots import make_subplots
-
+from sklearn.cluster import KMeans
 
     
 
@@ -197,36 +197,205 @@ with tab2:
 
 
 with tab3:
+    
 
-    # Selección de la variable a graficar
-    selected_vars = st.multiselect("Seleccione uno o múltiple variables", ["Day's High", "Day's Low", "Closing Price", "Volume", "Range in ticks", "VIX Closing Price", "Vwap", "Vpoc", "Volume in Vpoc Zone", "Volume Value Area Low", "Volume Value Area High", "vix_0dte"], default=["Closing Price"])
-    # Selección del tipo de gráfico
-    tipo_grafico = st.selectbox("Seleccione el tipo de gráfico", ["Linea", "Puntos", "Barras"], key='tipo_grafico', index=0)
-    if len(selected_vars) > 0:
-        fig = go.Figure()
-        
-        for variable in selected_vars:
-            # Si el tipo de gráfico es línea
-            if tipo_grafico == 'Linea':
-                fig.add_trace(go.Scatter(x=df['Date'], y=df[variable], mode='lines', name=variable))
-            # Si el tipo de gráfico es dispersión
-            elif tipo_grafico == 'Puntos':
-                fig.add_trace(go.Scatter(x=df['Date'], y=df[variable], mode='markers', name=variable))
-            # Si el tipo de gráfico es barras
-            else:
-                fig.add_trace(go.Bar(x=df['Date'], y=df[variable], name=variable))
-        
-        # Personaliza los títulos y ejes del gráfico
-        fig.update_layout(
-            title=f'Chart of {", ".join(selected_vars)}',
-            xaxis_title='Date',
-            yaxis_title='Value'
-        )
-        
-        # Muestra el gráfico en la página
-        st.plotly_chart(fig, use_container_width=True)
+    # Filtro de periodo
+    periodo = st.selectbox("Selecciona un periodo", ["1 día", "1 semana", "1 mes", "Todo"], index=3)
+
+    if periodo == "1 día":
+        df_filtered = df[-1:]
+    elif periodo == "1 semana":
+        df_filtered = df[-7:]
+    elif periodo == "1 mes":
+        df_filtered = df[-30:]
     else:
-        st.warning("Por favor selecciona alguna variable para graficar")
+        df_filtered = df
+
+    # Dividir la pantalla en dos columnas
+    col1, col2 = st.columns(2)
+
+    # Gráfico de Líneas - Evolución del Precio de Cierre
+    line_chart = px.line(df_filtered, x='Date', y='Closing Price', title='Evolución del Precio de Cierre')
+    col1.plotly_chart(line_chart, use_container_width=True)
+
+    # Gráfico de Área - Volumen Value Area
+    area_chart = px.area(df_filtered, x='Date', y=['Volume', 'Range in ticks'], title='Volumen y Rango en Ticks')
+    col2.plotly_chart(area_chart, use_container_width=True)
+
+    # Gráfico de Dispersión - Relación entre Precio de Cierre y Volumen
+    scatter_chart = px.scatter(df_filtered, x='Closing Price', y='Volume', title='Relación entre Precio de Cierre y Volumen')
+    col1.plotly_chart(scatter_chart, use_container_width=True)
+
+    # Gráfico de Área - Volumen Value Area
+    area_chart = px.area(df_filtered, x='Date', y=['Volume Value Area Low', 'Volume Value Area High', 'Volume in Vpoc Zone'], title='Volumen Value Area')
+    col2.plotly_chart(area_chart, use_container_width=True)
+
+
+    # Gráfico de Dispersión - Relación entre Precio de Cierre y Volumen
+    scatter_chart = px.scatter(df_filtered, x='Closing Price', y='Volume', title='Relación entre Precio de Cierre y Volumen')
+    col1.plotly_chart(scatter_chart, use_container_width=True)
+    
+    
+
+
+    #Gráfico de Donut de Composición de Volumen
+    volume_composition = df_filtered[['Volume in Vpoc Zone', 'Volume Value Area Low', 'Volume Value Area High']]
+    volume_composition_total = volume_composition.sum()
+    donut_chart = go.Figure(data=[go.Pie(labels=volume_composition.columns,
+    values=volume_composition_total,
+    hole=0.4)])
+    col2.plotly_chart(donut_chart, use_container_width=True)
+
+    
+
+    # Calcular la media móvil de 50 días
+    df['SMA_50'] = df['Closing Price'].rolling(window=50).mean()
+
+    # Calcular la diferencia entre el precio de cierre y la apertura
+    df['Price_Diff'] = df['Closing Price'] - df['Opening']
+
+    # Calcular la tendencia (1 si el precio es mayor que la media móvil, -1 si es menor, 0 si es neutral)
+    df['Trend'] = np.where(df['Price_Diff'] > 15, 1, np.where(df['Price_Diff'] < -15, -1, 0))
+
+    # Mapear los valores de tendencia a etiquetas descriptivas
+    trend_labels = {1: 'Positiva', -1: 'Negativa', 0: 'Neutral'}
+    df['Trend'] = df['Trend'].map(trend_labels)
+
+    # Filtrar el DataFrame según el periodo seleccionado
+    if periodo == "1 día":
+        df_filtered = df[-1:]
+    elif periodo == "1 semana":
+        df_filtered = df[-7:]
+    elif periodo == "1 mes":
+        df_filtered = df[-30:]
+    else:
+        df_filtered = df
+
+    # Obtener el recuento de cada categoría de tendencia
+    trend_counts = df_filtered['Trend'].value_counts().sort_index()
+
+    # Crear un nuevo DataFrame con las fechas en el eje y
+    trend_data = pd.DataFrame({'Fecha': trend_counts.index, 'Count': trend_counts.values})
+
+    # Gráfico de Barras - Tendencia de Precios
+    trend_chart = px.bar(trend_data, y='Fecha', x='Count', color='Fecha', orientation='h', title='Tendencia de Precios')
+
+    # Configurar la leyenda
+    trend_chart.update_layout(
+        legend_title='Tendencia',
+        legend=dict(
+            orientation='h',
+            yanchor='bottom',
+            y=1.02,
+            xanchor='right',
+            x=1
+        )
+    )
+
+    # Asignar colores personalizados a las categorías de tendencia
+    colors = {'Positiva': 'green', 'Negativa': 'red', 'Neutral': 'gray'}
+    for trace in trend_chart.data:
+        trace.marker.color = colors[trace.name]
+
+    col1.plotly_chart(trend_chart, use_container_width=True)
+
+
+
+
+
+
+
+
+
+
+    #Gráfico de Área - Volumen en Zonas de Punto de Control
+    vpoc_chart = px.area(df_filtered, x='Date', y='Volume in Vpoc Zone', title='Volumen en Zonas de Punto de Control')
+    col2.plotly_chart(vpoc_chart, use_container_width=True)
+
+    #Gráfico de Barra - Volumen por Día de la Semana
+    volume_bar_chart = px.bar(df_filtered, x='Weekday', y='Volume', title='Volumen por Día de la Semana')
+    col1.plotly_chart(volume_bar_chart, use_container_width=True)
+
+    # Filtrar los datos por encima y por debajo de 4000
+    above_4000_data = df_filtered[df_filtered['Closing Price'] > 4000]
+    below_4000_data = df_filtered[df_filtered['Closing Price'] <= 4000]
+
+    # Combinar los datos en un único DataFrame
+    combined_data = pd.concat([above_4000_data, below_4000_data])
+
+    # Asignar colores a las barras según la condición
+    combined_data['Color'] = np.where(combined_data['Closing Price'] > 4000, '> 4000', '< 4000')
+
+    # Gráfico de Barras - Precios por Encima y por Debajo de 4000
+    combined_chart = px.bar(combined_data, x='Date', y='Closing Price', title='Precios por Encima y por Debajo de 4000', color='Color')
+    col2.plotly_chart(combined_chart, use_container_width=True)
+
+
+
+
+    #Gráfico de Violín - Distribución de Rendimientos
+    violin_chart = px.violin(df_filtered, y='Volume', title='Distribución de Volumen')
+    col1.plotly_chart(violin_chart, use_container_width=True)
+
+    #Gráfico de Líneas - VIX y VIX1D
+    vix_line_chart = px.line(df_filtered, x='Date', y=['VIX Closing Price', 'vix_0dte'], title='VIX y VIX1D')
+    col2.plotly_chart(vix_line_chart, use_container_width=True)
+
+
+
+
+
+    # Calcular el drawdown diario
+    df_filtered['Daily Drawdown'] = (df_filtered['Closing Price'].shift(1).cummax() - df_filtered['Closing Price']) / df_filtered['Closing Price'].shift(1)
+
+    # Calcular el drawdown acumulado
+    df_filtered['Cumulative Drawdown'] = (df_filtered['Closing Price'].cummax() - df_filtered['Closing Price']) / df_filtered['Closing Price'].cummax()
+
+    # Calcular el máximo drawdown
+    max_drawdown = df_filtered['Cumulative Drawdown'].max()
+
+    # Calcular la ganancia acumulada
+    df_filtered['Cumulative Gain'] = (df_filtered['Closing Price'] - df_filtered['Closing Price'].cummin()) / df_filtered['Closing Price'].cummin()
+
+    # Calcular la máxima ganancia
+    max_gain = df_filtered['Cumulative Gain'].max()
+
+    # Multiplicar el drawdown y la ganancia por -1 y convertirlos en porcentajes
+    df_filtered['Cumulative Drawdown'] = df_filtered['Cumulative Drawdown'] * -100
+    df_filtered['Cumulative Gain'] = df_filtered['Cumulative Gain'] * 100
+    
+    # Crear dataframe para el máximo drawdown
+    drawdown_df = pd.DataFrame({'Fecha': df_filtered['Date'], 'Drawdown': df_filtered['Cumulative Drawdown']})
+
+    # Crear dataframe para la máxima ganancia
+    gain_df = pd.DataFrame({'Fecha': df_filtered['Date'], 'Ganancia': df_filtered['Cumulative Gain']})
+    
+    # Eliminar el valor 0 del dataframe de ganancias
+    gain_df = gain_df[gain_df['Ganancia'] != 0]
+    
+    # Eliminar el valor 0 del dataframe de ganancias
+    drawdown_df = drawdown_df[drawdown_df['Drawdown'] != 0]
+    
+    # Gráfico de Líneas - Máximo Drawdown y Máxima Ganancia
+    drawdown_chart = go.Figure()
+
+    # Agregar el área de drawdown en rojo
+    drawdown_chart.add_trace(go.Scatter(x=df_filtered['Date'], y=df_filtered['Cumulative Drawdown'], fill='tozeroy', fillcolor='red', line_color='red', name='Pérdida'))
+
+    # Agregar el área de ganancia en verde
+    drawdown_chart.add_trace(go.Scatter(x=df_filtered['Date'], y=df_filtered['Cumulative Gain'], fill='tozeroy', fillcolor='green', line_color='green', name='Ganancia'))
+
+    # Configurar la leyenda
+    drawdown_chart.update_layout(legend_title='Filtro', legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1))
+
+    # Configurar el título del gráfico
+    drawdown_chart.update_layout(title='Máxima Pérdida y Ganancia')
+
+    # Mostrar el gráfico de drawdown y ganancia
+    st.plotly_chart(drawdown_chart, use_container_width=True)
+
+
+
 
 
 
@@ -254,17 +423,115 @@ with tab3:
     # Mostrar gráfico de dispersión de dos columnas
     col_x = st.selectbox('Selecciona una columna para el eje x', df.drop("Unnamed: 0", axis=1).columns)
     col_y = st.selectbox('Selecciona una columna para el eje y', df.drop("Unnamed: 0", axis=1).columns)
-    scatter_plot = alt.Chart(df).mark_circle().encode(
-        x=col_x,
-        y=col_y,
-        tooltip=[col_x, col_y]
-    ).interactive()
-    st.write("### Scatterplot " + col_x + " vs " + col_y)
-    st.altair_chart(scatter_plot, use_container_width=True)
+    tipo_grafico = st.selectbox("Seleccione el tipo de gráfico", ["Linea", "Puntos", "Barras"], index=0)
+
+
+    if tipo_grafico == "Linea":
+        line_plot = alt.Chart(df).mark_line().encode(
+            x=col_x,
+            y=col_y,
+            tooltip=[col_x, col_y]
+        ).interactive()
+        st.write("### Gráfico de Línea " + col_x + " vs " + col_y)
+        st.altair_chart(line_plot, use_container_width=True)
+    elif tipo_grafico == "Puntos":
+        scatter_plot = alt.Chart(df).mark_circle().encode(
+            x=col_x,
+            y=col_y,
+            tooltip=[col_x, col_y]
+        ).interactive()
+        st.write("### Gráfico de Puntos " + col_x + " vs " + col_y)
+        st.altair_chart(scatter_plot, use_container_width=True)
+    else:
+        bar_plot = alt.Chart(df).mark_bar().encode(
+            x=col_x,
+            y=col_y,
+            tooltip=[col_x, col_y]
+        ).interactive()
+        st.write("### Gráfico de Barras " + col_x + " vs " + col_y)
+        st.altair_chart(bar_plot, use_container_width=True)
 
 
 
 
+
+
+
+
+
+
+
+    #DELTAS
+    
+    # Transformar la columna 'Date' a formato fecha
+    df['Date'] = pd.to_datetime(df['Date'])
+
+
+
+    # Crear el gráfico de barras con Plotly Express
+    fig = px.bar(df, x='Date', y='Delta',
+                color='Delta',
+                color_discrete_sequence=['red', 'green'],
+                labels={'Delta': 'Deltas'},
+                title=f'Delta ')
+
+    # Definir los colores para valores positivos y negativos
+    fig.update_traces(marker=dict(color=df['Delta'].apply(lambda x: 'green' if x >= 0 else 'red')))
+
+    # Añadir línea horizontal en y=0
+    fig.add_shape(type='line', x0=min(df['Date']), y0=0, x1=max(df['Date']), y1=0,
+                line=dict(color='black', width=1))
+
+    # Configurar el tooltip para mostrar la fecha y el valor de delta
+    fig.update_traces(hovertemplate='<b>%{x|%Y-%m-%d}</b><br>%{y:.0f} Deltas')
+
+    # Mostrar el gráfico de barras en Streamlit
+    st.plotly_chart(fig, use_container_width=True)
+    
+    
+    
+    
+    ########### VARIACION PORCENTUAL DEL PRECIO DE CIERRE ###########
+    # Calcular la variación porcentual del precio de cierre
+    df['Daily_Return'] = df['Closing Price'].pct_change() * 100
+
+    # Crear el gráfico de barras con Plotly Express
+    fig = px.bar(df, x='Date', y='Daily_Return',
+                color='Daily_Return',
+                color_continuous_scale='RdYlGn',  # Escala de colores para positivo (verde) y negativo (rojo)
+                labels={'Daily_Return': 'Variación Porcentual'},
+                title='Variación Porcentual Diaria del Precio de Cierre')
+
+    # Añadir línea horizontal en y=0
+    fig.add_shape(type='line', x0=min(df['Date']), y0=0, x1=max(df['Date']), y1=0,
+                line=dict(color='black', width=1))
+
+    # Configurar el tooltip para mostrar la fecha y la variación porcentual
+    fig.update_traces(hovertemplate='<b>%{x|%Y-%m-%d}</b><br>%{y:.2f}%')
+
+    # Mostrar el gráfico de barras en Streamlit
+    st.plotly_chart(fig, use_container_width=True)
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    ######################   FORECAST #######################
+    
+    
+    
 
     st.subheader("Regresión Linea para hacer predicciones a un día")
 
@@ -304,14 +571,21 @@ with tab3:
 
     st.write("La predicción para la variable: ", variable_dependiente, "es", prediction[0][0])
 
-
-
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 with tab4:
 
     # Mostrar la tabla completa al iniciar el programa
