@@ -219,8 +219,13 @@ with tab3:
     col1.plotly_chart(line_chart, use_container_width=True)
 
     # Gráfico de Área - Volumen Value Area
-    area_chart = px.area(df_filtered, x='Date', y=['Volume', 'Range in ticks'], title='Volumen y Rango en Ticks')
+    area_chart = px.line(df_filtered, x='Date', y=['Range in ticks'], title='Rango en ticks')
+
+    # Configurar el tipo de gráfico a "stacked"
+    area_chart.update_layout(barmode='stack')
+
     col2.plotly_chart(area_chart, use_container_width=True)
+
 
     # Gráfico de Dispersión - Relación entre Precio de Cierre y Volumen
     scatter_chart = px.scatter(df_filtered, x='Closing Price', y='Volume', title='Relación entre Precio de Cierre y Volumen')
@@ -238,13 +243,23 @@ with tab3:
     
 
 
-    #Gráfico de Donut de Composición de Volumen
-    volume_composition = df_filtered[['Volume in Vpoc Zone', 'Volume Value Area Low', 'Volume Value Area High']]
-    volume_composition_total = volume_composition.sum()
-    donut_chart = go.Figure(data=[go.Pie(labels=volume_composition.columns,
-    values=volume_composition_total,
-    hole=0.4)])
-    col2.plotly_chart(donut_chart, use_container_width=True)
+    # Obtener el recuento de volumen por día de la semana
+    volume_counts = df_filtered['Weekday'].value_counts().sort_index()
+
+    # Calcular los porcentajes de volumen por día de la semana
+    volume_percentages = volume_counts / volume_counts.sum() * 100
+
+    # Crear un nuevo DataFrame con los días de la semana y sus porcentajes de volumen
+    volume_data = pd.DataFrame({'Día de la Semana': volume_percentages.index, 'Porcentaje de Volumen': volume_percentages.values})
+
+    #Gráfico de Violín - Distribución de Rendimientos
+    violin_chart = px.violin(df_filtered, y='Volume', title='Distribución de Volumen')
+    col2.plotly_chart(violin_chart, use_container_width=True)
+
+    #Gráfico de Líneas - VIX y VIX1D
+    vix_line_chart = px.line(df_filtered, x='Date', y=['VIX Closing Price', 'vix_0dte'], title='VIX y VIX1D')
+    col1.plotly_chart(vix_line_chart, use_container_width=True)
+
 
     
 
@@ -258,7 +273,7 @@ with tab3:
     df['Trend'] = np.where(df['Price_Diff'] > 15, 1, np.where(df['Price_Diff'] < -15, -1, 0))
 
     # Mapear los valores de tendencia a etiquetas descriptivas
-    trend_labels = {1: 'Positiva', -1: 'Negativa', 0: 'Neutral'}
+    trend_labels = {1: 'Tendencia Alcista', -1: 'Tendencia Bajista', 0: 'Tendencia Lateral'}
     df['Trend'] = df['Trend'].map(trend_labels)
 
     # Filtrar el DataFrame según el periodo seleccionado
@@ -274,28 +289,20 @@ with tab3:
     # Obtener el recuento de cada categoría de tendencia
     trend_counts = df_filtered['Trend'].value_counts().sort_index()
 
-    # Crear un nuevo DataFrame con las fechas en el eje y
-    trend_data = pd.DataFrame({'Fecha': trend_counts.index, 'Count': trend_counts.values})
+    # Calcular los porcentajes de cada categoría
+    trend_percentages = trend_counts / trend_counts.sum() * 100
 
-    # Gráfico de Barras - Tendencia de Precios
-    trend_chart = px.bar(trend_data, y='Fecha', x='Count', color='Fecha', orientation='h', title='Tendencia de Precios')
+    # Crear un nuevo DataFrame con las categorías y sus porcentajes
+    trend_data = pd.DataFrame({'Tendencia': trend_percentages.index, 'Porcentaje': trend_percentages.values})
 
-    # Configurar la leyenda
-    trend_chart.update_layout(
-        legend_title='Tendencia',
-        legend=dict(
-            orientation='h',
-            yanchor='bottom',
-            y=1.02,
-            xanchor='right',
-            x=1
-        )
-    )
+    # Definir los colores para cada categoría de tendencia
+    colors = {'Tendencia Alcista': 'lightgreen', 'Tendencia Bajista': 'lightcoral', 'Tendencia Lateral': 'lightgray'}
 
-    # Asignar colores personalizados a las categorías de tendencia
-    colors = {'Positiva': 'green', 'Negativa': 'red', 'Neutral': 'gray'}
-    for trace in trend_chart.data:
-        trace.marker.color = colors[trace.name]
+    # Crear el gráfico de tarta con los colores personalizados
+    trend_chart = go.Figure(data=[go.Pie(labels=trend_data['Tendencia'], values=trend_data['Porcentaje'], marker=dict(colors=[colors[t] for t in trend_data['Tendencia']]))])
+
+    # Configurar el título del gráfico
+    trend_chart.update_layout(title='Tendencia de Precios')
 
     col1.plotly_chart(trend_chart, use_container_width=True)
 
@@ -310,12 +317,8 @@ with tab3:
 
     #Gráfico de Área - Volumen en Zonas de Punto de Control
     vpoc_chart = px.area(df_filtered, x='Date', y='Volume in Vpoc Zone', title='Volumen en Zonas de Punto de Control')
+    
     col2.plotly_chart(vpoc_chart, use_container_width=True)
-
-    #Gráfico de Barra - Volumen por Día de la Semana
-    volume_bar_chart = px.bar(df_filtered, x='Weekday', y='Volume', title='Volumen por Día de la Semana')
-    col1.plotly_chart(volume_bar_chart, use_container_width=True)
-
     # Filtrar los datos por encima y por debajo de 4000
     above_4000_data = df_filtered[df_filtered['Closing Price'] > 4000]
     below_4000_data = df_filtered[df_filtered['Closing Price'] <= 4000]
@@ -329,17 +332,34 @@ with tab3:
     # Gráfico de Barras - Precios por Encima y por Debajo de 4000
     combined_chart = px.bar(combined_data, x='Date', y='Closing Price', title='Precios por Encima y por Debajo de 4000', color='Color')
     col2.plotly_chart(combined_chart, use_container_width=True)
+    
+    
+    #Gráfico de Barra - Volumen por Día de la Semana
+    volume_bar_chart = px.bar(df_filtered, x='Weekday', y='Volume', title='Volumen por Día de la Semana')
+    col1.plotly_chart(volume_bar_chart, use_container_width=True)
+    
+    # Obtener el recuento de volumen por día de la semana
+    volume_counts = df_filtered['Weekday'].value_counts().sort_index()
+
+    # Calcular los porcentajes de volumen por día de la semana
+    volume_percentages = volume_counts / volume_counts.sum() * 100
+
+    # Crear un nuevo DataFrame con los días de la semana y sus porcentajes de volumen
+    volume_data = pd.DataFrame({'Día de la Semana': volume_percentages.index, 'Porcentaje de Volumen': volume_percentages.values})
+
+    # Gráfico de Tarta - Volumen por Día de la Semana
+    volume_chart = go.Figure(data=[go.Pie(labels=volume_data['Día de la Semana'], values=volume_data['Porcentaje de Volumen'])])
+
+    # Configurar el título del gráfico
+    volume_chart.update_layout(title='Volumen por Día de la Semana')
+
+    col2.plotly_chart(volume_chart, use_container_width=True)
 
 
 
 
-    #Gráfico de Violín - Distribución de Rendimientos
-    violin_chart = px.violin(df_filtered, y='Volume', title='Distribución de Volumen')
-    col1.plotly_chart(violin_chart, use_container_width=True)
 
-    #Gráfico de Líneas - VIX y VIX1D
-    vix_line_chart = px.line(df_filtered, x='Date', y=['VIX Closing Price', 'vix_0dte'], title='VIX y VIX1D')
-    col2.plotly_chart(vix_line_chart, use_container_width=True)
+
 
 
 
