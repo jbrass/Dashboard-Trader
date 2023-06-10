@@ -215,7 +215,7 @@ with tab3:
     col1, col2 = st.columns(2)
 
     # Gráfico de Líneas - Evolución del Precio de Cierre
-    line_chart = px.line(df_filtered, x='Date', y='Closing Price', title='Evolución del Precio de Cierre')
+    line_chart = px.line(df_filtered, x='Date', y=['Closing Price',"Day's High","Day's Low"], title='Evolución del Precio de Cierre')
     col1.plotly_chart(line_chart, use_container_width=True)
 
     # Gráfico de Área - Volumen Value Area
@@ -228,11 +228,11 @@ with tab3:
 
 
     # Gráfico de Dispersión - Relación entre Precio de Cierre y Volumen
-    scatter_chart = px.scatter(df_filtered, x='Closing Price', y='Volume', title='Relación entre Precio de Cierre y Volumen')
+    scatter_chart = px.scatter(df_filtered, x='Closing Price', y=['Volume','Volume in Vpoc Zone'], title='Relación entre Precio de Cierre y Volumen y Volume VPoc')
     col1.plotly_chart(scatter_chart, use_container_width=True)
 
     # Gráfico de Área - Volumen Value Area
-    area_chart = px.area(df_filtered, x='Date', y=['Volume Value Area Low', 'Volume Value Area High', 'Volume in Vpoc Zone'], title='Volumen Value Area')
+    area_chart = px.line(df_filtered, x='Date', y=['Volume Value Area Low', 'Volume Value Area High', 'Volume in Vpoc Zone'], title='Volumen Value Area')
     col2.plotly_chart(area_chart, use_container_width=True)
 
 
@@ -317,8 +317,8 @@ with tab3:
 
     #Gráfico de Área - Volumen en Zonas de Punto de Control
     vpoc_chart = px.area(df_filtered, x='Date', y='Volume in Vpoc Zone', title='Volumen en Zonas de Punto de Control')
-    
     col2.plotly_chart(vpoc_chart, use_container_width=True)
+    
     # Filtrar los datos por encima y por debajo de 4000
     above_4000_data = df_filtered[df_filtered['Closing Price'] > 4000]
     below_4000_data = df_filtered[df_filtered['Closing Price'] <= 4000]
@@ -330,7 +330,7 @@ with tab3:
     combined_data['Color'] = np.where(combined_data['Closing Price'] > 4000, '> 4000', '< 4000')
 
     # Gráfico de Barras - Precios por Encima y por Debajo de 4000
-    combined_chart = px.bar(combined_data, x='Date', y='Closing Price', title='Precios por Encima y por Debajo de 4000', color='Color')
+    combined_chart = px.scatter(combined_data, x='Date', y='Closing Price', title='Precios por Encima y por Debajo de 4000', color='Color')
     col2.plotly_chart(combined_chart, use_container_width=True)
     
     
@@ -413,8 +413,6 @@ with tab3:
 
     # Mostrar el gráfico de drawdown y ganancia
     st.plotly_chart(drawdown_chart, use_container_width=True)
-
-
 
 
 
@@ -1654,9 +1652,9 @@ with tab4:
             st.plotly_chart(fig6, container_width=1000, container_height=500)
 
 
-
-
-
+      
+        
+    
 
         col1, col2 = st.columns(2)
         with col1:
@@ -2185,6 +2183,7 @@ with tab4:
 
 
     with tab9:
+
         # Gráfico de barras para comparar posicionamiento commercial y non-commercial
         fig = go.Figure()
 

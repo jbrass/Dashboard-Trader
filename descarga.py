@@ -1,18 +1,22 @@
 import requests
-from urllib.parse import urlparse
+import os
 
-def descargar_archivo(blob_url):
-    parsed_url = urlparse(blob_url)
-    real_url = parsed_url.fragment
+def main():
+    # URL del sitio web
+    url = 'https://www.cboe.com/delayed_quotes/spx/quote_table'
 
-    response = requests.get(real_url)
+    # Realizar la solicitud GET al sitio web
+    response = requests.get(url)
 
-    if response.status_code == 200:
-        content_disposition = response.headers.get('Content-Disposition')
-        filename = content_disposition.split('filename=')[1]
+    # Obtener el nombre del archivo
+    filename = response.headers['Content-Disposition'].split('=')[1]
 
-        with open(filename, 'wb') as file:
-            file.write(response.content)
-        print('La descarga se completó correctamente.')
-    else:
-        print('No se pudo realizar la descarga del archivo.')
+    # Ruta de destino para guardar el archivo
+    destination_path = r'C:\Users\jmmar\Desktop\Dashboard-Trader\Operativa\processed'
+
+    # Guardar el archivo en la ruta de destino
+    with open(os.path.join(destination_path, filename), 'wb') as file:
+        file.write(response.content)
+
+if __name__ == "__main__":
+    main()
