@@ -705,7 +705,7 @@ with tab4:
         st.dataframe(df_top)
     else:
         if archivo_seleccionado == "spx_quotedata.csv":
-            df_top['Price'] = df_top['Strike'] + 5
+            df_top['Price'] = df_top['Strike'] + 45
         else:  # archivo_seleccionado == "spy_quotedata.csv"
             df_top['Price'] = df_top['Strike'] * 10
 
@@ -924,14 +924,14 @@ with tab4:
     with col2:
         # Crear un gráfico de barras para mostrar las columnas de "Puts Gamma" y "Calls Gamma" para cada "Strike"
         fig5 = go.Figure()
-        fig5.add_trace(go.Bar(x=data_all['Strike'], y=data_all['Puts Gamma'], name='Puts Gamma'))
-        fig5.add_trace(go.Bar(x=data_all['Strike'], y=data_all['Calls Gamma'], name='Calls Gamma'))
+        fig5.add_trace(go.Bar(x=data_all['Strike'], y=data_all['Puts IV'], name='Puts IV'))
+        fig5.add_trace(go.Bar(x=data_all['Strike'], y=data_all['Calls IV'], name='Calls IV'))
                     
         # Personaliza los títulos y ejes del gráfico
         fig5.update_layout(
-            title='Gamma de opciones call y put para todas las expiraciones',
+            title='Volatilidad implícita de opciones call y put para todas las expiraciones',
             xaxis_title='Strike',
-            yaxis_title='Puts Gamma',
+            yaxis_title='IV Gamma',
             barmode='stack'
         )
 
@@ -2184,9 +2184,12 @@ with tab4:
 
     with tab9:
 
-        # Gráfico de barras para comparar posicionamiento commercial y non-commercial
+      
+
+        # Crear una figura con dos ejes y
         fig = go.Figure()
 
+        # Agregar las barras del posicionamiento comercial y no comercial
         fig.add_trace(go.Bar(
             x=df_cotSP['dia'],
             y=df_cotSP['cot_commercial'],
@@ -2201,7 +2204,7 @@ with tab4:
             marker_color='#E1523D'
         ))
 
-        # Configurar el diseño del gráfico
+        # Configurar el primer eje y para el posicionamiento comercial y no comercial
         fig.update_layout(
             title='Posicionamiento Neto Commercial vs. Non-Commercial',
             xaxis_title='Periodo',
@@ -2211,72 +2214,33 @@ with tab4:
                 tickformat='%d-%m-%Y',  # Formato de las fechas
                 tickmode='auto',
                 nticks=10  # Número de ticks en el eje x
+            ),
+            yaxis=dict(
+                side='left'  # Configurar el primer eje y en el lado izquierdo
             )
         )
 
-        # Mostrar el gráfico en Streamlit
-        st.plotly_chart(fig, use_container_width=True)
-                
-       # Gráfico de barras para comparar el posicionamiento de los participantes
-        fig = go.Figure()
-
-        fig.add_trace(go.Bar(
+        # Agregar la línea del precio de cierre en el segundo eje y
+        fig.add_trace(go.Scatter(
             x=df_cotSP['dia'],
-            y=df_cotSP['cot_commercial'],
-            name='Commercial',
-            marker_color='#C2BB00'
+            y=df_diarios_ES['Closing Price'],
+            name='Precio de Cierre',
+            yaxis='y2'  # Asociar la línea al segundo eje y
         ))
 
-        fig.add_trace(go.Bar(
-            x=df_cotSP['dia'],
-            y=df_cotSP['cot_noncommercial'],
-            name='Non-Commercial',
-            marker_color='#E1523D'
-        ))
-
-        fig.add_trace(go.Bar(
-            x=df_cotSP['dia'],
-            y=df_cotSP['cot_dealer'],
-            name='Dealer',
-            marker_color='#ED8B16'
-        ))
-
-        fig.add_trace(go.Bar(
-            x=df_cotSP['dia'],
-            y=df_cotSP['cot_institutional'],
-            name='Asset Manager/Instituional',
-            marker_color='#005E54'
-        ))
-
-        fig.add_trace(go.Bar(
-            x=df_cotSP['dia'],
-            y=df_cotSP['cot_leveragedfunds'],
-            name='Leveraged Funds',
-            marker_color='#72F2EB'
-        ))
-
-        fig.add_trace(go.Bar(
-            x=df_cotSP['dia'],
-            y=df_cotSP['cot_other'],
-            name='Other Reportables',
-            marker_color='#FF4858'
-        ))
-
-        # Configurar el diseño del gráfico
+        # Configurar el segundo eje y para el precio de cierre
         fig.update_layout(
-            title='Posicionamiento Neto de todos los participantes',
-            xaxis_title='Periodo',
-            yaxis_title='Posicionamiento',
-            barmode='group',
-            xaxis=dict(
-                tickformat='%d-%m-%Y',  # Formato de las fechas
-                tickmode='auto',
-                nticks=10  # Número de ticks en el eje x
+            yaxis2=dict(
+                side='right',  # Configurar el segundo eje y en el lado derecho
+                overlaying='y',  # Superponer el segundo eje y al primero
+                title='Precio de Cierre',
+                rangemode='normal'  # Utilizar una escala lineal para el eje y2
             )
         )
 
         # Mostrar el gráfico en Streamlit
         st.plotly_chart(fig, use_container_width=True)
+
         
         
         
