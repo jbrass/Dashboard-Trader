@@ -92,30 +92,30 @@ with tab1:
 
 
     # Título de la sección
-    st.header('Día 07/06/2023')
+    st.header('Día 13/06/2023')
 
     # Introducción
     st.write(txt_comentario)
-    st.image("./img/Junio/7Junio/premercado.png")
+    st.image("./img/Junio/13Junio/premercado.png")
     #ppner imagen
     #st.image("./img/5Mayo/cme-liquidez.jpeg")
-    st.image("./img/Junio/7Junio/gamma.png")  
+    st.image("./img/Junio/13Junio/gamma.png")  
     # Gráfico de precios de la semana
     st.subheader('Niveles importantes')
     st.write(txt_niveles)
     st.write(txt_sentiment)
-    st.image("./img/Junio/7Junio/premercado_neto.png")
-    st.image("./img/Junio/7Junio/premercado_delta.png")
+    st.image("./img/Junio/13Junio/premercado_neto.png")
+    st.image("./img/Junio/13Junio/premercado_delta.png")
     
     # Análisis de los principales movimientos del mercado
     st.subheader('Planteamiento y escenarios operativos')
     st.write(txt_esperamos)
-    st.image("./img/Junio/7Junio/estructura.png")
+    st.image("./img/Junio/13Junio/estructura.png")
     
     # Volatilidad
     st.subheader('Volatilidad')
     st.write(txt_volatilidad)
-    st.image("./img/Junio/7Junio/volatilidad.png") 
+    st.image("./img/Junio/13Junio/volatilidad.png") 
 
 
 
@@ -218,17 +218,27 @@ with tab3:
     line_chart = px.line(df_filtered, x='Date', y=['Closing Price',"Day's High","Day's Low"], title='Evolución del Precio de Cierre')
     col1.plotly_chart(line_chart, use_container_width=True)
 
-    # Gráfico de Área - Volumen Value Area
+    # Crear el gráfico de área
     area_chart = px.line(df_filtered, x='Date', y=['Range in ticks'], title='Rango en ticks')
+
+    # Agregar el precio de cierre al eje y derecho
+    area_chart.add_trace(go.Scatter(x=df_filtered['Date'], y=df_filtered['Closing Price'],
+                                mode='lines', name='Closing Price', yaxis='y2'))
+
+    # Configurar el eje y derecho
+    area_chart.update_layout(yaxis2=dict(title='Closing Price', side='right', overlaying='y'))
 
     # Configurar el tipo de gráfico a "stacked"
     area_chart.update_layout(barmode='stack')
 
+    # Mostrar el gráfico
     col2.plotly_chart(area_chart, use_container_width=True)
 
 
-    # Gráfico de Dispersión - Relación entre Precio de Cierre y Volumen
-    scatter_chart = px.scatter(df_filtered, x='Closing Price', y=['Volume','Volume in Vpoc Zone'], title='Relación entre Precio de Cierre y Volumen y Volume VPoc')
+    # Calcular el volumen acumulado semanalmente
+    df_filtered['Volumen Acumulado'] = df_filtered['Volume'].cumsum()
+    # Actualizar el gráfico de dispersión con el volumen acumulado
+    scatter_chart = px.scatter(df_filtered, x='Closing Price', y=['Volumen Acumulado'], title='Relación entre Precio de Cierre y Volumen Acumulado')
     col1.plotly_chart(scatter_chart, use_container_width=True)
 
     # Gráfico de Área - Volumen Value Area
@@ -413,6 +423,10 @@ with tab3:
 
     # Mostrar el gráfico de drawdown y ganancia
     st.plotly_chart(drawdown_chart, use_container_width=True)
+
+
+
+
 
 
 

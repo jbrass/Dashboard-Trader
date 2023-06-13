@@ -1,18 +1,18 @@
 
-txt_comentario = "Cerramos el Martes día 6 de Junio con un mercado en rango, Observamos como la Call Wall para el precio y hace de resistencia. Las opciones van expirando dia a dia y lo que si hay es una intención por seguir escalando precios."
-txt_niveles = "**Para hoy 7 de Junio:** Niveles relevantes en premercado: **SPX: Call Wall 4300 y Put Wall 4260**. y para el **ES: Call Wall 4305 y Put Wall 4265**. **Nivel Gamma 0: SPX: 4265 y ES: 4270, Estamos en gamma positiva y bajando.**. "
+txt_comentario = "Semana de OPEX y todo muy bullish. Cualquier dato qu observemos en nuestro panel te indica que tenemos que seguir siendo alcistas. Es una semana donde se hace el rollover en futuros y los volúmenes son dispares siendo a día de hoy Martes 13 de Junio el contrato de Septiembre ya el mas negociado."
+txt_niveles = "**Para hoy 13 de Junio:** Niveles relevantes en premercado: **SPX: Call Wall 4350 y Put Wall 4300**. y para el **ES: Call Wall 4395 y Put Wall 4345**. **Nivel Gamma 0: SPX: 4305 y ES: 4350, Estamos en gamma positiva y bajando.**. "
 txt_sentiment = "**Sentiment** Positivo "
-txt_esperamos = "**¿Qué esperamos para hoy?** Una subida y una rotura de la CallWall nos hace pensar en un mercado alcista dado los flujos institucionales que están entrando en estas útlimas semanas."
-txt_volatilidad = "Seguimos estando en unos niveles de volatilidad bajos en los mínimos anuales."
+txt_esperamos = "**¿Qué esperamos para hoy?** Esperaremos las primeras dos fuente de datos para ver que posicionamiento hay en el mercado de opciones. Una vez establecidas las zonas operativas, analizaremos el flujo más micro en estructuras de rango. "
+txt_volatilidad = "Lo relevante es la subida del Vix1d en el día de ayer. Una subida exponencial donde observamos un precio en máximos. Interesante el día de hoy que se cuece."
 
 
 
 title_esta_semana = "**Esta Semana: Noticias y Datos relevantes para esta semana**"
-esta_semana1 = " 1. :orange[**Lunes**], Tendremos el dato Final del ISM de Servicios en EEUU, el IPP de la zona euro del mes de Abril y el PMI Caixin de Servicios de China"
-esta_semana2 = " 2. :orange[**Martes**], Saldrá el dato de Ventas al por menor de la Zona euro de Abril. "
-esta_semana3 = " 3. :orange[**Miercoles**], Tendremos el dato de producción industrial de Alemania y la Balanza Comercial de China."
-esta_semana4 = " 4. :orange[**Jueves**], Tendremos los datos finales de PIB del T1 y el Empleo de la Eurozona."
-esta_semana5 = " 4. :orange[**Viernes**], El foco lo pondremos en China, donde saldrán las referencias de IPC e IPP para la inflación, y los indicadores de masa monetaria M0 y M2."
+esta_semana1 = " 1. :orange[**Lunes**], Nada relevante"
+esta_semana2 = " 2. :orange[**Martes**], Tendremos el dato de ZEW de expectativas aleman así como el índice de optimismo de las PYMEs norteamericanas y por supuesto, el dato de inflación del mes de Mayo en Estados Unidos.  "
+esta_semana3 = " 3. :orange[**Miercoles**], Se publicará la producción industrial de Abril de la Eurozona y el índice de precios a la producción de Mayo en Estados Unidos. Por la tarde, reunión de la FED y decisión sobre tipos de interés."
+esta_semana4 = " 4. :orange[**Jueves**], Tendremos datos importantes en China como la producción industrial y las ventas minoristas de Mayo. A su vez, habrá reunión del BCE y decisión sobre tipos de interés y por la tarde, datos de ventas minoristas y producción industrial en EE.UU. "
+esta_semana5 = " 4. :orange[**Viernes**], Terminaremos la semana con la encuesta de confianza de la Universidad de Michigan."
 
 
 
