@@ -24,6 +24,10 @@ from sklearn.linear_model import LinearRegression
 from plotly.subplots import make_subplots
 from sklearn.cluster import KMeans
 
+
+
+
+
     
 
 st.set_page_config(page_title="Mi tablero de Streamlit",
@@ -64,7 +68,7 @@ with open("fintra-logo-blanco.png", 'rb') as img:
     
 
 # Utilizar una estructura de control de flujo más clara
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs(["Reporte de Mercado", "Estadísticas", "Gráficos/Predicciones", "Opciones 0DTE", "Charts Índices", "Charts Acciones", "Meme Stocks", "Gamma", "CotReport", "Estadísticas Macroeconómicas"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10= st.tabs(["Reporte de Mercado", "Estadísticas", "Gráficos", "Opciones 0DTE", "Charts Índices", "Charts Acciones", "Meme Stocks", "Gamma", "CotReport", "Estadísticas Macroeconómicas"])
 
 with tab1:
 
@@ -75,12 +79,8 @@ with tab1:
             if data_source == nombre_amigable:
                 if archivo == "./Operativa/processed/Diarios-ES.csv":
                     df = df_diarios_ES
-                elif archivo == "./Operativa/processed/Diarios-NQ.csv":
-                    df = df_diarios_NQ
-                elif archivo == "./Operativa/processed/Semanal-ES.csv":
-                    df = df_semanal_ES
                 else:
-                    df = df_semanal_NQ
+                    df = df_diarios_NQ
                 break
         return df
 
@@ -88,34 +88,35 @@ with tab1:
     df = mostrar_sidebar()
 
 
-
-
+   
 
     # Título de la sección
-    st.header('Día 13/06/2023')
+    st.header('Día 14/06/2023')
+    
+
 
     # Introducción
     st.write(txt_comentario)
-    st.image("./img/Junio/13Junio/premercado.png")
+    st.image("./img/Junio/14Junio/premercado.png")
     #ppner imagen
     #st.image("./img/5Mayo/cme-liquidez.jpeg")
-    st.image("./img/Junio/13Junio/gamma.png")  
+    st.image("./img/Junio/14Junio/gamma.png")  
     # Gráfico de precios de la semana
     st.subheader('Niveles importantes')
     st.write(txt_niveles)
     st.write(txt_sentiment)
-    st.image("./img/Junio/13Junio/premercado_neto.png")
-    st.image("./img/Junio/13Junio/premercado_delta.png")
+    st.image("./img/Junio/14Junio/premercado_neto.png")
+    st.image("./img/Junio/14Junio/premercado_delta.png")
     
     # Análisis de los principales movimientos del mercado
     st.subheader('Planteamiento y escenarios operativos')
     st.write(txt_esperamos)
-    st.image("./img/Junio/13Junio/estructura.png")
+    st.image("./img/Junio/14Junio/estructura.png")
     
     # Volatilidad
     st.subheader('Volatilidad')
     st.write(txt_volatilidad)
-    st.image("./img/Junio/13Junio/volatilidad.png") 
+    st.image("./img/Junio/14Junio/volatilidad.png") 
 
 
 
@@ -2444,19 +2445,17 @@ with tab4:
                 
     
     with tab10:
-        
+
 
         # Select para elegir el tipo de gráfico
-        tipo_grafico = st.selectbox('Tipo de Gráfico', ['Barras', 'Líneas'], index=0)
+        tipo_grafico = st.selectbox('Tipo de Gráfico', ['Barras', 'Líneas'], index=1)
 
-        # Select para elegir la visualización por mes o por año
-        visualizacion = st.selectbox('Visualización', ['Mes', 'Año'], index=0)
+        
 
         col1, col2 = st.columns(2)
 
         with col1:
             # Gráfico de inflación
-            st.subheader('CPI')
             fig_inflacion = go.Figure()
             if tipo_grafico == "Barras":
                 fig_inflacion.add_trace(go.Bar(
@@ -2473,13 +2472,12 @@ with tab4:
             fig_inflacion.update_layout(
                 xaxis_title='Fecha',
                 yaxis_title='Inflación',
-                title='CPI'
+                title='Inflación'
             )
             st.plotly_chart(fig_inflacion, use_container_width=True)
 
         with col2:  
             # Gráfico de tipos de interés
-            st.subheader('Interest Rate')
             fig_tipos_interes = go.Figure()
             if tipo_grafico == "Barras":
                 fig_tipos_interes.add_trace(go.Bar(
@@ -2496,7 +2494,7 @@ with tab4:
             fig_tipos_interes.update_layout(
                 xaxis_title='Fecha',
                 yaxis_title='Tasa de Interés',
-                title='Interest Rate'
+                title='Tasa de Interés'
             )
             st.plotly_chart(fig_tipos_interes, use_container_width=True)
 
@@ -2504,7 +2502,6 @@ with tab4:
 
         with col1:
             # Gráfico de tasa de desempleo
-            st.subheader('Unemployment Rate')
             fig_empleo = go.Figure()
             if tipo_grafico == "Barras":
                 fig_empleo.add_trace(go.Bar(
@@ -2521,13 +2518,12 @@ with tab4:
             fig_empleo.update_layout(
                 xaxis_title='Fecha',
                 yaxis_title='Tasa de Desempleo',
-                title='Unemployment Rate'
+                title='Tasa de Desempleo'
             )
             st.plotly_chart(fig_empleo, use_container_width=True)
 
         with col2:
             # Gráfico de M2
-            st.subheader('M2')
             fig_m2 = go.Figure()
             if tipo_grafico == "Barras":
                 fig_m2.add_trace(go.Bar(
@@ -2552,7 +2548,6 @@ with tab4:
 
         with col1:
             # Gráfico de Mercados Emergentes
-            st.subheader('Emerging Markets')
             fig_dolares_emergentes = go.Figure()
             if tipo_grafico == "Barras":
                 fig_dolares_emergentes.add_trace(go.Bar(
@@ -2569,14 +2564,13 @@ with tab4:
             fig_dolares_emergentes.update_layout(
                 xaxis_title='Fecha',
                 yaxis_title='Mercados Emergentes',
-                title='Emerging Markets'
+                title='Mercados Emergentes vs Dollar EEUU'
             )
             st.plotly_chart(fig_dolares_emergentes, use_container_width=True)
 
         with col2:
 
             # Gráfico de inflación y tipos de interés
-            st.subheader('Inflación y Tipos de Interés')
 
             # Fusionar los datos de inflación y tipos de interés en un solo DataFrame
             combined_df = pd.merge(inflacion_df, tipos_interes_df, on='Date')
@@ -2677,3 +2671,6 @@ with tab4:
 
         # Mostrar el gráfico en Streamlit
         st.plotly_chart(fig_combined, use_container_width=True)
+
+
+

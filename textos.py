@@ -1,9 +1,9 @@
 
-txt_comentario = "Semana de OPEX y todo muy bullish. Cualquier dato qu observemos en nuestro panel te indica que tenemos que seguir siendo alcistas. Es una semana donde se hace el rollover en futuros y los volúmenes son dispares siendo a día de hoy Martes 13 de Junio el contrato de Septiembre ya el mas negociado."
-txt_niveles = "**Para hoy 13 de Junio:** Niveles relevantes en premercado: **SPX: Call Wall 4350 y Put Wall 4300**. y para el **ES: Call Wall 4395 y Put Wall 4345**. **Nivel Gamma 0: SPX: 4305 y ES: 4350, Estamos en gamma positiva y bajando.**. "
+txt_comentario = "Ayer Martes 13 de Junio el mercado volvió a tener un desplazamiento alcista. Con respecto a los días precederos el movimiento fue mas lento situándose el cierre de sesión en la CallWall diaria y punto de resistencia que veníamos comentando como clave."
+txt_niveles = "**Para hoy 14 de Junio:** Niveles relevantes en premercado: **SPX: Call Wall 4400 y Put Wall 4350**. y para el **ES: Call Wall 4445 y Put Wall 4395**. **Nivel Gamma 0: SPX: 4350 y ES: 4395, Estamos en gamma positiva alta.**. "
 txt_sentiment = "**Sentiment** Positivo "
-txt_esperamos = "**¿Qué esperamos para hoy?** Esperaremos las primeras dos fuente de datos para ver que posicionamiento hay en el mercado de opciones. Una vez establecidas las zonas operativas, analizaremos el flujo más micro en estructuras de rango. "
-txt_volatilidad = "Lo relevante es la subida del Vix1d en el día de ayer. Una subida exponencial donde observamos un precio en máximos. Interesante el día de hoy que se cuece."
+txt_esperamos = "**¿Qué esperamos para hoy?** Los días de FOMC son estadísticamente días muy arrangados hasta llegar a la hora de la conferencia. Por tanto únicamente trabajaremos algún nivel relevante si lo vemos claro. "
+txt_volatilidad = "Sigue apreciándose un poco más el vix1d, mientras el vix a 30 días sigue en mínimos."
 
 
 

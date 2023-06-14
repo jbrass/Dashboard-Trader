@@ -194,17 +194,15 @@ def rename_columns(df):
 
 df_diarios_ES = rename_columns(df_diarios_ES)
 df_diarios_NQ = rename_columns(df_diarios_NQ)
-df_semanal_ES = rename_columns(df_semanal_ES)
-df_semanal_NQ = rename_columns(df_semanal_NQ)
+""" df_semanal_ES = rename_columns(df_semanal_ES)
+df_semanal_NQ = rename_columns(df_semanal_NQ) """
 
 
 
 
 renombre = {
     "./Operativa/processed/Diarios-ES.csv": "Mini S&P500 daily data",
-    "./Operativa/processed/Diarios-NQ.csv": "Daily mini NASDAQ100 data",
-    "./Operativa/processed/Semanal-ES.csv": "Mini S&P500 Weekly data",
-    "./Operativa/processed/Semanal-NQ.csv": "Weekly mini NASDAQ100 data"
+    "./Operativa/processed/Diarios-NQ.csv": "Daily mini NASDAQ100 data"
 }
 
 

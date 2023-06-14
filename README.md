@@ -29,7 +29,8 @@ Data source:
     - empleo.csv: https://fred.stlouisfed.org/series/UNRATE
     - m2.csv: https://fred.stlouisfed.org/series/WM2NS
     - dolares-emergentes.csv:https://fred.stlouisfed.org/series/RTWEXEMEGS
-
+    - inflacion.csv:https://fred.stlouisfed.org/series/CORESTICKM159SFRBATL
+    - GDP.csv:https://fred.stlouisfed.org/series/GDP
 
 ## Autor
 Este proyecto ha sido desarrollado por José Mª Martin jmmartinnu@hotmail.com
