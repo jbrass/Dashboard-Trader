@@ -36,7 +36,19 @@ df_dix = pd.read_csv("./Operativa/processed/DIX.csv", on_bad_lines='skip', delim
 df_squeeze = pd.read_csv("./Operativa/processed/DIX.csv")
 
 
+#Acciones Gainers
+df_gainers = pd.read_csv('./Operativa/processed/gainers.csv')
+#Acciones Losers
+df_losers = pd.read_csv('./Operativa/processed/losers.csv')
+#Acciones mas activas por volumen
+df_activas = pd.read_csv('./Operativa/processed/mostActive.csv')
 
+
+#Acciones DarkPools Shortsqueeze
+df_shorteadas = pd.read_csv('./Operativa/processed/darkpools-short.csv')
+
+#Datos sobre CBOE 
+df_cboe = pd.read_csv('./Operativa/processed/volume-options.csv')
 
 
 #COT REPORT
@@ -51,6 +63,7 @@ df_volatilidad_nq = pd.read_csv("./Operativa/processed/ndx_quotedata.csv", on_ba
 
 #CBOE INDICES TODA EXPIRACION COMPLETA
 data_all = pd.read_csv('./Operativa/processed/spx_quotedata_all.csv')
+data_vix_all = pd.read_csv('./Operativa/processed/vix_quotedata_all.csv')
 
 #CBOE Acciones
 data_apple = pd.read_csv('./Operativa/processed/aapl_quotedata.csv')
@@ -61,12 +74,12 @@ data_amzn = pd.read_csv('./Operativa/processed/amzn_quotedata.csv')
 data_nvda = pd.read_csv('./Operativa/processed/nvda_quotedata.csv')
 data_amd = pd.read_csv('./Operativa/processed/amd_quotedata.csv')
 df_tesla = pd.read_csv("./Operativa/processed/tsla_quotedata.csv", on_bad_lines='skip', delimiter=",")
-
+df_cvna = pd.read_csv('./Operativa/processed/cvna_quotedata.csv')
 #Acciones Esporadicas
 data_otros = pd.read_csv('./Operativa/processed/ko_quotedata.csv')
 df_ares =  pd.read_csv('./Operativa/processed/ares_quotedata.csv')
-
-
+df_pypl = pd.read_csv('./Operativa/processed/pypl_quotedata.csv')
+df_spce = pd.read_csv('./Operativa/processed/spce_quotedata.csv')
 
 #Acciones Memes
 df_lcid = pd.read_csv('./Operativa/processed/lcid_quotedata.csv')
@@ -113,7 +126,11 @@ data_files = {
     "sofi_quotedata.csv": df_sofi,
     "pltr_quotedata.csv": df_pltr,
     "rivn_quotedata.csv": df_rivn,
-    "spx_all_quotedata.csv": data_all
+    "pypl_quotedata.csv": df_pypl,
+    "spx_all_quotedata.csv": data_all,
+    "cvna_quotedate.csv": df_cvna,
+    "spce_quotedata.csv": df_spce,
+    "vix_all_quotedata.csv": data_vix_all
 }
 
 
@@ -125,6 +142,9 @@ data_files = {
 data_cot = pd.read_csv('./Operativa/processed/cot-report.csv')
 data_cot_noncommercial = pd.read_csv('./Operativa/processed/cot-report-noncommercial.csv')
 
+
+#Open Interest
+data_OI = pd.read_csv('./Operativa/processed/openinterest.csv')
 
 
 
