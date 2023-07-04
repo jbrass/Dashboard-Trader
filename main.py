@@ -2581,15 +2581,11 @@ with tab4:
                 color=alt.Color('Total Option Notional', scale=alt.Scale(scheme='blues')),
                 tooltip=['Market Participant', 'Total Option Notional']
             ).properties(
-                title='Volumen de Mercado',
                 width=600,
                 height=400
             )
             return chart
 
-        # Utilizar Streamlit para mostrar el gráfico de barras
-        st.title('Análisis de Datos de Mercados Financieros')
-        st.write('Gráfico de barras para mostrar el mercado con el mayor volumen.')
 
         st.subheader('Volumen de Mercado')
         st.altair_chart(volume_chart(), use_container_width=True)
@@ -2608,15 +2604,11 @@ with tab4:
                 color='Market Participant',
                 tooltip=['Market Participant', 'Total Option Contracts']
             ).properties(
-                title='Evolución del Volumen de Contratos de Opciones',
                 width=600,
                 height=400
             )
             return chart
 
-        # Utilizar Streamlit para mostrar el gráfico de líneas
-        st.title('Análisis de Datos de Mercados Financieros')
-        st.write('Gráfico de líneas para mostrar la evolución del volumen de contratos de opciones.')
 
         st.subheader('Evolución del Volumen de Contratos de Opciones')
         st.altair_chart(volume_line_chart(), use_container_width=True)
@@ -2632,15 +2624,11 @@ with tab4:
                 color=alt.Color('Total Option Contracts', scale=alt.Scale(scheme='blues')),
                 tooltip=['Market Participant', 'Total Option Contracts']
             ).properties(
-                title='Volumen de Contratos de Opciones por Participante del Mercado',
                 width=600,
                 height=400
             )
             return chart
 
-        # Utilizar Streamlit para mostrar el gráfico de barras agrupadas
-        st.title('Análisis de Datos de Mercados Financieros')
-        st.write('Gráfico de barras agrupadas para comparar el volumen de contratos de opciones por participante del mercado.')
 
         st.subheader('Volumen de Contratos de Opciones por Participante del Mercado')
         st.altair_chart(volume_grouped_bar_chart(), use_container_width=True)
@@ -2658,15 +2646,12 @@ with tab4:
                 size='Total Option Contracts',
                 tooltip=['Market Participant', 'Total Option Notional', 'Total Option Contracts']
             ).properties(
-                title='Relación entre Volumen de Contratos y Valor Nominal de Opciones',
                 width=600,
                 height=400
             )
             return chart
 
-        # Utilizar Streamlit para mostrar el gráfico de dispersión
-        st.title('Análisis de Datos de Mercados Financieros')
-        st.write('Gráfico de dispersión para explorar la relación entre el volumen de contratos y el valor nominal de las opciones.')
+
 
         st.subheader('Relación entre Volumen de Contratos y Valor Nominal de Opciones')
         st.altair_chart(scatter_plot(), use_container_width=True)
@@ -2676,9 +2661,6 @@ with tab4:
         # Ordenar los datos por el día
         df_cboe = df_cboe.sort_values('Day')
 
-        # Utilizar Streamlit para mostrar el gráfico de área
-        st.title('Análisis de Datos de Mercados Financieros')
-        st.write('Gráfico de área para mostrar la evolución del volumen total de contratos de opciones.')
 
         st.subheader('Evolución del Volumen Total de Contratos de Opciones')
         st.area_chart(df_cboe['Total Option Contracts'], use_container_width=True)
@@ -2696,14 +2678,12 @@ with tab4:
                 x='Day:T',
                 y='Total Option Contracts:Q'
             ).properties(
-                title='Evolución del Volumen Total de Contratos de Opciones',
                 width=800,
                 height=400
             )
             return chart
 
         # Utilizar Streamlit para mostrar el gráfico de líneas
-        st.title('Análisis de Datos del Mercado CBOE Options Exchange')
         st.subheader('Evolución del Volumen Total de Contratos de Opciones')
         st.altair_chart(line_chart(), use_container_width=True)
 
@@ -2720,7 +2700,6 @@ with tab4:
                 y='Total Option Notional:Q',
                 tooltip=['Day', 'Market Participant', 'Equity Option Trade Count', 'Total Option Notional']
             ).properties(
-                title='Relación entre el Número de Transacciones y el Volumen Notional de Contratos de Opciones',
                 width=800,
                 height=400
             )
@@ -2737,15 +2716,86 @@ with tab4:
 
 
 
+############## ESTADISTICAS SOBRE TICKER DE OPCIONES DIARIAS ##############
+
+
+
+
+        # Agrupar el volumen por símbolo
+        df_grouped = df_options.groupby('Symbol').sum().reset_index()
+
+        # Ordenar los símbolos por volumen de mayor a menor
+        df_top_symbols = df_grouped.sort_values('Volume', ascending=False).head(25)
+
+        # Crear el gráfico de barras agrupadas con los símbolos seleccionados
+        chart = alt.Chart(df_top_symbols).mark_bar(size=30).encode(
+            x=alt.X('Symbol:N', title='Símbolo'),
+            y=alt.Y('Volume:Q', title='Volumen de Negociación'),
+            color=alt.Color('Symbol:N', legend=None)
+        ).properties(
+            title='Volumen de Negociación - Top 25 Símbolos',
+            width=600,
+            height=400
+        ).configure_axis(
+            labelFontSize=12,
+            titleFontSize=14
+        ).configure_title(
+            fontSize=16,
+            anchor='middle'
+        ).interactive()
+
+        # Mostrar el gráfico de barras agrupadas con los símbolos seleccionados
+        st.title('Gráfico de barras agrupadas de volumen - Top 25 Símbolos')
+        st.altair_chart(chart, use_container_width=True)
+
+
+
+        # Agrupar el volumen por tipo de opción y símbolo
+        df_grouped = df_options.groupby(['Symbol', 'Call/Put']).sum().reset_index()
+
+        # Seleccionar las 10 mayores acciones por volumen
+        top_symbols = df_grouped.groupby('Symbol')['Volume'].sum().nlargest(30).index
+        df_top_symbols = df_grouped[df_grouped['Symbol'].isin(top_symbols)]
+
+        # Transformar los valores de volumen de las opciones Put a negativos
+        df_top_symbols['Volume'] = df_top_symbols['Volume'].where(df_top_symbols['Call/Put'].str.contains('C', case=False), -df_top_symbols['Volume'])
+
+        # Crear el gráfico de barras apiladas
+        chart = alt.Chart(df_top_symbols).mark_bar().encode(
+            x='Symbol',
+            y=alt.Y('Volume:Q', axis=alt.Axis(title='Volumen'), scale=alt.Scale(domain=[-1000000, 1000000])),
+            color=alt.condition(
+                alt.datum['Call/Put'] == 'C',
+                alt.value('green'),  # Color verde para opciones Call
+                alt.value('red')  # Color rojo para opciones Put
+            ),
+            tooltip=['Symbol', 'Call/Put', 'Volume']
+        ).properties(
+            title='Volumen de Negociación por Tipo de Opción Call/Put',
+            width=600,
+            height=400
+        ).configure_axis(
+            labelFontSize=12,
+            titleFontSize=14
+        ).configure_title(
+            fontSize=16,
+            anchor='middle'
+        ).interactive()
+
+        # Mostrar el gráfico de barras apiladas
+        st.title('Gráfico de Volumen Call/Put')
+        st.altair_chart(chart, use_container_width=True)
+                        
 
 
 
 
 
-
-
-
+        
+    
     with tab12:
+        
+        
         
         st.subheader("Options Data. Acciones más representativas del SP500")
         col1, col2 = st.columns(2)

@@ -49,7 +49,7 @@ df_shorteadas = pd.read_csv('./Operativa/processed/darkpools-short.csv')
 
 #Datos sobre CBOE 
 df_cboe = pd.read_csv('./Operativa/processed/volume-options.csv')
-
+df_options = pd.read_csv('./Operativa/processed/options_symbols.csv')
 
 #COT REPORT
 df_cotNQ = pd.read_csv('./Operativa/processed/cotreport_NQ.csv')
