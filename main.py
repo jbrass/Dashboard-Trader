@@ -80,32 +80,35 @@ with tab1:
    
 
     # Título de la sección
-    st.header('Día 20/06/2023')
+    st.header('Día 25/07/2023')
     
 
 
     # Introducción
     st.write(txt_comentario)
-    st.image("./img/Junio/20Junio/premercado.png")
+    st.image("./img/Julio/25Julio/callvolume.png")
+    st.image("./img/Julio/25Julio/putvolume.png")
+    st.image("./img/Julio/25Julio/calloi.png")
+    st.image("./img/Julio/25Julio/putoi.png")
     #ppner imagen
     #st.image("./img/5Mayo/cme-liquidez.jpeg")
-    st.image("./img/Junio/20Junio/gamma.png")  
+    st.image("./img/Julio/25Julio/gamma.png")  
     # Gráfico de precios de la semana
     st.subheader('Niveles importantes')
     st.write(txt_niveles)
     st.write(txt_sentiment)
-    st.image("./img/Junio/20Junio/premercado_neto.png")
-    st.image("./img/Junio/20Junio/premercado_delta.png")
+    st.image("./img/Julio/25Julio/callnet.png")
+    st.image("./img/Julio/25Julio/putnet.png")
     
     # Análisis de los principales movimientos del mercado
     st.subheader('Planteamiento y escenarios operativos')
     st.write(txt_esperamos)
-    st.image("./img/Junio/20Junio/estructura.png")
+    st.image("./img/Julio/25Julio/estructura.png")
     
     # Volatilidad
     st.subheader('Volatilidad')
     st.write(txt_volatilidad)
-    st.image("./img/Junio/20Junio/volatilidad.png") 
+    st.image("./img/Julio/25Julio/volatilidad.png") 
 
 
 
@@ -736,7 +739,7 @@ with tab4:
         st.dataframe(df_top)
     else:
         if archivo_seleccionado == "spx_quotedata.csv":
-            df_top['Price'] = df_top['Strike'] + 40
+            df_top['Price'] = df_top['Strike'] + 30
         else:  # archivo_seleccionado == "spy_quotedata.csv"
             df_top['Price'] = df_top['Strike'] * 10
 
@@ -2546,22 +2549,7 @@ with tab4:
 
 
 
-        # Configurar la aplicación Streamlit
-        st.title("Distribución de Short Vol. 1M y Net Short Vol. 1M por Ticker")
-        st.write("Este gráfico de barras muestra la distribución de las variables Short Vol. 1M y Net Short Vol. 1M para diferentes Tickers.")
 
-
-
-        # Crear el gráfico de barras
-        bar_chart = alt.Chart(df_shorteadas).mark_bar().encode(
-            x=alt.X('Ticker', title='Variable'),
-            y=alt.Y('Short Vol. [1M]', title='Valor'),
-            color=alt.Color('Variable:N', legend=None),
-            tooltip=['Variable:N', 'Value:Q']
-        )
-
-        # Mostrar el gráfico de barras
-        st.altair_chart(bar_chart, use_container_width=True)
 
 
 
@@ -2766,8 +2754,8 @@ with tab4:
             y=alt.Y('Volume:Q', axis=alt.Axis(title='Volumen'), scale=alt.Scale(domain=[-1000000, 1000000])),
             color=alt.condition(
                 alt.datum['Call/Put'] == 'C',
-                alt.value('green'),  # Color verde para opciones Call
-                alt.value('red')  # Color rojo para opciones Put
+                alt.value('#7EF2E7'),  # Color verde para opciones Call
+                alt.value('#D95A11')  # Color rojo para opciones Put
             ),
             tooltip=['Symbol', 'Call/Put', 'Volume']
         ).properties(
@@ -2781,6 +2769,8 @@ with tab4:
             fontSize=16,
             anchor='middle'
         ).interactive()
+
+
 
         # Mostrar el gráfico de barras apiladas
         st.title('Gráfico de Volumen Call/Put')

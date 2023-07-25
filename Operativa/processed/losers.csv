@@ -1,26 +1,26 @@
-Symbol,Name,Price (Intraday),Change,% Change,Volume,Avg Vol (3 month),Market Cap,PE Ratio (TTM)
-MDGL,Madrigal Pharmaceuticals, Inc.,203.88,-31.34,-13.32%,1.824M,367562,3.729B,
-ECX,ECARX Holdings Inc.,6.84,-0.9,-11.63%,176291,151809,2.308B,
-WBA,Walgreens Boots Alliance, Inc.,28.64,-2.95,-9.34%,46.656M,7.925M,24.71B,
-REGN,Regeneron Pharmaceuticals, Inc.,716.09,-68.29,-8.71%,2.028M,553508,78.562B,19.34
-ARGGY,Aston Martin Lagonda Global Holdings plc,4.2397,-0.3703,-8.03%,92851,51574,3.161B,
-PETRY,Vibra Energia S.A.,6.95,-0.53,-7.09%,27217,25489,3.883B,14.48
-ASAI,Sendas Distribuidora S.A.,13.68,-0.93,-6.37%,1.659M,936716,3.786B,16.48
-SNPHY,Santen Pharmaceutical Co., Ltd.,8.08,-0.51,-5.94%,40216,2937,3.033B,
-RGEN,Repligen Corporation,142,-8.57,-5.69%,1.157M,569545,7.907B,47.81
-CVAC,CureVac N.V.,10.95,-0.65,-5.60%,1.962M,652393,2.451B,
-SLRN,Acelyrin, Inc.,22.59,-1.31,-5.48%,1.523M,1.011M,2.196B,
-TGS,Transportadora de Gas del Sur S.A.,13.15,-0.75,-5.40%,215472,183129,3.993B,23.07
-MORF,Morphic Holding, Inc.,55.01,-3.04,-5.24%,562083,627506,2.521B,
-SNX,TD SYNNEX Corporation,92.82,-4.88,-4.99%,1.076M,399316,8.758B,12.98
-CTLT,Catalent, Inc.,41.72,-2.1,-4.79%,5.666M,5.095M,7.521B,181.39
-GGAL,Grupo Financiero Galicia S.A.,16.77,-0.8,-4.55%,1.185M,686250,5.018B,12.24
-CRCT,Cricut, Inc.,14.3,-0.68,-4.54%,795719,297920,3.296B,75.26
-CEPU,Central Puerto S.A.,6.83,-0.32,-4.48%,212866,218545,2.035B,27.32
-ILMN,Illumina, Inc.,183.43,-8.45,-4.40%,3.099M,1.401M,29B,
-AXNX,Axonics, Inc.,47.99,-2.01,-4.02%,593282,587675,2.418B,
-FMS,Fresenius Medical Care AG & Co. KGaA,23.01,-0.96,-4.01%,868641,626627,13.837B,20.54
-DTEGF,Deutsche Telekom AG,21.08,-0.88,-3.99%,186062,26041,104.825B,12.18
-CXMSF,CEMEX, S.A.B. de C.V.,0.71,-0.0294,-3.98%,34109,1.348M,10.286B,17.75
-KFY,Korn Ferry,48.9,-1.98,-3.89%,531072,301780,2.563B,10.29
-BMA,Banco Macro S.A.,26.45,-1.07,-3.89%,426368,251845,3.994B,
+Symbol,Name,Price (Intraday),Change,% Change,Volume,Avg Vol (3 month),Market Cap,PE Ratio (TTM),
+SIRI,Sirius XM Holdings Inc.,6,-1.08,-15.25%,38.802M,21.633M,23.21B,14.63,
+CGSHY,Country Garden Services Holdings Company Limited,0.964,-0.146,-13.15%,40106,6697,3.894B,12.05
+RYAAY,Ryanair Holdings plc,97.82,-9.7,-9.02%,1.653M,515495,22.28B,15.5
+SDGR,Schrödinger, Inc.,49.59,-4.2,-7.81%,1.321M,1.487M,3.578B,381.46
+RXRX,Recursion Pharmaceuticals, Inc.,14.28,-1.19,-7.69%,7.998M,5.427M,2.747B,
+PHG,Koninklijke Philips N.V.,21.51,-1.54,-6.68%,2.765M,969029,19.809B,
+APLS,Apellis Pharmaceuticals, Inc.,32.22,-2.17,-6.31%,4.786M,2.684M,3.752B,
+SYM,Symbotic Inc.,40.97,-2.71,-6.20%,4.308M,987268,22.757B,
+LTHM,Livent Corporation,24.95,-1.58,-5.96%,4.908M,3.058M,4.483B,16.31
+INSP,Inspire Medical Systems, Inc.,289.05,-18.3,-5.95%,968168,418883,8.432B,
+OROCF,Allkem Limited,9.98,-0.62,-5.85%,24207,29183,6.385B,13.31
+ODD,ODDITY Tech Ltd. Class A Ordinary Shares,49.67,-2.89,-5.50%,898506,2.718M,2.808B,73.04
+RIOT,Riot Platforms, Inc.,17.43,-0.95,-5.17%,19.188M,24.12M,3.105B,
+NTRA,Natera, Inc.,46.79,-2.52,-5.11%,1.094M,993465,5.444B,
+RCM,R1 RCM Inc.,16.46,-0.88,-5.07%,3.425M,2.602M,6.884B,
+BRKR,Bruker Corporation,71.63,-3.74,-4.96%,1.384M,834281,10.51B,34.11
+ARGX,argenx SE,521.49,-26.94,-4.91%,650998,304844,29.18B,
+CURLF,Curaleaf Holdings, Inc.,3.3,-0.17,-4.90%,299201,393273,2.389B,
+SPT,Sprout Social, Inc.,51.5,-2.65,-4.89%,620513,916393,2.853B,
+LSXMA,The Liberty SiriusXM Group,31.82,-1.62,-4.84%,1.751M,1.124M,10.389B,10.4
+MLTX,MoonLake Immunotherapeutics,53.98,-2.66,-4.70%,318359,745742,2.788B,
+LSXMK,The Liberty SiriusXM Group,31.72,-1.56,-4.69%,2.453M,1.206M,10.389B,10.33
+MDGL,Madrigal Pharmaceuticals, Inc.,205.68,-10.07,-4.67%,207589,348819,3.762B,
+SPOT,Spotify Technology S.A.,163.72,-7.99,-4.65%,3.896M,1.597M,31.666B,
+PTON,Peloton Interactive, Inc.,8.7,-0.42,-4.61%,6.515M,10.923M,3.083B,

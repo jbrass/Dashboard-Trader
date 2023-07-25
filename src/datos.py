@@ -45,7 +45,7 @@ df_activas = pd.read_csv('./Operativa/processed/mostActive.csv')
 
 
 #Acciones DarkPools Shortsqueeze
-df_shorteadas = pd.read_csv('./Operativa/processed/darkpools-short.csv')
+df_shorteadas = pd.read_csv('./Operativa/processed/shorteadas.csv')
 
 #Datos sobre CBOE 
 df_cboe = pd.read_csv('./Operativa/processed/volume-options.csv')

@@ -1,26 +1,26 @@
-Symbol,Name,Price (Intraday),Change,% Change,Volume,Avg Vol (3 month),Market Cap,PE Ratio (TTM)
-TSLA,Tesla, Inc.,250.21,9.16,+3.80%,162.958M,139.152M,793.041B,74.47
-LCID,Lucid Group, Inc.,6.1,0.55,+9.91%,72.875M,28.25M,12.248B,
-NIO,NIO Inc.,9.34,0.94,+11.19%,67.27M,52.364M,16.237B,
-MARA,Marathon Digital Holdings, Inc.,13.38,1.59,+13.49%,64.515M,37.081M,2.274B,
-CCL,Carnival Corporation & plc,15.89,1.29,+8.84%,61.951M,38.16M,20.702B,
-AMD,Advanced Micro Devices, Inc.,110.39,2.88,+2.68%,58.524M,67.618M,177.768B,581
-PLTR,Palantir Technologies Inc.,14.61,0.67,+4.81%,55.019M,70.943M,30.95B,
-F,Ford Motor Company,14.41,0.3,+2.13%,49.273M,59.854M,57.651B,19.74
-WBA,Walgreens Boots Alliance, Inc.,28.64,-2.95,-9.34%,46.656M,7.925M,24.71B,
-NVDA,NVIDIA Corporation,418.76,12.44,+3.06%,44.774M,47.373M,1.034T,219.25
-AAL,American Airlines Group Inc.,17.35,0.91,+5.54%,41.965M,24.829M,11.327B,6.29
-AAPL,Apple Inc.,188.06,2.79,+1.51%,46.982M,56.916M,2.958T,31.87
-AMZN,Amazon.com, Inc.,129.18,1.85,+1.45%,44.528M,63.104M,1.325T,293.59
-BAC,Bank of America Corporation,28.24,0.15,+0.53%,37.768M,49.583M,225.049B,8.48
-SOFI,SoFi Technologies, Inc.,8.64,0.44,+5.37%,39.129M,50.363M,8.129B,
-SIRI,Sirius XM Holdings Inc.,4.09,0.18,+4.60%,37.036M,16.499M,15.822B,14.1
-GOOGL,Alphabet Inc.,118.33,-0.01,-0.01%,36.231M,33.861M,1.506T,25.95
-U,Unity Software Inc.,42.38,5.65,+15.38%,33.369M,11.746M,16.048B,
-OPEN,Opendoor Technologies Inc.,3.4,0.455,+15.45%,32.294M,23.605M,2.206B,
-T,AT&T Inc.,15.84,0.21,+1.34%,30.418M,39.013M,113.24B,
-BBD,Banco Bradesco S.A.,3.42,0.0006,+0.02%,27.695M,25.584M,36.341B,10.06
-PFE,Pfizer Inc.,36.42,-0.47,-1.27%,32.191M,25.668M,213.461B,7.46
-ENVX,Enovix Corporation,16.43,3.31,+25.23%,27.545M,6.684M,2.599B,
-RIVN,Rivian Automotive, Inc.,13.94,0.49,+3.64%,27.435M,26.064M,13.094B,
-WBD,Warner Bros. Discovery, Inc.,12.27,0.49,+4.16%,31.111M,22.218M,29.891B,
+Symbol,Name,Price (Intraday),Change,% Change,Volume,Avg Vol (3 month),Market Cap,PE Ratio (TTM),
+AMC,AMC Entertainment Holdings, Inc.,5.85,1.45,+32.95%,244.345M,22.034M,5.419B,
+TSLA,Tesla, Inc.,269.06,9.04,+3.48%,134.78M,137.854M,852.786B,87.36
+NIO,NIO Inc.,11.73,1.15,+10.87%,107.132M,55.54M,20.791B,
+BAC,Bank of America Corporation,32.65,0.67,+2.10%,61.174M,47.675M,259.684B,9.38
+RIVN,Rivian Automotive, Inc.,25.81,0.54,+2.14%,59.367M,45.325M,24.244B,
+APE,AMC Entertainment Holdings, Inc.,1.8,0,0.00%,52.608M,12.735M,4.076B,
+T,AT&T Inc.,14.95,0.19,+1.29%,48.607M,45.635M,106.878B,
+AMD,Advanced Micro Devices, Inc.,110.61,-0.34,-0.31%,45.442M,70.856M,178.122B,614.5
+F,Ford Motor Company,13.96,0.18,+1.31%,46.476M,59.633M,55.851B,19.12
+LCID,Lucid Group, Inc.,7.17,0.3,+4.37%,41.478M,42.17M,16.301B,
+AAPL,Apple Inc.,192.75,0.81,+0.42%,44.776M,57.616M,3.032T,32.72
+SIRI,Sirius XM Holdings Inc.,6,-1.08,-15.25%,38.802M,21.633M,23.21B,14.63
+AMZN,Amazon.com, Inc.,128.8,-1.2,-0.92%,40.081M,63.191M,1.322T,306.67
+PLTR,Palantir Technologies Inc.,16.32,-0.11,-0.67%,35.743M,80.442M,34.573B,
+NVDA,NVIDIA Corporation,446.12,3.03,+0.68%,36.668M,49.587M,1.102T,232.35
+BABA,Alibaba Group Holding Limited,96.35,4.18,+4.54%,33.06M,19.385M,246.897B,24.9
+VZ,Verizon Communications Inc.,33.98,0.1,+0.30%,30.674M,24.13M,142.852B,6.61
+GOOGL,Alphabet Inc.,121.53,1.51,+1.26%,29.518M,34.45M,1.545T,27.62
+CCL,Carnival Corporation & plc,17.85,-0.03,-0.17%,27.912M,43.927M,23.313B,
+AAL,American Airlines Group Inc.,16.88,-0.54,-3.10%,28.395M,24.169M,11.029B,6.59
+ITUB,Itaú Unibanco Holding S.A.,5.98,-0.05,-0.83%,27.309M,20.272M,58.604B,9.34
+MARA,Marathon Digital Holdings, Inc.,16.42,-0.46,-2.73%,26.311M,40.521M,2.791B,
+BBD,Banco Bradesco S.A.,3.49,-0.09,-2.51%,24.875M,23.763M,37.084B,10.26
+SOFI,SoFi Technologies, Inc.,9.45,0.02,+0.21%,25.651M,55.664M,8.891B,
+XPEV,XPeng Inc.,16.01,1.45,+9.96%,24.665M,15.118M,13.861B,
