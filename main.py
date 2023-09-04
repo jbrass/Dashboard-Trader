@@ -739,7 +739,7 @@ with tab4:
         st.dataframe(df_top)
     else:
         if archivo_seleccionado == "spx_quotedata.csv":
-            df_top['Price'] = df_top['Strike'] + 30
+            df_top['Price'] = df_top['Strike'] + 10
         else:  # archivo_seleccionado == "spy_quotedata.csv"
             df_top['Price'] = df_top['Strike'] * 10
 
