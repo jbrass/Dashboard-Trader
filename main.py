@@ -23,7 +23,8 @@ from scipy.stats import norm
 from sklearn.linear_model import LinearRegression
 from plotly.subplots import make_subplots
 from sklearn.cluster import KMeans
-
+from scipy.interpolate import make_interp_spline
+from datetime import datetime, timedelta
 
 
 
@@ -58,7 +59,7 @@ with open("fintra-logo-blanco.png", 'rb') as img:
     
 
 # Utilizar una estructura de control de flujo más clara
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12= st.tabs(["Reporte de Mercado", "Estadísticas", "Gráficos", "Opciones 0DTE", "Charts Índices", "Charts Acciones", "Meme Stocks", "Gamma", "CotReport", "Acciones Ganadoras/Perdedoras", "Estadísticas CBOE", "Estadísticas Macroeconómicas"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab11, tab12= st.tabs(["Reporte de Mercado", "Estadísticas ES_F", "Gráficos ES_F", "Opciones 0DTE", "Charts Índices", "Charts Acciones", "Meme Stocks", "Gamma", "CotReport", "Estadísticas CBOE", "Estadísticas Macroeconómicas"])
 
 with tab1:
 
@@ -80,7 +81,7 @@ with tab1:
    
 
     # Título de la sección
-    st.header('Día 25/07/2023')
+    st.header('Día 05/09/2023')
     
 
 
@@ -190,6 +191,8 @@ with tab2:
 
 
 with tab3:
+    
+
     
 
     # Filtro de periodo
@@ -308,6 +311,7 @@ with tab3:
     trend_chart.update_layout(title='Tendencia de Precios')
 
     col1.plotly_chart(trend_chart, use_container_width=True)
+
 
 
 
@@ -628,8 +632,16 @@ with tab3:
     
     
     
+       
     
     
+#ZONA DE PRUEBAS
+    
+    
+
+        
+        
+        
     
     
     
@@ -639,6 +651,10 @@ with tab3:
     
     
 with tab4:
+    
+    
+
+    
 
     # Mostrar la tabla completa al iniciar el programa
     st.subheader('Opciones con expiración diarias 0DTE')
@@ -739,7 +755,7 @@ with tab4:
         st.dataframe(df_top)
     else:
         if archivo_seleccionado == "spx_quotedata.csv":
-            df_top['Price'] = df_top['Strike'] + 10
+            df_top['Price'] = df_top['Strike'] + 35
         else:  # archivo_seleccionado == "spy_quotedata.csv"
             df_top['Price'] = df_top['Strike'] * 10
 
@@ -764,7 +780,50 @@ with tab4:
 
 
 
-    
+
+    #CURVA VANNA CON DELTA NOTIONAL 0dte
+    # Calcula las gammas individuales para Calls y Puts
+    data['Gamma Calls'] = 0.5 * abs(data['Calls Net']) * data['Calls IV'] * (data['Calls Delta'])**2
+    data['Gamma Puts'] = 0.5 * abs(data['Puts Net']) * data['Puts IV'] * (data['Puts Delta'])**2
+
+    # Ajusta regresiones polinómicas de grado superior para Vanna Calls y Vanna Puts
+    degree = 4  # Grado del polinomio (puedes ajustarlo según sea necesario)
+    coefficients_calls = np.polyfit(data['Strike'], data['Gamma Calls'], degree)
+    polynomial_calls = np.poly1d(coefficients_calls)
+
+    coefficients_puts = np.polyfit(data['Strike'], data['Gamma Puts'], degree)
+    polynomial_puts = np.poly1d(coefficients_puts)
+
+    # Crea DataFrames para las curvas de Vanna Calls y Vanna Puts suavizadas
+    smoothed_strikes = np.linspace(data['Strike'].min(), data['Strike'].max(), 1000)  # Interpola más puntos para suavizar la curva
+    predicted_data_calls = pd.DataFrame({
+        'Strike': smoothed_strikes,
+        'Vanna Calls': polynomial_calls(smoothed_strikes)
+    })
+
+    predicted_data_puts = pd.DataFrame({
+        'Strike': smoothed_strikes,
+        'Vanna Puts': polynomial_puts(smoothed_strikes)
+    })
+
+    # Crea un gráfico con dos líneas curvadas para Vanna Calls y Vanna Puts
+    chart = alt.Chart(predicted_data_calls).mark_line(color='green').encode(
+        x=alt.X('Strike:O', axis=alt.Axis(format='d')),  # Formato de número entero en el eje x
+        y='Vanna Calls:Q',
+        tooltip=['Strike', 'Vanna Calls']
+    ) + alt.Chart(predicted_data_puts).mark_line(color='red').encode(
+        x=alt.X('Strike:O', axis=alt.Axis(format='d')),  # Formato de número entero en el eje x
+        y='Vanna Puts:Q',
+        tooltip=['Strike', 'Vanna Puts']
+    )
+
+    # Muestra el gráfico usando Streamlit
+    st.title('Curvas de Vanna Suavizadas para Calls y Puts')
+    st.altair_chart(chart, use_container_width=True)
+
+
+
+
 
 
 
@@ -799,35 +858,106 @@ with tab4:
 
 
 
-    
-    #Calcular CHARM por fecha de expiracion
-    #calculo: para calcular la diferencia entre los precios de las opciones de Calls y Puts en días consecutivos,
-    # y luego dividimos esta diferencia por el número de días que separan las fechas de vencimiento (Expiration Date).
-    # Esto nos dará una medida del cambio diario en el precio de la opción, es decir, el Charm.
-    
-    # Ordenar los datos por fecha de vencimiento
-    data = data.sort_values('Expiration Date')
 
-    # Calcular el Charm
-    data['Charm'] = data['Calls Delta'].diff() / data['Calls Last Sale'].diff()
 
-    # Crear el gráfico de Charm
-    chart = alt.Chart(data).mark_bar().encode(
-        x='Strike:Q',
-        y=alt.Y('Charm:Q', axis=alt.Axis(format='%', title='Charm (%)')),
-        color=alt.condition(alt.datum.Charm >= 0, alt.value('cyan'), alt.value('orange'))
+    # Código para el gráfico de sesgo de volatilidad con el eje X mejorado
+    # Supongamos que tienes un DataFrame llamado "data" con las columnas necesarias
+
+    # Calcular el sesgo de volatilidad (diferencia entre IV de calls y puts) en porcentaje
+    data['Sesgo_IV'] = (data['Calls IV'] - data['Puts IV']) * 100  # Multiplicamos por 100 para convertirlo en porcentaje
+
+    # Crear el gráfico de barras
+    chart_sesgo_iv = alt.Chart(data).mark_bar().encode(
+        x=alt.X('Strike:O', axis=alt.Axis(labelAngle=0), title='Precio de Ejercicio'),  # Rotar las etiquetas del eje X a 0 grados
+        y=alt.Y('Sesgo_IV:Q', axis=alt.Axis(format='%'), title='Sesgo de Volatilidad (%)'),  # Formatear el eje Y como porcentaje
+        color=alt.condition(alt.datum.Sesgo_IV >= 0, alt.value('orange'), alt.value('cyan')),
+        tooltip=['Strike', 'Sesgo_IV']
     ).properties(
-        title='Charm Near the Money SPX'
+        title='Sesgo de Volatilidad (IV) de Calls y Puts por Precio de Ejercicio',
+        width=800
+    )
+
+    # Mostrar el gráfico en Streamlit
+    st.altair_chart(chart_sesgo_iv, use_container_width=True)
+
+
+
+
+
+    
+    
+
+                
+    
+
+    
+    #PROBANDO CALCULAR VANNA JPMORGAN
+    # Calcular el Vanna
+    data['Vanna Calls'] = data['Calls Last Sale'] * data['Calls Delta'] * data['Calls IV']
+    data['Vanna Puts'] = data['Puts Last Sale'] * data['Puts Delta'] * data['Puts IV']
+
+    # Crear un gráfico de barras para mostrar el Vanna por Strike
+    chart = alt.Chart(data).mark_bar().encode(
+        x='Strike:O',  # Precio de Ejercicio en el eje x
+        y=alt.Y('Vanna Calls:Q', title='Vanna Calls'),
+        color=alt.value('blue'),
+        tooltip=['Strike:O', 'Vanna Calls:Q']
+    ).properties(
+        width=600,
+        height=400,
+        title='Vanna Calls por Strike'
+    ) + \
+    alt.Chart(data).mark_bar().encode(
+        x='Strike:O',  # Precio de Ejercicio en el eje x
+        y=alt.Y('Vanna Puts:Q', title='Vanna Puts'),
+        color=alt.value('red'),
+        tooltip=['Strike:O', 'Vanna Puts:Q']
+    ).properties(
+        width=600,
+        height=400,
+        title='Vanna Puts por Strike'
+    )
+
+    # Título de la aplicación
+    st.title('Vanna Calculator')
+
+    # Visualizar el gráfico de barras de Vanna
+    st.altair_chart(chart, use_container_width=True)
+            
+     
+
+        
+     
+     
+     
+     
+
+            
+            
+            
+    #Calcular CHARM 0dte
+    # Suponiendo que ya tienes el DataFrame 'data' con las columnas mencionadas
+
+    # Asegúrate de que la columna 'Expiration Date' sea de tipo datetime
+    data['Expiration Date'] = pd.to_datetime(data['Expiration Date'])
+
+    # Calcular el Charm para cada Strike
+    data['Charm'] = data['Calls Delta'] - data['Puts Delta']
+
+    # Crear el gráfico de barras con Altair y ajustar el esquema de color
+    chart = alt.Chart(data).mark_bar().encode(
+        x=alt.X('Strike:N', title='Strike'),
+        y=alt.Y('Charm:Q', title='Charm'),
+        color=alt.Color('Charm:Q', scale=alt.Scale(scheme='blues', reverse=True), legend=None),
+        tooltip=['Strike:N', 'Charm:Q']
+    ).properties(
+        width=800,
+        height=600,
+        title='Charm de Opciones 0DTE sobre SPX para diferentes Strikes'
     )
 
     # Mostrar el gráfico en Streamlit
     st.altair_chart(chart, use_container_width=True)
-
-
-
-#INDICES ALL ###
-
-        
         
     
     st.header("Todas las expiraciones SPX")
@@ -835,17 +965,21 @@ with tab4:
     col1, col2 = st.columns(2)
 
     with col1:
+        # Suponiendo que tienes un DataFrame llamado 'data_all' con las columnas 'Strike', 'Calls Volume' y 'Puts Volume'
+        # Crear una nueva columna 'Puts Volume' con valores negativos para representar las Puts Volume por debajo del 0
+        data_all['Puts Volume'] = -data_all['Puts Volume']
+
         # Crear un gráfico de barras para mostrar las columnas de "Calls Volume" y "Puts Volume" para cada "Strike"
         fig2 = go.Figure()
-        fig2.add_trace(go.Bar(x=data_all['Strike'], y=data_all['Calls Volume'], name='Calls Volume'))
         fig2.add_trace(go.Bar(x=data_all['Strike'], y=data_all['Puts Volume'], name='Puts Volume'))
+        fig2.add_trace(go.Bar(x=data_all['Strike'], y=data_all['Calls Volume'], name='Calls Volume'))
 
         # Personaliza los títulos y ejes del gráfico
         fig2.update_layout(
             title='Volumen de opciones call y put para todas las expiraciones',
             xaxis_title='Strike',
             yaxis_title='Volume',
-            barmode='stack'
+            barmode='relative',  # Utiliza 'relative' para que las barras se apilen correctamente
         )
 
         # Muestra el gráfico en la página
@@ -906,6 +1040,7 @@ with tab4:
                     
     
     
+    
 
 
     
@@ -913,6 +1048,31 @@ with tab4:
     
     
     
+    
+
+    #SESGO VOLATILIDA ALL EXPIRATIONS SPX
+    # Código para el gráfico de sesgo de volatilidad con el eje X mejorado
+    # Supongamos que tienes un DataFrame llamado "data" con las columnas necesarias
+
+    # Calcular el sesgo de volatilidad (diferencia entre IV de calls y puts) en porcentaje
+    data_all['Sesgo_IV'] = (data_all['Calls IV'] - data_all['Puts IV']) * 100  # Multiplicamos por 100 para convertirlo en porcentaje
+
+    # Crear el gráfico de barras
+    chart_sesgo_iv = alt.Chart(data_all).mark_bar().encode(
+        x=alt.X('Strike:O', axis=alt.Axis(labelAngle=0), title='Precio de Ejercicio'),  # Rotar las etiquetas del eje X a 0 grados
+        y=alt.Y('Sesgo_IV:Q', axis=alt.Axis(format='%'), title='Sesgo de Volatilidad (%)'),  # Formatear el eje Y como porcentaje
+        color=alt.condition(alt.datum.Sesgo_IV >= 0, alt.value('orange'), alt.value('cyan')),
+        tooltip=['Strike', 'Sesgo_IV']
+    ).properties(
+        title='Sesgo de Volatilidad (IV) de Calls y Puts por Precio de Ejercicio',
+        width=800
+    )
+
+    # Mostrar el gráfico en Streamlit
+    st.altair_chart(chart_sesgo_iv, use_container_width=True)
+    
+    
+
 
     #DELTA TODAS LAS EXPIRACIONES SPX
     # Transformar Expiration Date a formato fecha
@@ -949,6 +1109,174 @@ with tab4:
 
 
 
+
+
+    # Crear el gráfico usando Altair con formato de fecha personalizado
+    chart2 = alt.Chart(data_all).mark_line().encode(
+        x=alt.X('Expiration Date:T', 
+                axis=alt.Axis(title='Fecha de Vencimiento', labelAngle=45, format='%b %d, %Y')),  # Formato personalizado de fecha
+        y='sum(Calls Open Interest):Q',
+        color=alt.value('#9EF8EE')
+    ) + alt.Chart(data_all).mark_line().encode(
+        x=alt.X('Expiration Date:T', 
+                axis=alt.Axis(title='Fecha de Vencimiento', labelAngle=45, format='%b %d, %Y')),  # Formato personalizado de fecha
+        y='sum(Puts Open Interest):Q',
+        color=alt.value('#F24405')
+    )
+
+    # Agregar etiquetas de texto personalizadas
+    text = alt.Chart(data_all).mark_text(dx=-20, dy=-10, color='#9EF8EE').encode(
+        x=alt.X('Expiration Date:T', 
+                axis=alt.Axis(title='Fecha de Vencimiento', labelAngle=45, format='%b %d, %Y')),  # Formato personalizado de fecha
+        y='sum(Calls Open Interest):Q',
+        text='sum(Calls Open Interest):Q'
+    ) + alt.Chart(data_all).mark_text(dx=20, dy=-10, color='#F24405').encode(
+        x=alt.X('Expiration Date:T', 
+                axis=alt.Axis(title='Fecha de Vencimiento', labelAngle=45, format='%b %d, %Y')),  # Formato personalizado de fecha
+        y='sum(Puts Open Interest):Q',
+        text='sum(Puts Open Interest):Q'
+    )
+
+    # Mostrar el gráfico y las etiquetas usando Altair
+    st.altair_chart(chart2 + text, use_container_width=True)
+
+
+
+
+
+
+
+    #probador GAMMA 0dte
+    # Supongamos que tienes un DataFrame llamado 'data' con las columnas 'Calls Gamma' y 'Puts Gamma'
+    # Calcula el Net Gamma restando 'Puts Gamma' de 'Calls Gamma'
+    data['Net Gamma'] = data['Calls Gamma'] - data['Puts Gamma']
+
+    # Crea un gráfico de barras para visualizar el Net Gamma por Strike
+    chart = alt.Chart(data).mark_bar().encode(
+        x=alt.X('Strike:O', title='Strike', axis=alt.Axis(labelAngle=45)),  # Rotar las etiquetas del eje X
+        y=alt.Y('Net Gamma:Q', title='Net Gamma ($)',
+                axis=alt.Axis(format='~s')),  # Formatear los números en notación de ingeniería para números grandes
+        color=alt.condition(
+            alt.datum['Net Gamma'] >= 0,
+            alt.value('#08A64D'),  # Color para Net Gamma positivo
+            alt.value('#F22929')   # Color para Net Gamma negativo
+        ),
+        tooltip=['Strike:O', 'Net Gamma:Q']
+    ).properties(
+        width=800,
+        height=400,
+        title='Net Gamma del S&P 500 (SPX) por Strike'
+    )
+
+    # Mostrar el gráfico usando Streamlit
+    st.write("Net Gamma del S&P 500 (SPX) por Strike")
+    st.altair_chart(chart, use_container_width=True)
+
+    # Supongamos que tienes un DataFrame llamado 'data_all' con las columnas 'Calls Gamma' y 'Puts Gamma'
+    # Calcula el Net Gamma restando 'Puts Gamma' de 'Calls Gamma'
+    data_all['Net Gamma'] = data_all['Calls Gamma'] - data_all['Puts Gamma']
+
+    # Crea un gráfico de barras para visualizar el Net Gamma por Strike
+    chart_all = alt.Chart(data_all).mark_bar().encode(
+        x=alt.X('Strike:O', title='Strike', axis=alt.Axis(labelAngle=45)),  # Rotar las etiquetas del eje X
+        y=alt.Y('Net Gamma:Q', title='Net Gamma ($)',
+                axis=alt.Axis(format='~s')),  # Formatear los números en notación de ingeniería para números grandes
+        color=alt.condition(
+            alt.datum['Net Gamma'] >= 0,
+            alt.value('#08A64D'),  # Color para Net Gamma positivo
+            alt.value('#F22929')   # Color para Net Gamma negativo
+        ),
+        tooltip=['Strike:O', 'Net Gamma:Q']
+    ).properties(
+        width=800,
+        height=400,
+        title='Net Gamma del S&P 500 (SPX) por Strike'
+    )
+
+    # Mostrar el gráfico usando Streamlit
+    st.write("Net Gamma del S&P 500 (SPX) por Strike")
+    st.altair_chart(chart_all, use_container_width=True)
+
+
+    
+    
+            
+    #CURVA DE VANNA 0DTE
+    # Elimina los valores duplicados en la columna de Strike
+    data = data.drop_duplicates(subset='Strike')
+
+    # Calcula el delta notional para cada opción
+    data['Delta Notional Calls'] = data['Calls Delta'] * data['Calls Last Sale']
+    data['Delta Notional Puts'] = data['Puts Delta'] * data['Puts Last Sale']
+
+    # Suma los deltas notionales para obtener el delta notional agregado
+    data['Delta Notional'] = data['Delta Notional Calls'] + data['Delta Notional Puts']
+
+    # Ordena los datos por el valor del Strike
+    data = data.sort_values(by='Strike')
+
+    # Utiliza un spline cúbico para suavizar las curvas con un valor de k más alto (por ejemplo, 5)
+    spline = make_interp_spline(data['Strike'], data['Delta Notional'], k=7)
+    x_smooth = data['Strike'].values
+    y_smooth_notional = spline(x_smooth)
+
+    # Crea un DataFrame con los datos suavizados
+    smoothed_data = pd.DataFrame({'Strike': x_smooth, 'Delta Notional': y_smooth_notional})
+
+    # Crea un gráfico de línea para la curva suavizada
+    chart = alt.Chart(smoothed_data).mark_line().encode(
+        x='Strike:Q',
+        y='Delta Notional:Q',
+        color=alt.value('#D2E8E3'),
+        tooltip=['Strike:Q', 'Delta Notional:Q']
+    ).properties(
+        width=800,
+        height=400
+    )
+
+    # Muestra el gráfico en Streamlit
+    st.write("Curva de Delta Notional suavizada del S&P 500 (SPX) por Strike")
+    st.altair_chart(chart, use_container_width=True)
+
+  
+  
+  
+  
+  
+    # Supongamos que tienes un DataFrame llamado 'data' con las columnas proporcionadas
+
+    # Calcula la suma de Calls Net y Puts Net
+    total_calls_net = data['Calls Net'].sum()
+    total_puts_net = data['Puts Net'].sum()
+
+    # Crea un DataFrame para el gráfico
+    total_data = pd.DataFrame({'Tipo': ['Total Calls Net', 'Total Puts Net'],
+                            'Valor': [total_calls_net, total_puts_net]})
+
+    # Crea un gráfico de barras con Altair
+    chart = alt.Chart(total_data).mark_bar().encode(
+        x='Tipo',
+        y='Valor:Q',
+        color=alt.Color('Tipo:N', legend=None),
+        tooltip=['Tipo', 'Valor']
+    ).properties(
+        width=400,
+        height=300,
+        title='Total Calls Net y Total Puts Net'
+    )
+
+    # Muestra el gráfico en Streamlit
+    st.write("Total Calls Net y Total Puts Net")
+    st.altair_chart(chart, use_container_width=True)
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
     #TODAS LAS EXPIRACIONES VIX
     st.header("Todas las expiraciones VIX")
@@ -1069,18 +1397,10 @@ with tab4:
 
 
 
-    
-
-
-
-
-
 
     ##########
 
     with tab5:
-
-
         
         st.subheader("Options Data. Índices más representativos: SPX, SPY, NDX")
 
@@ -1088,10 +1408,6 @@ with tab4:
         
         
         with col1:
-
-            #INDICES
-            # Obtener los datos del dataframe df_acciones
-            # Supongamos que el dataframe contiene las columnas ['Expiration Date', 'Calls Net', 'Puts Net']
 
             # Crear un nuevo dataframe para los datos del gráfico
             df_chart = pd.DataFrame({
@@ -1102,31 +1418,24 @@ with tab4:
 
             # Establecer la columna 'Expiration Date' como índice
             df_chart.set_index('Expiration Date', inplace=True)
-            # Ordenar el índice de forma descendente (de la fecha más reciente a la más antigua)
-            df_chart.sort_index(ascending=False, inplace=False)
-
-            # Ordenar el dataframe por Calls Net descendente
-            #df_chart = df_chart.sort_values('Calls Net', ascending=True)
-        
-
-            # Limitar el número de acciones a mostrar en el gráfico
-            #num_acciones_mostrar = 10
-            #df_chart = df_chart.head(num_acciones_mostrar)
 
             # Título del gráfico
             titulo = "Neto de los principales Índices: SPX, SPY, NDX"
 
             # Crear un gráfico de barras
             fig18 = go.Figure()
-            fig18.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Net'], name='Calls Net'))
-            fig18.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Net'], name='Puts Net') )
+            fig18.add_trace(go.Bar(x=df_chart.index, y=df_chart['Calls Net'], name='Calls Net', marker=dict(color='#FF6B6B')))
+            fig18.add_trace(go.Bar(x=df_chart.index, y=df_chart['Puts Net'], name='Puts Net', marker=dict(color='#6B66FF')))
 
             # Personalizar el diseño del gráfico
             fig18.update_layout(
                 title=titulo,
                 xaxis_title='Expiration Date',
                 yaxis_title='Neto',
-                barmode='group'
+                barmode='group',
+                plot_bgcolor='black',  # Fondo negro
+                paper_bgcolor='black',  # Fondo del gráfico negro
+                font=dict(color='white')  # Color del texto blanco
             )
 
             # Mostrar el gráfico en la página web
@@ -2255,6 +2564,7 @@ with tab4:
 
       
 
+
         # Crear una figura con dos ejes y
         fig = go.Figure()
 
@@ -2456,96 +2766,43 @@ with tab4:
 
 
 
-        st.info("El gráfico de barras de comparación de influencias es una herramienta visual efectiva para determinar las variables más influyentes en un conjunto de datos y tomar decisiones informadas basadas en su magnitud absoluta de influencia.", icon="ℹ️")
+        st.info("El gráfico de barras de comparación de influencias es una herramienta visual efectiva para determinar las variables más influyentes en un conjunto de datos y tomar decisiones informadas basadas en su magnitud relativa de influencia.", icon="ℹ️")
+
         # Crear un subconjunto del dataframe con las variables necesarias
         df_subset = df_cotSP[['cot_commercial', 'cot_noncommercial', 'cot_dealer', 'cot_institutional', 'cot_leveragedfunds', 'cot_other']]
 
         # Calcular la matriz de correlación entre las variables
-        correlation_matrix = df_subset.corr()
+        correlation_matrix = df_subset.corr().abs()
 
-        # Crear una lista con los nombres de las variables
-        variables = list(correlation_matrix.columns)
+        # Calcular las magnitudes de influencia relativa
+        total_absolute_influence = correlation_matrix.sum().sum()
+        relative_influence = correlation_matrix.sum() / total_absolute_influence
 
-        # Crear una matriz de influencia a partir de la matriz de correlación
-        influence_matrix = correlation_matrix.copy()
+        # Crear un dataframe con las variables y sus influencias relativas
+        df_influences = pd.DataFrame({'Variable': relative_influence.index, 'Influencia Relativa': relative_influence.values})
 
-        # Calcular las magnitudes de influencia en magnitud absoluta
-        total_influence = influence_matrix.sum()
-
-        # Crear un dataframe con las variables y sus influencias en magnitud absoluta
-        df_influences = pd.DataFrame({'Variable': variables, 'Influencia': total_influence})
-
-        # Ordenar el dataframe por la columna de influencia en orden descendente
-        df_influences = df_influences.sort_values(by='Influencia', ascending=False)
+        # Ordenar el dataframe por la columna de influencia relativa en orden descendente
+        df_influences = df_influences.sort_values(by='Influencia Relativa', ascending=False)
 
         # Crear el gráfico de barras de comparación de influencias con Altair
         chart = alt.Chart(df_influences).mark_bar().encode(
             x=alt.X('Variable:N', sort=None),
-            y=alt.Y('Influencia:Q'),
+            y=alt.Y('Influencia Relativa:Q', axis=alt.Axis(format='.0%')),  # Mostrar como porcentaje en el eje Y
             color=alt.Color('Variable:N', legend=None),
-            tooltip=['Variable', alt.Tooltip('Influencia', format='.2f')]
+            tooltip=['Variable', alt.Tooltip('Influencia Relativa:Q', format='.2%')]
         ).properties(
-            title='Comparación de Influencias'
+            title='Comparación de Influencias Relativas'
         )
 
         # Mostrar el gráfico de barras de comparación de influencias con Altair y Streamlit
         st.altair_chart(chart, use_container_width=True)
 
 
-
-
  
  
                 
     
-    with tab10:
-
-
-
-    # Crear un gráfico de barras del volumen de operaciones de acciones
-        # Crear un gráfico de barras del volumen de operaciones de acciones ganadoras
-        chart_gainers = alt.Chart(df_gainers).mark_bar().encode(
-            x='Symbol',
-            y='Volume',
-            color='Symbol'
-        ).properties(
-            title='Volumen de operaciones de acciones ganadoras'
-        )
-
-        # Mostrar el gráfico en Streamlit
-        st.altair_chart(chart_gainers, use_container_width=True)
-
-        # Crear un gráfico de barras del volumen de operaciones de acciones perdedoras
-        chart_losers = alt.Chart(df_losers).mark_bar().encode(
-            x='Symbol',
-            y='Volume',
-            color='Symbol'
-        ).properties(
-            title='Volumen de operaciones de acciones perdedoras'
-        )
-
-        # Mostrar el gráfico en Streamlit
-        st.altair_chart(chart_losers, use_container_width=True)
-
-        # Crear un gráfico de barras del volumen de operaciones de acciones más activas
-        chart_activas = alt.Chart(df_activas).mark_bar().encode(
-            x='Symbol',
-            y='Volume',
-            color='Symbol'
-        ).properties(
-            title='Acciones más activas intradía por volumen'
-        )
-
-        # Mostrar el gráfico en Streamlit
-        st.altair_chart(chart_activas, use_container_width=True)
-        
-        
-        
-        
-        # Mostrar la tabla de datos
-        st.subheader("Datos de Acciones Shorteadas")
-        st.table(df_shorteadas.head(16))
-
+    
 
 
 
@@ -2557,6 +2814,65 @@ with tab4:
 
 
     with tab11:
+        
+        #Gráfico de Líneas de Actividad Diaria:
+        st.subheader("Actividad Diaria de Trading de Opciones")
+        chart = alt.Chart(df_cboe).mark_line().encode(
+            x='Day:T',
+            y='Equity Option Contracts:Q',
+            color='Market Participant:N',
+            tooltip=['Day:T', 'Equity Option Contracts:Q']
+        ).properties(
+            width=600,
+            height=400
+        )
+        st.altair_chart(chart, use_container_width=True )
+
+
+        #Gráfico de Barras para Mostrar la Cantidad de Contratos por Tipo:
+        st.subheader("Cantidad Total de Contratos por Tipo de Opción")
+        bar_chart = alt.Chart(df_cboe).mark_bar().encode(
+            x='sum(Equity Option Contracts):Q',
+            y='Market Participant:N',
+            color='Market Participant:N',
+            tooltip=['Market Participant:N', 'sum(Equity Option Contracts):Q']
+        ).properties(
+            width=600,
+            height=400
+        )
+        st.altair_chart(bar_chart, use_container_width=True)
+
+        #Gráfico de Dispersion para Relacionar el Número de Contratos con el Número de Transacciones:
+        st.subheader("Relación entre Número de Contratos y Número de Transacciones")
+        scatter_chart = alt.Chart(df_cboe).mark_circle().encode(
+            x='Equity Option Contracts:Q',
+            y='Equity Option Trade Count:Q',
+            color='Market Participant:N',
+            tooltip=['Market Participant', 'Equity Option Contracts', 'Equity Option Trade Count']
+        ).properties(
+            width=600,
+            height=400
+        )
+        st.altair_chart(scatter_chart, use_container_width=True)
+
+
+        #Gráfico de Barras Apiladas para Mostrar la Participación en el Mercado:
+        st.subheader("Participación en el Mercado de Opciones")
+        stacked_bar_chart = alt.Chart(df_cboe).mark_bar().encode(
+            x='Day:T',
+            y='Equity Option Contracts:Q',
+            color='Market Participant:N',
+            tooltip=['Day:T', 'Market Participant', 'Equity Option Contracts:Q']
+        ).properties(
+            width=600,
+            height=400
+        )
+        st.altair_chart(stacked_bar_chart, use_container_width=True )
+
+
+
+
+
 
         # Ordenar los datos por volumen descendente
         df_cboe = df_cboe.sort_values('Total Option Notional', ascending=False)
@@ -2705,7 +3021,6 @@ with tab4:
 
 
 ############## ESTADISTICAS SOBRE TICKER DE OPCIONES DIARIAS ##############
-
 
 
 

@@ -37,15 +37,15 @@ df_squeeze = pd.read_csv("./Operativa/processed/DIX.csv")
 
 
 #Acciones Gainers
-df_gainers = pd.read_csv('./Operativa/processed/gainers.csv')
+df_gainers = pd.read_csv('./Operativa/processed/gainers.csv', sep=';')
 #Acciones Losers
-df_losers = pd.read_csv('./Operativa/processed/losers.csv')
+df_losers = pd.read_csv('./Operativa/processed/losers.csv' , sep=';')
 #Acciones mas activas por volumen
-df_activas = pd.read_csv('./Operativa/processed/mostActive.csv')
+df_activas = pd.read_csv('./Operativa/processed/mostActive.csv' , sep=';')
 
 
 #Acciones DarkPools Shortsqueeze
-df_shorteadas = pd.read_csv('./Operativa/processed/shorteadas.csv')
+df_shorteadas = pd.read_csv('./Operativa/processed/shorteadas.csv', sep=';')
 
 #Datos sobre CBOE 
 df_cboe = pd.read_csv('./Operativa/processed/volume-options.csv')
@@ -80,6 +80,9 @@ data_otros = pd.read_csv('./Operativa/processed/ko_quotedata.csv')
 df_ares =  pd.read_csv('./Operativa/processed/ares_quotedata.csv')
 df_pypl = pd.read_csv('./Operativa/processed/pypl_quotedata.csv')
 df_spce = pd.read_csv('./Operativa/processed/spce_quotedata.csv')
+df_vale = pd.read_csv('./Operativa/processed/vale_quotedata.csv')
+df_intc = pd.read_csv('./Operativa/processed/intc_quotedata.csv')
+df_hyg = pd.read_csv('./Operativa/processed/hyg_quotedata.csv')
 
 #Acciones Memes
 df_lcid = pd.read_csv('./Operativa/processed/lcid_quotedata.csv')
@@ -100,6 +103,7 @@ df_acciones_tech = pd.concat([data_apple, data_goog, data_msft, data_nvda], igno
 
 #Union Indices
 df_index = pd.concat([data, data_spy, df_volatilidad_nq], ignore_index=True)
+
 
 
 
@@ -130,6 +134,9 @@ data_files = {
     "spx_all_quotedata.csv": data_all,
     "cvna_quotedate.csv": df_cvna,
     "spce_quotedata.csv": df_spce,
+    "vale_quotedata.csv": df_vale,
+    "intc_quotedata.csv": df_intc,
+    "hyg_quotedata.csv": df_hyg,
     "vix_all_quotedata.csv": data_vix_all
 }
 
