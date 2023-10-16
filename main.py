@@ -755,7 +755,7 @@ with tab4:
         st.dataframe(df_top)
     else:
         if archivo_seleccionado == "spx_quotedata.csv":
-            df_top['Price'] = df_top['Strike'] + 35
+            df_top['Price'] = df_top['Strike'] + 30
         else:  # archivo_seleccionado == "spy_quotedata.csv"
             df_top['Price'] = df_top['Strike'] * 10
 
@@ -782,43 +782,40 @@ with tab4:
 
 
     #CURVA VANNA CON DELTA NOTIONAL 0dte
+
     # Calcula las gammas individuales para Calls y Puts
     data['Gamma Calls'] = 0.5 * abs(data['Calls Net']) * data['Calls IV'] * (data['Calls Delta'])**2
     data['Gamma Puts'] = 0.5 * abs(data['Puts Net']) * data['Puts IV'] * (data['Puts Delta'])**2
 
-    # Ajusta regresiones polinómicas de grado superior para Vanna Calls y Vanna Puts
-    degree = 4  # Grado del polinomio (puedes ajustarlo según sea necesario)
-    coefficients_calls = np.polyfit(data['Strike'], data['Gamma Calls'], degree)
-    polynomial_calls = np.poly1d(coefficients_calls)
+    # Calcula la media de Gamma Calls y Gamma Puts
+    data['Gamma Average'] = 0.5 * (data['Gamma Calls'] + data['Gamma Puts'])
 
-    coefficients_puts = np.polyfit(data['Strike'], data['Gamma Puts'], degree)
-    polynomial_puts = np.poly1d(coefficients_puts)
+    # Ajuste polinómico para la media de Gamma Calls y Gamma Puts
+    degree = 4
+    coefficients_average = np.polyfit(data['Strike'], data['Gamma Average'], degree)
+    polynomial_average = np.poly1d(coefficients_average)
 
-    # Crea DataFrames para las curvas de Vanna Calls y Vanna Puts suavizadas
-    smoothed_strikes = np.linspace(data['Strike'].min(), data['Strike'].max(), 1000)  # Interpola más puntos para suavizar la curva
-    predicted_data_calls = pd.DataFrame({
+    # Interpola más puntos para suavizar la curva
+    smoothed_strikes = np.linspace(data['Strike'].min(), data['Strike'].max(), 1000)
+
+    # Calcula los valores de la curva suavizada
+    vanna_average_smooth = polynomial_average(smoothed_strikes)
+
+    # Crea un DataFrame para la curva de Vanna suavizada
+    predicted_data = pd.DataFrame({
         'Strike': smoothed_strikes,
-        'Vanna Calls': polynomial_calls(smoothed_strikes)
+        'Vanna Average': vanna_average_smooth
     })
 
-    predicted_data_puts = pd.DataFrame({
-        'Strike': smoothed_strikes,
-        'Vanna Puts': polynomial_puts(smoothed_strikes)
-    })
-
-    # Crea un gráfico con dos líneas curvadas para Vanna Calls y Vanna Puts
-    chart = alt.Chart(predicted_data_calls).mark_line(color='green').encode(
+    # Crea el gráfico con la línea curvada para Vanna Average
+    chart = alt.Chart(predicted_data).mark_line(color='#A3AB78').encode(
         x=alt.X('Strike:O', axis=alt.Axis(format='d')),  # Formato de número entero en el eje x
-        y='Vanna Calls:Q',
-        tooltip=['Strike', 'Vanna Calls']
-    ) + alt.Chart(predicted_data_puts).mark_line(color='red').encode(
-        x=alt.X('Strike:O', axis=alt.Axis(format='d')),  # Formato de número entero en el eje x
-        y='Vanna Puts:Q',
-        tooltip=['Strike', 'Vanna Puts']
+        y='Vanna Average:Q',
+        tooltip=['Strike', 'Vanna Average']
     )
 
     # Muestra el gráfico usando Streamlit
-    st.title('Curvas de Vanna Suavizadas para Calls y Puts')
+    st.title('Curva de Vanna Suavizada (Media de Calls y Puts)')
     st.altair_chart(chart, use_container_width=True)
 
 
@@ -864,6 +861,8 @@ with tab4:
     # Supongamos que tienes un DataFrame llamado "data" con las columnas necesarias
 
     # Calcular el sesgo de volatilidad (diferencia entre IV de calls y puts) en porcentaje
+    
+    
     data['Sesgo_IV'] = (data['Calls IV'] - data['Puts IV']) * 100  # Multiplicamos por 100 para convertirlo en porcentaje
 
     # Crear el gráfico de barras
@@ -876,6 +875,8 @@ with tab4:
         title='Sesgo de Volatilidad (IV) de Calls y Puts por Precio de Ejercicio',
         width=800
     )
+    #Añadirmos informacion
+    st.info('Este gráfico representa el **Sesgo de volatilidad** (IV) entre las opciones de compra (calls) y venta (puts) en función del precio de ejercicio (strike price). Proporciona información valiosa sobre cómo los participantes del mercado perciben el riesgo futuro del activo subyacente y cómo esto se refleja en los precios de las opciones. Aquí hay algunas formas en que este gráfico puede ser útil al analizar el índice SPX (u otro activo subyacente)', icon="ℹ️")
 
     # Mostrar el gráfico en Streamlit
     st.altair_chart(chart_sesgo_iv, use_container_width=True)
@@ -892,6 +893,11 @@ with tab4:
 
     
     #PROBANDO CALCULAR VANNA JPMORGAN
+    #Añadirmos informacion Calls Vanna
+    st.info('**Vanna Calls disminuye:** Esto indica que las opciones de compra se vuelven menos sensibles a los cambios en el precio del activo subyacente y la volatilidad a medida que nos movemos hacia strikes más altos. Es posible que las expectativas del mercado para movimientos significativos en el precio del activo subyacente sean menores a medida que nos alejamos del precio actual del SPX)', icon="ℹ️")
+    #Añadirmos informacion Puts Vanna
+    st.info('**Vanna Puts aumenta:** Por otro lado, el aumento en Vanna Puts sugiere que las opciones de venta se vuelven más sensibles a los cambios en el precio del activo subyacente y la volatilidad a medida que nos movemos hacia strikes más altos. Esto podría indicar que los inversores están mostrando más interés en las opciones de venta a medida que el precio del activo subyacente aumenta)', icon="ℹ️")
+
     # Calcular el Vanna
     data['Vanna Calls'] = data['Calls Last Sale'] * data['Calls Delta'] * data['Calls IV']
     data['Vanna Puts'] = data['Puts Last Sale'] * data['Puts Delta'] * data['Puts IV']
@@ -935,32 +941,21 @@ with tab4:
             
             
             
-    #Calcular CHARM 0dte
-    # Suponiendo que ya tienes el DataFrame 'data' con las columnas mencionadas
-
-    # Asegúrate de que la columna 'Expiration Date' sea de tipo datetime
-    data['Expiration Date'] = pd.to_datetime(data['Expiration Date'])
-
-    # Calcular el Charm para cada Strike
-    data['Charm'] = data['Calls Delta'] - data['Puts Delta']
-
-    # Crear el gráfico de barras con Altair y ajustar el esquema de color
-    chart = alt.Chart(data).mark_bar().encode(
-        x=alt.X('Strike:N', title='Strike'),
+    # Crear el gráfico de burbujas interactivo
+    chart = alt.Chart(data).mark_circle().encode(
+        x=alt.X('Strike:O', title='Strike'),
         y=alt.Y('Charm:Q', title='Charm'),
-        color=alt.Color('Charm:Q', scale=alt.Scale(scheme='blues', reverse=True), legend=None),
+        size='Charm:Q',
+        color=alt.Color('Charm:Q', scale=alt.Scale(scheme='blues', reverse=True)),
         tooltip=['Strike:N', 'Charm:Q']
     ).properties(
         width=800,
         height=600,
-        title='Charm de Opciones 0DTE sobre SPX para diferentes Strikes'
+        title='Charm de Opciones 0DTE sobre SPX para diferentes Strikes (Gráfico de Burbujas)'
     )
 
-    # Mostrar el gráfico en Streamlit
+    # Mostrar el gráfico de burbujas en Streamlit
     st.altair_chart(chart, use_container_width=True)
-        
-    
-    st.header("Todas las expiraciones SPX")
 
     col1, col2 = st.columns(2)
 
@@ -2562,65 +2557,58 @@ with tab4:
 
     with tab9:
 
-      
+            
+        # Asegúrate de que las fechas estén en el mismo formato
+        df_cotSP['dia'] = pd.to_datetime(df_cotSP['dia'])
+        df_diarios_ES['Date'] = pd.to_datetime(df_diarios_ES['Date'])
 
+        # Sincronizar los DataFrames usando la columna 'dia' como referencia
+        df_merged = pd.merge(df_cotSP, df_diarios_ES, how='inner', left_on='dia', right_on='Date')
 
-        # Crear una figura con dos ejes y
+        # Obtener las fechas en el formato deseado (por ejemplo, 'd-m-Y')
+        formatted_dates = df_merged['dia'].dt.strftime('%d-%m-%Y')
+
+        # Crear una figura con dos ejes Y
         fig = go.Figure()
 
         # Agregar las barras del posicionamiento comercial y no comercial
         fig.add_trace(go.Bar(
-            x=df_cotSP['dia'],
-            y=df_cotSP['cot_commercial'],
+            x=formatted_dates,
+            y=df_merged['cot_commercial'],
             name='Commercial',
-            marker_color='#C2BB00'
+            marker_color='#C2BB00',
+            yaxis='y1'  # Asociar al primer eje Y
         ))
 
         fig.add_trace(go.Bar(
-            x=df_cotSP['dia'],
-            y=df_cotSP['cot_noncommercial'],
+            x=formatted_dates,
+            y=df_merged['cot_noncommercial'],
             name='Non-Commercial',
-            marker_color='#E1523D'
+            marker_color='#E1523D',
+            yaxis='y1'  # Asociar al primer eje Y
         ))
 
-        # Configurar el primer eje y para el posicionamiento comercial y no comercial
-        fig.update_layout(
-            title='Posicionamiento Neto Commercial vs. Non-Commercial',
-            xaxis_title='Periodo',
-            yaxis_title='Posicionamiento',
-            barmode='group',
-            xaxis=dict(
-                tickformat='%d-%m-%Y',  # Formato de las fechas
-                tickmode='auto',
-                nticks=10  # Número de ticks en el eje x
-            ),
-            yaxis=dict(
-                side='left'  # Configurar el primer eje y en el lado izquierdo
-            )
-        )
-
-        # Agregar la línea del precio de cierre en el segundo eje y
+        # Agregar la línea suavizada del precio de cierre
         fig.add_trace(go.Scatter(
-            x=df_cotSP['dia'],
-            y=df_diarios_ES['Closing Price'],
+            x=formatted_dates,
+            y=df_merged['Closing Price'],
             name='Precio de Cierre',
-            yaxis='y2'  # Asociar la línea al segundo eje y
+            mode='lines+markers',
+            line=dict(color='blue'),
+            yaxis='y2'  # Asociar al segundo eje Y
         ))
 
-        # Configurar el segundo eje y para el precio de cierre
+        # Configurar el diseño del gráfico
         fig.update_layout(
-            yaxis2=dict(
-                side='right',  # Configurar el segundo eje y en el lado derecho
-                overlaying='y',  # Superponer el segundo eje y al primero
-                title='Precio de Cierre',
-                rangemode='normal'  # Utilizar una escala lineal para el eje y2
-            )
+            title='Posicionamiento Neto Commercial vs. Non-Commercial y Precio de Cierre',
+            xaxis_title='Periodo',
+            yaxis=dict(title='Posicionamiento', side='left'),  # Configurar el primer eje Y
+            yaxis2=dict(title='Precio de Cierre', side='right', overlaying='y', showgrid=False),  # Configurar el segundo eje Y
+            barmode='group'
         )
 
         # Mostrar el gráfico en Streamlit
         st.plotly_chart(fig, use_container_width=True)
-
-        
         
         
         
