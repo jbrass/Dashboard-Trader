@@ -876,7 +876,7 @@ with tab4:
         width=800
     )
     #Añadirmos informacion
-    st.info('Este gráfico representa el **Sesgo de volatilidad** (IV) entre las opciones de compra (calls) y venta (puts) en función del precio de ejercicio (strike price). Proporciona información valiosa sobre cómo los participantes del mercado perciben el riesgo futuro del activo subyacente y cómo esto se refleja en los precios de las opciones. Aquí hay algunas formas en que este gráfico puede ser útil al analizar el índice SPX (u otro activo subyacente)', icon="ℹ️")
+    st.info('Este gráfico representa el **Sesgo de volatilidad** (IV) entre las opciones de compra (calls) y venta (puts) en función del precio de ejercicio (strike price). Proporciona información valiosa sobre cómo los participantes del mercado perciben el riesgo futuro del activo subyacente y cómo esto se refleja en los precios de las opciones.)', icon="ℹ️")
 
     # Mostrar el gráfico en Streamlit
     st.altair_chart(chart_sesgo_iv, use_container_width=True)
@@ -942,20 +942,30 @@ with tab4:
             
             
     # Crear el gráfico de burbujas interactivo
-    chart = alt.Chart(data).mark_circle().encode(
-        x=alt.X('Strike:O', title='Strike'),
+
+    data['Expiration Date'] = pd.to_datetime(data['Expiration Date'])
+
+    # Calcular el Charm para cada Strike
+    data['Charm'] = data['Calls Delta'] - data['Puts Delta']
+
+    # Crear el gráfico de barras con Altair y ajustar el esquema de color
+    chart = alt.Chart(data).mark_bar().encode(
+        x=alt.X('Strike:N', title='Strike'),
         y=alt.Y('Charm:Q', title='Charm'),
-        size='Charm:Q',
-        color=alt.Color('Charm:Q', scale=alt.Scale(scheme='blues', reverse=True)),
+        color=alt.Color('Charm:Q', scale=alt.Scale(scheme='blues', reverse=True), legend=None),
         tooltip=['Strike:N', 'Charm:Q']
     ).properties(
         width=800,
         height=600,
-        title='Charm de Opciones 0DTE sobre SPX para diferentes Strikes (Gráfico de Burbujas)'
+        title='Charm de Opciones 0DTE sobre SPX para diferentes Strikes'
     )
 
-    # Mostrar el gráfico de burbujas en Streamlit
+    # Mostrar el gráfico en Streamlit
     st.altair_chart(chart, use_container_width=True)
+        
+    
+    st.header("Todas las expiraciones SPX")
+
 
     col1, col2 = st.columns(2)
 
@@ -1388,6 +1398,35 @@ with tab4:
 
     # Mostrar el gráfico en Streamlit
     st.plotly_chart(fig, use_container_width=True)
+
+
+
+
+
+    #Netos Vix All Exp.
+    # Calcula la suma de Calls Net y Puts Net para Vix all exp.
+    total_calls_net = data_vix_all['Calls Net'].sum()
+    total_puts_net = data_vix_all['Puts Net'].sum()
+
+    # Crea un DataFrame para el gráfico
+    total_data = pd.DataFrame({'Tipo': ['Total Calls Net', 'Total Puts Net'],
+                            'Valor': [total_calls_net, total_puts_net]})
+
+    # Crea un gráfico de barras con Altair
+    chart = alt.Chart(total_data).mark_bar().encode(
+        x='Tipo',
+        y='Valor:Q',
+        color=alt.Color('Tipo:N', legend=None),
+        tooltip=['Tipo', 'Valor']
+    ).properties(
+        width=400,
+        height=300,
+        title='Total Calls Net y Total Puts Net'
+    )
+
+    # Muestra el gráfico en Streamlit
+    st.write("Total Calls Net y Total Puts Net VIx")
+    st.altair_chart(chart, use_container_width=True)
 
 
 
